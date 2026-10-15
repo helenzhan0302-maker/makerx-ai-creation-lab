@@ -112,6 +112,15 @@ git config --global http.https://github.com/.proxy http://127.0.0.1:7897
 
 > ⚠️ **未验证**：间歇性超时的原因（运营商 / DNS / 代理规则 / 对端限速）**未定位**。以上只是可用性测量，不是根因结论。
 
+**推送失败时怎么判断是哪一环**：
+
+| 现象 | 含义 | 处理 |
+|---|---|---|
+| `Failed to connect to 127.0.0.1 port 7897 ... Couldn't connect to server` | 代理没在跑（Clash Verge 未启动） | 启动 Clash Verge，确认 `127.0.0.1:7897` 在监听 |
+| `Failed to connect to github.com port 443 ... timed out` | 代理未生效，走了直连 | 复查 `git config --global --get http.https://github.com/.proxy` |
+| `HTTP 401` / `Authentication failed` | 凭证过期（代理已通） | 重新登录；凭证由 Git Credential Manager 管理 |
+| 推送很慢或中途断开 | 代理节点带宽不足 | 在 Clash 里换节点 |
+
 ### 首页原型验证记录（真实命令 + 退出码 + 关键输出）
 
 | 命令 | 退出码 | 关键输出 |
