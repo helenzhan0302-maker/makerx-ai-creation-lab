@@ -1,0 +1,27 @@
+:root {
+  --lab-sky: #e9f2fd;
+  --lab-surface: #ffffff;
+  --lab-deep: #dcebff;
+  --brand-ink: #111315;
+  --ink-muted: #4a5568;
+  --ink-soft: #5a6478;
+  --accent-wire: #2f4bc7;
+  --brand-cyan: #77daf8;
+  --brand-peri: #7ba4f0;
+  --line: rgba(17, 19, 21, 0.14);
+  --line-strong: rgba(17, 19, 21, 0.32);
+  --orbit-cyan: #55d7f9;
+  --orbit-violet: #7b72ef;
+  --stage-gutter: clamp(1.25rem, 4vw, 4.5rem);
+  --stage-max-width: 1600px;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, "Liberation Mono", monospace;
+  --fs-display: clamp(4.5rem, 15vw, 14rem);
+  --fs-h2: clamp(2rem, 5vw, 4.5rem);
+  --fs-body: 1rem;
+  --fs-meta: 0.75rem;
+  --content-width: 1440px;
+  --copy-width: 760px;
+  --page-gutter: clamp(1.25rem, 4vw, 4rem);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
