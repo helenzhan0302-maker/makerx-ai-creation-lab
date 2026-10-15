@@ -77,7 +77,7 @@ pnpm test             # 首页结构契约测试
 |---|---|
 | Node | `v24.19.0` |
 | pnpm | `11.25.0` |
-| Git | 当前目录尚未初始化 Git 仓库 |
+| Git | `2.45.1.windows.1`；仓库已初始化，`main` 已推送并跟踪 `origin/main` |
 | 依赖 | `astro ^7.3.8`；dev: `@astrojs/check ^0.9.10`、`typescript ^6.0.3`、`cross-env ^10.1.0`、`@types/node ^26.6.5` |
 
 依赖选择说明（AGENTS.md §2 硬约束 11「不引入重型依赖」）：
@@ -87,6 +87,30 @@ pnpm test             # 首页结构契约测试
 - **`yaml`（dev）**：`check-resources.mjs` 需要独立解析 frontmatter；Zod 那条路径只在 Astro 内部可用。
 - **`@types/node`（dev）**：`astro.config.mjs` 用了 `node:url`，`astro check` 需要 node 类型。
 - 运行期依赖目前只有 `astro`。
+
+### GitHub 推送配置（2026-10-15 实测）
+
+直连 `github.com:443` 在本机**间歇性超时**（不是稳定可用，也不是稳定不可用）。已配置**仅对 github.com 生效**的代理，不影响 gitee 等其他远端：
+
+```bash
+git config --global http.https://github.com/.proxy http://127.0.0.1:7897
+```
+
+| 命令 | 退出码 | 关键输出 |
+|---|---|---|
+| `curl -x http://127.0.0.1:7897 https://github.com` × 12 | `0` | **12/12 成功**，均 `http_code=200`，平均 `1.79s`（`1.53s`–`2.31s`） |
+| `curl -4 https://github.com`（直连）× 20 | `28` | **0/20 成功**，全部 `code=000` 超时（10s 上限）。本次窗口内直连持续不可用 |
+| `curl -4 https://github.com`（直连）× 8（另一时间窗口） | `0` | **8/8 成功**，`200`，`0.76s`–`3.86s`。**同一配置下直连时通时不通** |
+| `curl https://gitee.com`（直连对照） | `0` | `http_code=200`，`2.32s` —— 仅 GitHub 受影响 |
+| `git push -u origin main` | `0` | `* [new branch] main -> main` |
+| `git ls-remote origin` | `0` | `refs/heads/main` = 本地 `HEAD` = `0c4cbf5` |
+| `git rev-list --left-right --count '@{u}...HEAD'` | `0` | `0	0`（无落后/领先） |
+
+`git push` 走代理后，同一路径下连续观察**未再出现失败**。
+
+依赖前提：本机需运行 Clash Verge（`verge-mihomo`）并监听 `127.0.0.1:7897`。代理进程未运行时，`git push` 会退回直连，**可能**超时也可能成功，取决于当时的网络状况。
+
+> ⚠️ **未验证**：间歇性超时的原因（运营商 / DNS / 代理规则 / 对端限速）**未定位**。以上只是可用性测量，不是根因结论。
 
 ### 首页原型验证记录（真实命令 + 退出码 + 关键输出）
 
