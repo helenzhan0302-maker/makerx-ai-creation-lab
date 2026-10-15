@@ -4,6 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <BaseLayout>
   <div class="site-shell">
+    <canvas class="cursor-trail" aria-hidden="true"></canvas>
     <main id="main-content">
       <section class="hero-stage" aria-labelledby="hero-title">
         <header class="site-header" data-reveal style="--reveal-delay: 40ms">
@@ -136,11 +137,103 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 </BaseLayout>
 
 <script is:inline>
+  /** @type {HTMLCanvasElement | null} */
+  const trailCanvas = document.querySelector('.cursor-trail');
+  const finePointer = window.matchMedia('(pointer: fine)').matches;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (trailCanvas && finePointer && !reducedMotion) {
+    const trailContext = trailCanvas.getContext('2d');
+    if (trailContext) {
+      /** @type {{ x: number; y: number; hue: number; life: number; size: number; velocityX: number; velocityY: number }[]} */
+      const particles = [];
+      /** @type {{ x: number; y: number } | null} */
+      let lastPointer = null;
+      let animationFrame = 0;
+
+    const resizeTrail = () => {
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      trailCanvas.width = Math.round(window.innerWidth * pixelRatio);
+      trailCanvas.height = Math.round(window.innerHeight * pixelRatio);
+      trailCanvas.style.width = `${window.innerWidth}px`;
+      trailCanvas.style.height = `${window.innerHeight}px`;
+      trailContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    };
+
+    const drawTrail = () => {
+      trailContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      trailContext.globalCompositeOperation = 'lighter';
+
+      for (let index = particles.length - 1; index >= 0; index -= 1) {
+        const particle = particles[index];
+        particle.life -= 0.035;
+        particle.x += particle.velocityX;
+        particle.y += particle.velocityY;
+        particle.velocityX *= 0.96;
+        particle.velocityY *= 0.96;
+
+        if (particle.life <= 0) {
+          particles.splice(index, 1);
+          continue;
+        }
+
+        const radius = particle.size * particle.life;
+        const gradient = trailContext.createRadialGradient(particle.x, particle.y, 0, particle.x, particle.y, radius * 4);
+        gradient.addColorStop(0, `hsla(${particle.hue}, 100%, 88%, ${particle.life * 0.9})`);
+        gradient.addColorStop(0.35, `hsla(${particle.hue}, 100%, 68%, ${particle.life * 0.4})`);
+        gradient.addColorStop(1, `hsla(${particle.hue}, 100%, 60%, 0)`);
+        trailContext.fillStyle = gradient;
+        trailContext.beginPath();
+        trailContext.arc(particle.x, particle.y, radius * 4, 0, Math.PI * 2);
+        trailContext.fill();
+      }
+
+      animationFrame = particles.length > 0 ? requestAnimationFrame(drawTrail) : 0;
+    };
+
+    const wakeTrail = () => {
+      if (animationFrame === 0) animationFrame = requestAnimationFrame(drawTrail);
+    };
+
+    /** @param {PointerEvent} event */
+    const handlePointerMove = (event) => {
+      const currentPointer = { x: event.clientX, y: event.clientY };
+      const previousPointer = lastPointer || currentPointer;
+      const distance = Math.hypot(currentPointer.x - previousPointer.x, currentPointer.y - previousPointer.y);
+      const particleCount = Math.min(6, Math.max(1, Math.ceil(distance / 12)));
+
+      for (let index = 0; index < particleCount; index += 1) {
+        const progress = particleCount === 1 ? 1 : index / (particleCount - 1);
+        particles.push({
+          x: previousPointer.x + (currentPointer.x - previousPointer.x) * progress,
+          y: previousPointer.y + (currentPointer.y - previousPointer.y) * progress,
+          hue: index % 3 === 0 ? 191 : index % 3 === 1 ? 226 : 274,
+          life: 0.72 + Math.random() * 0.28,
+          size: 2 + Math.random() * 4,
+          velocityX: (Math.random() - 0.5) * 1.4,
+          velocityY: (Math.random() - 0.5) * 1.4,
+        });
+      }
+
+      if (particles.length > 120) particles.splice(0, particles.length - 120);
+      lastPointer = currentPointer;
+      wakeTrail();
+    };
+
+    resizeTrail();
+    window.addEventListener('resize', resizeTrail, { passive: true });
+    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+      window.addEventListener('blur', () => {
+        particles.length = 0;
+        lastPointer = null;
+      });
+    }
+  }
+
   const root = document.documentElement;
   root.classList.add('js');
 
   const revealItems = [...document.querySelectorAll('[data-reveal]')];
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /** @param {Element} element */
   const show = (element) => element.classList.add('is-visible');

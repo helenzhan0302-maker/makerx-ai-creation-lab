@@ -37,6 +37,7 @@ Hero 不使用左右栏，不把 PNG 当作 `<img>` 主视觉，不突出实验 
 - 通过自绘 SVG 绘制轨道、球体、星芒和渐变几何体；不增加 Three.js、GSAP、WebGL 或外部字体。
 - 首屏进入时导航、角标、品牌文字和 SVG 装饰错峰出现；只动画 `opacity` 与 `transform`。
 - 轨道缓慢旋转、球体沿轨道轻微移动、几何体低幅漂浮；不做高频闪烁或影响阅读的视差。
+- 桌面端精细指针移动时显示低幅度粒子尾焰；Canvas 只作为装饰层，`pointer-events: none`，触摸设备不启用。
 - `prefers-reduced-motion: reduce` 下关闭所有持续动画和入场过渡，内容直接可见。
 - 无 JavaScript 时所有文字、导航和滚动入口仍然可见可用。
 

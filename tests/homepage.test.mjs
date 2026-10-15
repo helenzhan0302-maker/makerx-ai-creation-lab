@@ -16,6 +16,8 @@ test('homepage uses the approved HTML stage contract', () => {
   assert.match(page, /AI 造物实验室/);
   assert.match(page, /把脑海里的想法，动手造出来。/);
   assert.match(page, /<svg[^>]+aria-hidden="true"/s);
+  assert.match(page, /class="cursor-trail"/);
+  assert.match(page, /pointermove/);
   assert.match(page, /id="projects"/);
   assert.doesNotMatch(page, /makerx-hero\.png/);
   assert.doesNotMatch(page, /实验 001/);
