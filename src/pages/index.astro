@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { frontmatter as aiBaseProject } from '../content/projects/001-ai-base.md';
 ---
 
 <BaseLayout>
@@ -29,8 +30,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
         <div class="hero-composition">
           <p class="hero-kicker" data-reveal style="--reveal-delay: 300ms">AI CREATION LAB</p>
-          <h1 id="hero-title" class="wordmark" data-reveal style="--reveal-delay: 390ms">
-            Maker<span class="wordmark-x">X</span>
+          <h1 id="hero-title" class="wordmark" aria-label="MakerX" data-reveal style="--reveal-delay: 390ms">
+            <span class="wordmark-face" aria-hidden="true" data-text="Maker">Maker</span>
+            <span class="wordmark-x-glass" aria-hidden="true" data-text="X">X</span>
           </h1>
           <p class="hero-subtitle" data-reveal style="--reveal-delay: 470ms">
             <span aria-hidden="true">✦</span>
@@ -77,12 +79,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <ellipse rx="50" ry="18" fill="none" stroke="#546df0" stroke-opacity="0.6" stroke-width="6" transform="rotate(-36)" />
           </g>
 
-          <g class="art-cross" transform="translate(860 315) rotate(28)">
-            <rect x="-40" y="-124" width="80" height="248" rx="32" fill="url(#makerx-violet)" />
-            <rect x="-124" y="-40" width="248" height="80" rx="32" fill="url(#makerx-cyan)" />
-            <path d="M-25-111C-5-92 12-76 38-58C52-49 65-37 79-17C39-35 14-32-14-8C-38 12-56 32-79 54C-65 13-45-15-27-36C-7-58 11-83 25-111Z" fill="#ffffff" opacity="0.2" />
-          </g>
-
           <g class="art-cube" transform="translate(152 520) rotate(-17)">
             <path d="M0-43 50-14 48 44 0 71-49 43-50-14Z" fill="url(#makerx-violet)" opacity="0.82" />
             <path d="M0-43 0 13 48 44 50-14Z" fill="#b3f2ff" opacity="0.54" />
@@ -123,8 +119,24 @@ import BaseLayout from '../layouts/BaseLayout.astro';
               MakerX 不是一门固定不变的课程。我们会在每一次制作、测试和分享之后，把新的项目继续放进这个档案里。
             </p>
             <p class="archive-status">课程与项目持续研发中</p>
-            <a class="primary-link" href="#projects">探索造物项目 <span aria-hidden="true">↘</span></a>
+            <a class="primary-link" href="#project-list">探索造物项目 <span aria-hidden="true">↘</span></a>
           </div>
+        </div>
+
+        <div class="project-list" id="project-list" aria-labelledby="project-list-title">
+          <div class="project-list-heading">
+            <p class="section-label">project 001 / archive entry</p>
+            <h3 id="project-list-title">第一个造物项目</h3>
+          </div>
+          <article class="project-card" data-reveal style="--reveal-delay: 160ms">
+            <div class="project-card-index" aria-hidden="true">001</div>
+            <div class="project-card-copy">
+              <p class="project-card-status"><span aria-hidden="true"></span>{aiBaseProject.status}</p>
+              <h4>{aiBaseProject.title}</h4>
+              <p>{aiBaseProject.summary}</p>
+            </div>
+            <span class="project-card-arrow" aria-hidden="true">↗</span>
+          </article>
         </div>
       </section>
     </main>

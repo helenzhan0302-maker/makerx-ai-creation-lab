@@ -13,6 +13,10 @@ test('homepage uses the approved HTML stage contract', () => {
 
   assert.match(page, /class="hero-stage"/);
   assert.match(page, /MakerX/);
+  assert.match(page, /aria-label="MakerX"/);
+  assert.match(page, /class="wordmark-face"/);
+  assert.match(page, /class="wordmark-x-glass"/);
+  assert.doesNotMatch(page, /class="wordmark-x"/);
   assert.match(page, /AI 造物实验室/);
   assert.match(page, /把脑海里的想法，动手造出来。/);
   assert.match(page, /<svg[^>]+aria-hidden="true"/s);
@@ -23,6 +27,10 @@ test('homepage uses the approved HTML stage contract', () => {
   assert.doesNotMatch(page, /实验 001/);
   assert.match(styles, /min-height:\s*100svh/);
   assert.match(styles, /prefers-reduced-motion/);
+  assert.match(styles, /white-space:\s*nowrap/);
+  assert.match(page, /href="#project-list"/);
+  assert.match(page, /aiBaseProject\.title/);
+  assert.match(read('src/content/projects/001-ai-base.md'), /title: AI 小基地/);
 });
 
 test('reference image remains available without being used as Hero markup', () => {

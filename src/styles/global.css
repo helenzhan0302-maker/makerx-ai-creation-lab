@@ -278,13 +278,102 @@ a:focus-visible {
   text-wrap: balance;
 }
 
-.wordmark-x {
+.wordmark-face {
+  position: relative;
   display: inline-block;
-  background: linear-gradient(135deg, var(--brand-cyan), #536ef0 56%, #b78cff);
+  isolation: isolate;
+  background: linear-gradient(145deg, #050608 0%, #11151c 48%, #000000 100%);
   background-clip: text;
   color: transparent;
   -webkit-background-clip: text;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.34);
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.84),
+    0 0.04em 0 rgba(17, 19, 21, 0.82),
+    0 0.09em 0 rgba(17, 19, 21, 0.62),
+    0 0.16em 0.3em rgba(17, 19, 21, 0.26);
   transform: translateY(0.02em);
+}
+
+.wordmark-face::before,
+.wordmark-face::after {
+  position: absolute;
+  inset: 0;
+  display: block;
+  content: attr(data-text);
+  pointer-events: none;
+}
+
+.wordmark-face::before {
+  z-index: -1;
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.34), rgba(42, 49, 62, 0.28) 46%, rgba(0, 0, 0, 0.54));
+  background-clip: text;
+  color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-stroke: 1px rgba(17, 19, 21, 0.38);
+  filter: blur(0.6px);
+  transform: translate(0.022em, 0.055em);
+}
+
+.wordmark-face::after {
+  z-index: 1;
+  background: linear-gradient(118deg, transparent 0 31%, rgba(255, 255, 255, 0.72) 36%, rgba(255, 255, 255, 0.08) 40%, transparent 45% 100%);
+  background-clip: text;
+  color: transparent;
+  -webkit-background-clip: text;
+  mix-blend-mode: screen;
+}
+
+.wordmark-x-glass {
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+  margin-left: -0.12em;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.24) 15%, transparent 34%),
+    linear-gradient(135deg, #c7f8ff 0%, #5fd5f3 38%, #617df0 68%, #b996f3 100%);
+  background-clip: text;
+  color: transparent;
+  font-size: 0.88em;
+  font-weight: inherit;
+  letter-spacing: -0.12em;
+  -webkit-background-clip: text;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.72);
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.86),
+    0 0.05em 0 rgba(76, 103, 207, 0.7),
+    0 0.11em 0 rgba(71, 67, 164, 0.52),
+    0 0.18em 0.3em rgba(63, 93, 184, 0.26);
+  transform: translateY(0.025em) rotate(-5deg);
+}
+
+.wordmark-x-glass::before,
+.wordmark-x-glass::after {
+  position: absolute;
+  inset: 0;
+  display: block;
+  content: attr(data-text);
+  pointer-events: none;
+}
+
+.wordmark-x-glass::before {
+  z-index: -1;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.5), rgba(77, 105, 214, 0.34) 48%, rgba(86, 48, 160, 0.5));
+  background-clip: text;
+  color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-stroke: 1px rgba(72, 88, 176, 0.38);
+  filter: blur(0.5px);
+  transform: translate(0.022em, 0.055em);
+}
+
+.wordmark-x-glass::after {
+  z-index: 1;
+  background: linear-gradient(118deg, transparent 0 31%, rgba(255, 255, 255, 0.78) 36%, rgba(255, 255, 255, 0.08) 41%, transparent 46% 100%);
+  background-clip: text;
+  color: transparent;
+  -webkit-background-clip: text;
+  mix-blend-mode: screen;
 }
 
 .hero-subtitle {
@@ -354,12 +443,6 @@ a:focus-visible {
   transform-box: fill-box;
   transform-origin: center;
   animation: object-float 9s ease-in-out infinite;
-}
-
-.art-cross {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: object-float 11s ease-in-out infinite reverse;
 }
 
 .art-cube {
@@ -489,13 +572,13 @@ a:focus-visible {
 }
 
 .archive-panel h2 {
-  max-width: 8ch;
+  max-width: none;
   margin: 1rem 0 0;
-  font-size: var(--fs-h2);
+  font-size: clamp(1.55rem, 5vw, 4.5rem);
   font-weight: 650;
   letter-spacing: -0.07em;
   line-height: 0.98;
-  text-wrap: balance;
+  white-space: nowrap;
 }
 
 .archive-copy {
@@ -521,6 +604,100 @@ a:focus-visible {
   background: var(--brand-cyan);
   box-shadow: 0 0 0 5px rgba(119, 218, 248, 0.2);
   content: "";
+}
+
+.project-list {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.65fr) minmax(0, 1.35fr);
+  gap: clamp(1.5rem, 6vw, 7rem);
+  align-items: start;
+  margin-top: clamp(4rem, 9vw, 8rem);
+  padding-top: 1rem;
+  border-top: 1px solid var(--line-strong);
+}
+
+.project-list-heading h3 {
+  margin: 1rem 0 0;
+  font-size: clamp(1.2rem, 2vw, 1.75rem);
+  font-weight: 650;
+  letter-spacing: -0.05em;
+}
+
+.project-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: clamp(1rem, 3vw, 2.5rem);
+  align-items: center;
+  min-height: 12rem;
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+  overflow: hidden;
+  border: 1px solid rgba(47, 75, 199, 0.3);
+  border-radius: 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.74), rgba(220, 235, 255, 0.58));
+  box-shadow: 0 1.5rem 3rem rgba(80, 110, 190, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.project-card::after {
+  position: absolute;
+  top: -40%;
+  right: -12%;
+  width: 14rem;
+  height: 14rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(119, 218, 248, 0.46), rgba(123, 114, 239, 0));
+  content: "";
+  pointer-events: none;
+}
+
+.project-card-index {
+  color: var(--accent-wire);
+  font-family: var(--font-mono);
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  letter-spacing: -0.08em;
+}
+
+.project-card-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.project-card-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+}
+
+.project-card-status span {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--brand-cyan);
+  box-shadow: 0 0 0 5px rgba(119, 218, 248, 0.18);
+}
+
+.project-card h4 {
+  margin: 0.5rem 0 0;
+  color: var(--brand-ink);
+  font-size: clamp(1.5rem, 3vw, 2.6rem);
+  font-weight: 720;
+  letter-spacing: -0.06em;
+}
+
+.project-card-copy > p:last-child {
+  max-width: 28rem;
+  margin: 0.65rem 0 0;
+  color: var(--ink-muted);
+}
+
+.project-card-arrow {
+  position: relative;
+  z-index: 1;
+  color: var(--accent-wire);
+  font-size: 2rem;
 }
 
 .primary-link {
@@ -788,7 +965,22 @@ a:focus-visible {
   }
 
   .archive-panel h2 {
-    max-width: 10ch;
+    font-size: clamp(1.55rem, 8vw, 2.35rem);
+  }
+
+  .project-list {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .project-card-arrow {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
   }
 
   .site-footer {
