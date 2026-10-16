@@ -1,0 +1,396 @@
+---
+import {
+  AVATAR_OPTIONS,
+  COLOR_OPTIONS,
+  LAYOUT_OPTIONS,
+  SECTION_OPTIONS,
+  STYLE_OPTIONS,
+} from '../lib/ai-planet-builder.mjs';
+---
+
+<section class="prompt-builder" id="prompt-builder" aria-labelledby="builder-title">
+  <div class="builder-heading">
+    <p class="eyebrow">classroom maker tool / 课堂创作工具</p>
+    <h2 id="builder-title">一步一步，造出你的 AI星球。</h2>
+    <p>把想法先写清楚，再交给 AI 帮你做出来。这里不会保存或上传你的内容，刷新页面后会重新开始。</p>
+  </div>
+
+  <div class="builder-progress" aria-label="填写进度">
+    <div class="builder-progress-track"><span data-progress-bar></span></div>
+    <p><span data-progress-current>1</span> / 7　<span data-progress-label>网站名字</span></p>
+  </div>
+
+  <form data-builder-form novalidate>
+    <div class="builder-panels">
+      <section class="builder-step is-active" data-step-panel="0" aria-labelledby="step-title-0">
+        <div class="step-heading">
+          <span class="step-number">01</span>
+          <div>
+            <p class="eyebrow">先给它一个名字</p>
+            <h3 id="step-title-0">你的网站叫什么名字？</h3>
+          </div>
+        </div>
+        <label class="builder-field builder-field--large">
+          <span>我的网站名字</span>
+          <input name="websiteName" type="text" maxlength="40" autocomplete="off" placeholder="例如：我的星空屋" />
+        </label>
+        <p class="field-hint">可以和你喜欢的动物、颜色或一个有趣的想法有关。</p>
+        <p class="builder-error" data-error-for="0" role="alert"></p>
+      </section>
+
+      <section class="builder-step" data-step-panel="1" aria-labelledby="step-title-1" hidden>
+        <div class="step-heading">
+          <span class="step-number">02</span>
+          <div>
+            <p class="eyebrow">选择你的伙伴</p>
+            <h3 id="step-title-1">你的头像 / 形象是什么？</h3>
+          </div>
+          <span class="selection-limit">最多选择 2 个</span>
+        </div>
+        <fieldset class="choice-grid choice-grid--avatars">
+          <legend class="sr-only">选择头像或形象，最多两个</legend>
+          {AVATAR_OPTIONS.filter((option) => option.id !== 'custom').map((option) => (
+            <label class="choice-card">
+              <input type="checkbox" name="avatars" value={option.id} />
+              <span class="choice-card-mark" aria-hidden="true">✦</span>
+              <span class="choice-card-label">{option.label}</span>
+              <span class="choice-card-description">{option.description}</span>
+            </label>
+          ))}
+        </fieldset>
+        <label class="builder-field">
+          <span>自己描述一个形象（可以不写）</span>
+          <input name="avatarCustom" type="text" maxlength="80" autocomplete="off" placeholder="例如：一只戴着耳机的蓝色小鲸鱼" />
+        </label>
+        <p class="builder-error" data-error-for="1" role="alert"></p>
+      </section>
+
+      <section class="builder-step" data-step-panel="2" aria-labelledby="step-title-2" hidden>
+        <div class="step-heading">
+          <span class="step-number">03</span>
+          <div>
+            <p class="eyebrow">让别人认识你</p>
+            <h3 id="step-title-2">你想怎样介绍自己？</h3>
+          </div>
+        </div>
+        <div class="builder-fields-stack">
+          <label class="builder-field">
+            <span>一句话介绍我自己 <em>可以不写</em></span>
+            <textarea name="introSelf" rows="3" maxlength="160" placeholder="例如：我是一个喜欢观察星星、也喜欢动手做东西的人。"></textarea>
+          </label>
+          <label class="builder-field">
+            <span>我最喜欢的内容 <em>可以不写</em></span>
+            <input name="introFavorite" type="text" maxlength="80" autocomplete="off" placeholder="例如：恐龙、画画和蓝色" />
+          </label>
+          <label class="builder-field">
+            <span>我希望大家知道的我 <em>可以不写</em></span>
+            <textarea name="introKnown" rows="3" maxlength="160" placeholder="例如：我正在学习把自己的想法变成小网站。"></textarea>
+          </label>
+        </div>
+        <p class="field-hint">这一页可以全部留空，想说什么就说什么。</p>
+        <p class="builder-error" data-error-for="2" role="alert"></p>
+      </section>
+
+      <section class="builder-step" data-step-panel="3" aria-labelledby="step-title-3" hidden>
+        <div class="step-heading">
+          <span class="step-number">04</span>
+          <div>
+            <p class="eyebrow">安排网站内容</p>
+            <h3 id="step-title-3">网站里想放哪些内容？</h3>
+          </div>
+        </div>
+        <fieldset class="choice-grid choice-grid--sections">
+          <legend class="sr-only">选择网站内容，可以多选</legend>
+          {SECTION_OPTIONS.map((option) => (
+            <label class="choice-card choice-card--compact">
+              <input type="checkbox" name="sections" value={option.id} />
+              <span class="choice-card-mark" aria-hidden="true">+</span>
+              <span class="choice-card-label">{option.label}</span>
+            </label>
+          ))}
+        </fieldset>
+        <label class="builder-field">
+          <span>自己补充一种内容（可以不写）</span>
+          <input name="sectionsCustom" type="text" maxlength="80" autocomplete="off" placeholder="例如：我的秘密基地地图" />
+        </label>
+        <p class="field-hint">可以多选，不需要被固定的数量限制住。</p>
+        <p class="builder-error" data-error-for="3" role="alert"></p>
+      </section>
+
+      <section class="builder-step" data-step-panel="4" aria-labelledby="step-title-4" hidden>
+        <div class="step-heading">
+          <span class="step-number">05</span>
+          <div>
+            <p class="eyebrow">决定它的感觉</p>
+            <h3 id="step-title-4">你喜欢哪一种网站风格？</h3>
+          </div>
+        </div>
+        <fieldset class="choice-grid choice-grid--styles">
+          <legend class="sr-only">选择一种网站风格</legend>
+          {STYLE_OPTIONS.map((option) => (
+            <label class="choice-card choice-card--style">
+              <input type="radio" name="style" value={option.id} />
+              <span class="choice-card-mark" aria-hidden="true">✦</span>
+              <span class="choice-card-label">{option.label}</span>
+              <span class="choice-card-description">{option.description}</span>
+            </label>
+          ))}
+        </fieldset>
+        <p class="builder-error" data-error-for="4" role="alert"></p>
+      </section>
+
+      <section class="builder-step" data-step-panel="5" aria-labelledby="step-title-5" hidden>
+        <div class="step-heading">
+          <span class="step-number">06</span>
+          <div>
+            <p class="eyebrow">给它挑颜色</p>
+            <h3 id="step-title-5">主色和搭配色是什么？</h3>
+          </div>
+          <span class="selection-limit">最多选择 3 个</span>
+        </div>
+        <fieldset class="choice-grid choice-grid--colors">
+          <legend class="sr-only">选择一到三个颜色，第一个是主色</legend>
+          {COLOR_OPTIONS.map((option) => (
+            <label class="choice-card choice-card--color">
+              <input type="checkbox" name="colors" value={option.id} />
+              <span class="color-swatch" aria-hidden="true" style={`--swatch: ${option.hex}`}></span>
+              <span class="choice-card-label">{option.label}</span>
+            </label>
+          ))}
+        </fieldset>
+        <label class="builder-field">
+          <span>自己填写颜色（可以不写）</span>
+          <input name="customColor" type="text" maxlength="40" autocomplete="off" placeholder="例如：月光银" />
+        </label>
+        <p class="field-hint">第一个颜色会成为主色，后面的颜色是搭配色。</p>
+        <p class="builder-error" data-error-for="5" role="alert"></p>
+      </section>
+
+      <section class="builder-step" data-step-panel="6" aria-labelledby="step-title-6" hidden>
+        <div class="step-heading">
+          <span class="step-number">07</span>
+          <div>
+            <p class="eyebrow">安排页面队形</p>
+            <h3 id="step-title-6">你希望页面怎么排？</h3>
+          </div>
+        </div>
+        <fieldset class="choice-grid choice-grid--layouts">
+          <legend class="sr-only">选择一种页面布局</legend>
+          {LAYOUT_OPTIONS.map((option) => (
+            <label class="choice-card choice-card--layout">
+              <input type="radio" name="layout" value={option.id} />
+              <span class={`layout-glyph layout-glyph--${option.id}`} aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="choice-card-label">{option.label}</span>
+              <span class="choice-card-description">{option.description}</span>
+            </label>
+          ))}
+        </fieldset>
+        <p class="builder-error" data-error-for="6" role="alert"></p>
+      </section>
+
+      <section class="builder-step builder-step--summary" data-step-panel="7" aria-labelledby="step-title-7" hidden>
+        <div class="step-heading">
+          <span class="step-number">08</span>
+          <div>
+            <p class="eyebrow">回头检查一下</p>
+            <h3 id="step-title-7">这是你的 AI星球草图</h3>
+          </div>
+        </div>
+        <dl class="summary-grid" data-summary></dl>
+        <p class="builder-error" data-error-for="7" role="alert"></p>
+      </section>
+    </div>
+
+    <div class="builder-actions">
+      <button class="builder-button builder-button--quiet" type="button" data-previous hidden>上一步</button>
+      <span class="builder-actions-spacer"></span>
+      <button class="builder-button builder-button--secondary" type="button" data-next>下一步</button>
+      <button class="builder-button builder-button--primary" type="button" data-generate hidden>生成我的中文提示词</button>
+    </div>
+  </form>
+
+  <section class="builder-result" data-result hidden aria-labelledby="result-title">
+    <div class="result-heading">
+      <p class="eyebrow">your prompt / 你的提示词</p>
+      <h3 id="result-title">可以交给 AI 制作网站啦！</h3>
+      <p>下面这段话已经把你的选择整理好了，可以复制给老师指定的 AI 工具。</p>
+    </div>
+    <pre class="prompt-output" data-prompt-output tabindex="0"></pre>
+    <div class="result-actions">
+      <button class="builder-button builder-button--primary" type="button" data-copy>复制提示词</button>
+      <button class="builder-button builder-button--quiet" type="button" data-edit>返回修改</button>
+    </div>
+    <p class="copy-feedback" data-copy-feedback role="status" aria-live="polite"></p>
+  </section>
+</section>
+
+<script>
+  // @ts-nocheck
+  import {
+    buildPrompt,
+    createInitialState,
+    STEP_LABELS,
+    validateAll,
+    validateStep,
+  } from '../lib/ai-planet-builder.mjs';
+
+  const builder = document.querySelector('[data-builder-form]');
+  const root = document.querySelector('.prompt-builder');
+
+  if (builder && root) {
+    const panels = [...root.querySelectorAll('[data-step-panel]')];
+    const state = createInitialState();
+    let avatarOrder = [];
+    let colorOrder = [];
+    let currentStep = 0;
+    const progressBar = root.querySelector('[data-progress-bar]');
+    const progressCurrent = root.querySelector('[data-progress-current]');
+    const progressLabel = root.querySelector('[data-progress-label]');
+    const previousButton = root.querySelector('[data-previous]');
+    const nextButton = root.querySelector('[data-next]');
+    const generateButton = root.querySelector('[data-generate]');
+    const summary = root.querySelector('[data-summary]');
+    const result = root.querySelector('[data-result]');
+    const promptOutput = root.querySelector('[data-prompt-output]');
+    const copyFeedback = root.querySelector('[data-copy-feedback]');
+
+    const input = (name) => builder.elements.namedItem(name);
+    const checkboxValues = (name) => [...builder.querySelectorAll(`input[name="${name}"]:checked`)].map((element) => element.value);
+
+    const readState = () => {
+      state.websiteName = input('websiteName').value;
+      state.avatars = avatarOrder.length ? [...avatarOrder] : checkboxValues('avatars');
+      state.avatarCustom = input('avatarCustom').value;
+      state.intro = {
+        self: input('introSelf').value,
+        favorite: input('introFavorite').value,
+        known: input('introKnown').value,
+      };
+      state.sections = checkboxValues('sections');
+      state.sectionsCustom = input('sectionsCustom').value;
+      state.style = input('style')?.value || '';
+      state.colors = colorOrder.length ? [...colorOrder] : checkboxValues('colors');
+      state.customColor = input('customColor').value;
+      state.layout = input('layout')?.value || '';
+      return state;
+    };
+
+    const showError = (stepIndex, message) => {
+      const error = root.querySelector(`[data-error-for="${stepIndex}"]`);
+      if (error) error.textContent = message;
+    };
+
+    const clearErrors = () => root.querySelectorAll('.builder-error').forEach((error) => { error.textContent = ''; });
+
+    const labelFor = (name, value) => {
+      const control = builder.querySelector(`input[name="${name}"][value="${CSS.escape(value)}"]`);
+      return control?.closest('label')?.querySelector('.choice-card-label')?.textContent.trim() || value;
+    };
+
+    const renderSummary = () => {
+      const rows = [
+        ['网站名字', state.websiteName || '还没有填写'],
+        ['头像 / 形象', [...state.avatars.map((value) => labelFor('avatars', value)), state.avatarCustom.trim()].filter(Boolean).join('、') || '还没有填写'],
+        ['自我介绍', [state.intro.self, state.intro.favorite, state.intro.known].map((value) => value.trim()).filter(Boolean).join(' / ') || '这次先不写'],
+        ['网站内容', [...state.sections.map((value) => labelFor('sections', value)), state.sectionsCustom.trim()].filter(Boolean).join('、') || '还没有填写'],
+        ['网站风格', labelFor('style', state.style) || '还没有填写'],
+        ['主色与搭配色', [...state.colors.map((value) => labelFor('colors', value)), state.customColor.trim()].filter(Boolean).join('、') || '还没有填写'],
+        ['页面布局', labelFor('layout', state.layout) || '还没有填写'],
+      ];
+      summary.replaceChildren(...rows.map(([term, value]) => {
+        const row = document.createElement('div');
+        row.className = 'summary-row';
+        const termElement = document.createElement('dt');
+        termElement.textContent = term;
+        const valueElement = document.createElement('dd');
+        valueElement.textContent = value;
+        row.append(termElement, valueElement);
+        return row;
+      }));
+    };
+
+    const showStep = (stepIndex) => {
+      currentStep = stepIndex;
+      panels.forEach((panel, index) => {
+        const active = index === currentStep;
+        panel.hidden = !active;
+        panel.classList.toggle('is-active', active);
+      });
+      const isSummary = currentStep === 7;
+      progressCurrent.textContent = String(Math.min(currentStep + 1, 7));
+      progressLabel.textContent = STEP_LABELS[Math.min(currentStep, 6)];
+      progressBar.style.width = `${(Math.min(currentStep, 6) / 6) * 100}%`;
+      previousButton.hidden = currentStep === 0;
+      nextButton.hidden = isSummary;
+      generateButton.hidden = !isSummary;
+      if (isSummary) renderSummary();
+      clearErrors();
+    };
+
+    const goNext = () => {
+      readState();
+      const validation = validateStep(state, currentStep);
+      if (!validation.valid) {
+        showError(currentStep, validation.message);
+        const firstInvalid = panels[currentStep]?.querySelector(':invalid, input, textarea');
+        firstInvalid?.focus();
+        return;
+      }
+      showStep(Math.min(7, currentStep + 1));
+    };
+
+    builder.addEventListener('change', (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLInputElement)) return;
+      if (target.name === 'avatars' && target.checked && checkboxValues('avatars').length > 2) {
+        target.checked = false;
+        showError(1, '头像最多选择两个。');
+      } else if (target.name === 'avatars') {
+        avatarOrder = avatarOrder.filter((value) => value !== target.value);
+        if (target.checked) avatarOrder.push(target.value);
+      }
+      if (target.name === 'colors' && target.checked && checkboxValues('colors').length > 3) {
+        target.checked = false;
+        showError(5, '颜色最多选择三个。');
+      } else if (target.name === 'colors') {
+        colorOrder = colorOrder.filter((value) => value !== target.value);
+        if (target.checked) colorOrder.push(target.value);
+      }
+    });
+
+    nextButton.addEventListener('click', goNext);
+    previousButton.addEventListener('click', () => showStep(Math.max(0, currentStep - 1)));
+    generateButton.addEventListener('click', () => {
+      readState();
+      const validation = validateAll(state);
+      if (!validation.valid) {
+        showStep(validation.stepIndex);
+        showError(validation.stepIndex, validation.message);
+        return;
+      }
+      promptOutput.textContent = buildPrompt(state);
+      result.hidden = false;
+      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    root.querySelector('[data-copy]')?.addEventListener('click', async () => {
+      const prompt = promptOutput.textContent;
+      try {
+        await navigator.clipboard.writeText(prompt);
+        copyFeedback.textContent = '已复制，可以交给 AI 制作网站啦！';
+      } catch {
+        copyFeedback.textContent = '复制没有成功，请长按或拖动选中文字复制。';
+        promptOutput.focus();
+      }
+    });
+
+    root.querySelector('[data-edit]')?.addEventListener('click', () => {
+      result.hidden = true;
+      showStep(7);
+      root.querySelector('[data-step-panel="7"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    builder.addEventListener('input', readState);
+    showStep(0);
+  }
+</script>

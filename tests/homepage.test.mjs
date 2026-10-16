@@ -29,8 +29,11 @@ test('homepage uses the approved HTML stage contract', () => {
   assert.match(styles, /prefers-reduced-motion/);
   assert.match(styles, /white-space:\s*nowrap/);
   assert.match(page, /href="#project-list"/);
+  assert.match(page, /const baseUrl = import\.meta\.env\.BASE_URL;/);
+  assert.match(page, /href=\{`\$\{baseUrl\}lab\/001-ai-planet\/`\}/);
+  assert.match(read('astro.config.mjs'), /base:\s*['"]\/makerx['"]/);
   assert.match(page, /aiBaseProject\.title/);
-  assert.match(read('src/content/projects/001-ai-base.md'), /title: AI 小基地/);
+  assert.match(read('src/content/projects/001-ai-base.md'), /title: AI星球/);
 });
 
 test('reference image remains available without being used as Hero markup', () => {

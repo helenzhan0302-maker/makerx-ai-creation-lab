@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectPromptBuilder from '../../components/ProjectPromptBuilder.astro';
+import '../../styles/ai-planet-builder.css';
+
+const baseUrl = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="AI星球｜MakerX AI 造物实验室" description="在 MakerX AI 造物实验室，一步一步把你的想法变成 AI星球。">
+  <div class="project-page-shell">
+    <header class="project-page-header">
+      <a class="project-back-link" href={baseUrl}>← MakerX AI 造物实验室</a>
+      <span class="project-page-status">实验编号 001 / 研发中</span>
+    </header>
+
+    <main id="main-content">
+      <section class="project-intro" aria-labelledby="project-title">
+        <p class="eyebrow">project 001 / ai creation lab</p>
+        <h1 id="project-title">AI星球</h1>
+        <p class="project-intro-lead">把脑海里的一颗小星球，变成一个可以打开、可以继续改进的网站。</p>
+        <div class="project-intro-notes">
+          <p>适合 9–12 岁的课堂创作工具</p>
+          <p>不填写姓名 · 不上传内容 · 刷新后重新开始</p>
+        </div>
+      </section>
+
+      <ProjectPromptBuilder />
+    </main>
+
+    <footer class="project-page-footer">
+      <p>MakerX AI 造物实验室</p>
+      <a href={baseUrl}>回到首页 ↗</a>
+    </footer>
+  </div>
+</BaseLayout>

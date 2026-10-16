@@ -11,19 +11,19 @@
 
 ## 当前状态
 
-**当前状态：Phase 0 规划已完成，首页 Hero 原型与项目档案卡片已可运行；实验详情页、完整内容集合、课程物料检查和部署尚未实现。**
+**当前状态：Phase 0 规划已完成，首页 Hero 原型、AI星球项目页与课堂提示词工具已可运行；静态站点已按 IP 子路径部署到腾讯云，完整内容集合与课程物料检查仍待接入。**
 
 | 阶段 | 内容 | 状态 |
 |---|---|---|
 | Phase 0 | 规划文档、设计方向、技术选型 | ✅ 完成（2026-10-15） |
 | Phase 1 | 首页 Hero 原型 | ✅ 完成（2026-10-15） |
-| Phase 2 | 项目档案与项目详情页 | 🟡 进行中（首页项目卡片已完成，详情页未开始） |
-| Phase 3 | 完整内容校验、可访问性、构建与部署 | 🟡 部分完成（首页测试、类型检查与构建已通过；完整内容校验和部署未开始） |
+| Phase 2 | 项目档案与项目详情页 | 🟡 进行中（AI星球项目页与课堂工具已完成，正式课程详情仍待接入） |
+| Phase 3 | 完整内容校验、可访问性、构建与部署 | 🟡 部分完成（测试、类型检查、构建和腾讯云部署已通过；完整内容校验仍待接入） |
 | Phase 4 | 课堂试用后迭代 | ⬜ 未开始（需要真实课堂反馈） |
 
-已落地的东西：Astro 7 静态首页、设计令牌、`100svh` HTML/SVG 动态首屏、项目档案锚点、`AI 小基地` 项目卡片、原生入场 / 轨道 / 几何体 / 鼠标尾焰 / 滚动揭示动效和基础可访问性结构。项目卡片读取 `src/content/projects/001-ai-base.md` 的轻量展示字段；完整课程内容仍待确认。
+已落地的东西：Astro 7 静态首页、设计令牌、`100svh` HTML/SVG 动态首屏、项目档案锚点、`AI星球` 项目卡片与项目页、一步一项/汇总式中文提示词生成器、原生入场 / 轨道 / 几何体 / 鼠标尾焰 / 滚动揭示动效和基础可访问性结构。项目卡片读取 `src/content/projects/001-ai-base.md` 的轻量展示字段；正式课程内容仍待确认。
 
-**2026-10-15 原型决策**（设计规格见 [`docs/superpowers/specs/2026-10-15-makerx-homepage-hero-design.md`](docs/superpowers/specs/2026-10-15-makerx-homepage-hero-design.md)）：首屏严格占满 `100svh`；首屏图只作为构图与色彩参考，不作为 Hero 图片渲染；品牌名、主张、角标和装饰轨道都是真实 HTML/SVG；滚动后进入品牌级项目档案区，并展示当前已确认的 `AI 小基地` 卡片。卡片只标记「研发中」并显示「完整项目内容待确认」，不伪造详情、下载或报名入口。
+**2026-10-15 原型决策**（设计规格见 [`docs/superpowers/specs/2026-10-15-makerx-homepage-hero-design.md`](docs/superpowers/specs/2026-10-15-makerx-homepage-hero-design.md)）：首屏严格占满 `100svh`；首屏图只作为构图与色彩参考，不作为 Hero 图片渲染；品牌名、主张、角标和装饰轨道都是真实 HTML/SVG；滚动后进入品牌级项目档案区，并展示当前已确认的 `AI星球` 卡片。卡片只标记「研发中」，通过真实链接进入项目页；项目页提供不联网、不保存的中文提示词工具，不伪造课程下载或报名入口。
 
 ---
 
@@ -66,10 +66,10 @@ pnpm dev              # 本地开发服务器
 pnpm build            # 生产构建
 pnpm preview          # 预览构建产物
 pnpm check            # astro check：类型检查
-pnpm test             # 首页结构契约测试
+  pnpm test             # 首页与 AI星球工具领域/页面契约测试
 ```
 
-当前原型包含首页与项目档案卡片；课程物料、完整内容集合和项目详情页会在后续阶段接入。
+当前原型包含首页、AI星球项目页和课堂提示词工具；正式课程物料、完整内容集合和项目详情内容会在后续阶段接入。
 
 ### 已核对的环境（2026-10-15 实测）
 
@@ -126,9 +126,9 @@ git config --global http.https://github.com/.proxy http://127.0.0.1:7897
 | 命令 | 退出码 | 关键输出 |
 |---|---|---|
 | `pnpm install` | `0` | Astro 7.3.8 与检查工具安装完成 |
-| `pnpm test` | `0` | 2 个首页结构契约测试通过 |
+| `pnpm test` | `0` | 首页 2 个 + AI星球工具 5 个测试通过 |
 | `pnpm check` | `0` | `Result (5 files): 0 errors, 0 warnings, 0 hints` |
-| `pnpm build` | `0` | `1 page(s) built`；生成 `dist/index.html` |
+| `pnpm build` | `0` | `2 page(s) built`；生成首页与 `dist/lab/001-ai-planet/index.html` |
 | `curl -I http://localhost:4321/` | `0` | 本地开发服务器返回 `200 OK` / `text/html` |
 | `Invoke-WebRequest http://localhost:4321/` | `0` | 首页返回 `200 OK`，返回 HTML 包含 `hero-stage` 和 `MakerX` |
 | 首屏 Hero 资源检查 | `0` | 首页 HTML 不引用 `makerx-hero.png`，装饰使用内联 SVG |
@@ -140,19 +140,55 @@ git config --global http.https://github.com/.proxy http://127.0.0.1:7897
 - 页面标题为 `MakerX AI 造物实验室`，存在 skip link、主导航、`h1`、主张、内联 SVG 舞台和项目档案锚点。
 - Hero 是 `100svh` 单列结构，页面首屏不使用 PNG 主视觉；品牌文字和装饰轨道由 HTML/SVG 提供。
 - 页面主导航和「探索造物项目」文字 CTA 均指向本页真实存在的 `#project-list`。
-- 页面语义树中包含 `AI 小基地` 项目卡片，状态为「研发中」，没有编造项目数量、模块数量、课程工具或下载入口。
+- 页面语义树中包含 `AI星球` 项目卡片，状态为「研发中」，没有编造项目数量、模块数量、课程工具或下载入口。
 - 已打开本地视觉预览：`Maker` 为唯一可见品牌字样，大型 SVG 玻璃十字承担唯一的 `X`；项目档案标题在桌面视口保持单行。
 - 本轮修改后重新执行 `pnpm test`、`pnpm check`、`pnpm build`，均为退出码 `0`；浏览器语义树中 `h1` 的可访问名称仍为 `MakerX`。
 - 本轮微调仅将首屏 `X` 向 `Maker` 左移，未改变其结构、配色或立体样式。
+
+### AI星球工具验证记录（2026-10-15）
+
+| 命令 / 检查 | 退出码 / 结果 | 关键输出 |
+|---|---|---|
+| `pnpm test` | `0` | 首页 2 个 + AI星球工具 5 个测试通过，共 7 个 |
+| `pnpm check` | `0` | `0 errors, 0 warnings, 0 hints` |
+| `pnpm build` | `0` | 生成 `/index.html` 与 `/lab/001-ai-planet/index.html` |
+| 本地开发服务 | 使用已运行的 `http://localhost:4321/` | `pnpm dev` 检测到已有 Astro 服务，复用该服务完成浏览器检查 |
+| 浏览器流程 | 已验证 | 首页项目卡片进入 AI星球；7 步填写、汇总、生成中文提示词和复制成功反馈均可见 |
+
+浏览器流程中使用了虚构内容「我的星空屋 / 太空旅行者 / 我的梦想 / 梦幻想象 / 葡萄紫 + 天空蓝 / 中间开花」，未填写姓名等敏感信息。颜色汇总确认按点击顺序生成主色与搭配色；提示词结果只在当前页面内显示。
+
+### 腾讯云部署记录（2026-10-16 实测）
+
+部署方式遵循本机文件 `腾讯云挂新网站操作手册-IP子路径方案.md`：不新建独立 `server` 块，只在现有 Nginx 配置中新增 `/makerx/` location；旧站点目录 `/var/www/sugarcube/` 未覆盖。
+
+- 访问地址：`http://124.222.99.128/makerx/`
+- AI星球页面：`http://124.222.99.128/makerx/lab/001-ai-planet/`
+- 服务器部署目录：`/var/www/makerx/`
+- 子路径构建配置：`astro.config.mjs` 设置 `base: '/makerx'`，内部首页与项目链接均带子路径前缀。
+- Nginx 配置：`/etc/nginx/conf.d/sugarcube.conf`；修改前已创建带时间戳备份。
+
+| 检查 | 结果 |
+|---|---|
+| `pnpm test` | `0`；7 个测试通过 |
+| `pnpm check` | `0`；0 errors / 0 warnings / 0 hints |
+| `pnpm build` | `0`；首页与 AI星球页构建完成 |
+| `nginx -t` | `0`；syntax is ok / test is successful |
+| 公网 `/makerx/` | `HTTP 200` |
+| 公网 `/makerx/lab/001-ai-planet/` | `HTTP 200` |
+| 公网 `/makerx/_astro/BaseLayout.lzNKD0X9.css` | `HTTP 200` |
+| 公网旧站点 `/` | `HTTP 200` |
+| 公网旧站点 `/introduction/` | `HTTP 200` |
 
 ### 尚未核对 / 未验证
 
 - **真实移动设备**（iOS Safari、Android Chrome、微信内置浏览器）—— 未测。
 - **375px、768px、1440px 三档运行时几何**—— 当前已写入响应式规则，尚未逐档测量。
+- **AI星球工具手机尺寸横向溢出**—— 响应式规则已实现，浏览器自动化连接在调整视口时中断，尚未完成运行时测量。
 - **`prefers-reduced-motion` 运行时切换**—— 已有 CSS 降级规则，尚未在浏览器中切换系统偏好实测。
 - **关闭 JavaScript 的运行时页面**—— 已通过“无 JS 时 CSS 不隐藏内容”的代码结构设计，尚未在浏览器上下文中实测。
 - **真实屏幕阅读器**（VoiceOver / NVDA）—— 未测；目前只检查语义属性。
-- **部署**—— 未做；当前没有真实域名，也未生成 canonical / sitemap。
+- **真实移动网络**（手机 4G/5G、微信内置浏览器）—— 当前仅从外部公网请求验证，尚未在真实手机网络中手动打开。
+- **canonical / sitemap**—— 当前部署使用 IP 子路径，没有配置真实域名，也未生成 canonical / sitemap。
 - **视觉观感**—— 已提供本地浏览器预览，但最终是否符合你的审美需要你确认。
 
 ---
