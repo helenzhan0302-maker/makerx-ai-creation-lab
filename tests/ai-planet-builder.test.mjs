@@ -47,6 +47,30 @@ test('prompt omits empty introduction fields and includes selected Chinese value
   assert.doesNotMatch(prompt, /一句话介绍我自己：\s*\n/);
 });
 
+test('prompt keeps fixed numbering when introduction fields are empty', () => {
+  const state = {
+    ...createInitialState(),
+    websiteName: '我的星空屋',
+    avatars: ['space-traveler'],
+    sections: ['我的梦想'],
+    style: '梦幻想象',
+    colors: ['天空蓝'],
+    layout: '中间开花',
+  };
+  const prompt = buildPrompt(state);
+
+  assert.match(prompt, /三、我想这样介绍自己：这次先不写/);
+  assert.match(prompt, /四、网站上要放的内容：我的梦想/);
+
+  const stateWithIntro = { ...state, intro: { self: '我喜欢看书', favorite: '', known: '' } };
+  const promptWithIntro = buildPrompt(stateWithIntro);
+
+  assert.match(promptWithIntro, /三、我想这样介绍自己：/);
+  assert.match(promptWithIntro, /一句话介绍我自己：我喜欢看书/);
+  assert.match(promptWithIntro, /四、网站上要放的内容：我的梦想/);
+  assert.doesNotMatch(promptWithIntro, /这次先不写/);
+});
+
 test('project page exposes the approved Chinese builder contract', () => {
   const page = fs.readFileSync(path.join(root, 'src/pages/lab/001-ai-planet.astro'), 'utf8');
   const component = fs.readFileSync(path.join(root, 'src/components/ProjectPromptBuilder.astro'), 'utf8');

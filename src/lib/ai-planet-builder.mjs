@@ -188,9 +188,10 @@ export function buildPrompt(state) {
   ];
 
   const introLines = introductionLines(state);
-  if (introLines.length > 0) {
-    lines.push('三、我想这样介绍自己：', ...introLines);
-  }
+  lines.push(
+    introLines.length > 0 ? '三、我想这样介绍自己：' : '三、我想这样介绍自己：这次先不写',
+    ...introLines,
+  );
 
   const sectionValues = sectionLabels(state);
   lines.push(
