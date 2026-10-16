@@ -231,6 +231,31 @@ git config --global http.https://github.com/.proxy http://127.0.0.1:7897
 
 有头 Chromium 点击复制后，Windows 系统剪贴板确实收到了与页面提示词逐字符相同的 195 字符文本，说明非安全上下文下的降级复制真实生效，不是只显示成功文案。
 
+### AI星球页排版优化（2026-10-16）
+
+按用户要求优化 AI星球页（`/makerx/lab/001-ai-planet/`）的字体与布局，参考 `dino-kupinic.dev` 项目详情页的排版原则（面包屑式层级、克制字号、标签 chips、单列可读宽度、大留白）。只借鉴排版原则，未复制其配色、字体或任何资产。
+
+改动要点（`src/styles/ai-planet-builder.css` 与 `src/pages/lab/001-ai-planet.astro`）：
+
+- 页标题 `AI星球` 原用 `clamp(4rem, 14vw, 11rem)` + `letter-spacing: -0.12em`，中文字形互相挤压重叠；改为 `clamp(2.6rem, 5.5vw, 4.25rem)` + `-0.02em`、行高 1.08。
+- 内层小标题（工具区、步骤标题、结果标题）同步收小字号与负字距，避免中文碰撞。
+- 内容宽度从 1440px 收到 1180px，首屏介绍区最大 52rem，输入框限宽 36rem，正文行高提到 1.7。
+- 首屏三条说明改为 chips（参考站的标签样式），页头状态徽标改为圆角胶囊。
+- 步骤区最小高度 30rem → 20rem，卡片与内边距整体收紧，减少大面积空白。
+- 媒体查询同步整理：900px 与 600px 下卡片降为两列，移除已失效的 `builder-heading` 网格覆盖规则。
+
+| 命令 / 检查 | 结果 |
+|---|---|
+| `pnpm test` | `0`；14 个测试全部通过 |
+| `pnpm check` | `0`；0 errors / 0 warnings / 0 hints |
+| `pnpm build` | `0`；首页与 AI星球页构建完成 |
+| 本地 375px / 768px / 900px 几何 | 无横向溢出（`scrollWidth <= innerWidth + 1`）；900px 下卡片正确降至两列 |
+| 本地完整流程 | 7 步填写 → 汇总 → 生成提示词全部正常；控制台无 error / warn |
+
+#### 已知问题（本次未修）
+
+生成的提示词编号跳号：`buildPrompt` 只在填写了自我介绍时才输出「三、」，未填写时直接从「二、」跳到「四、」（`src/lib/ai-planet-builder.mjs` 第 189–203 行）。这是既有实现，本次未改动逻辑。是否需要修（例如固定编号或按填写情况重排）待用户确认。
+
 ### 尚未核对 / 未验证
 
 - **真实移动设备**（iOS Safari、Android Chrome、微信内置浏览器）—— 未测。

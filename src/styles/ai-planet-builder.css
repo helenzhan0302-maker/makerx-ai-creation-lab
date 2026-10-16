@@ -1,5 +1,5 @@
 .project-page-shell {
-  width: min(100%, 1440px);
+  width: min(100%, 1180px);
   margin: 0 auto;
   padding: 0 var(--page-gutter);
 }
@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  min-height: 5.5rem;
+  min-height: 4.25rem;
   border-bottom: 1px solid var(--line);
   color: var(--ink-soft);
   font-family: var(--font-mono);
@@ -32,12 +32,17 @@
 }
 
 .project-page-status {
+  padding: 0.35rem 0.8rem;
+  border: 1px solid rgba(47, 75, 199, 0.32);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
   color: var(--accent-wire);
+  white-space: nowrap;
 }
 
 .project-intro {
-  max-width: 980px;
-  padding: clamp(5rem, 12vw, 10rem) 0 clamp(4rem, 8vw, 7rem);
+  max-width: 52rem;
+  padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(1.75rem, 4vw, 2.75rem);
 }
 
 .eyebrow {
@@ -51,85 +56,73 @@
 }
 
 .project-intro h1 {
-  margin: 1rem 0 0;
+  margin: 0.75rem 0 0;
   color: var(--brand-ink);
-  font-size: clamp(4rem, 14vw, 11rem);
-  font-weight: 780;
-  letter-spacing: -0.12em;
-  line-height: 0.9;
+  font-size: clamp(2.6rem, 5.5vw, 4.25rem);
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
 }
 
 .project-intro-lead {
-  max-width: 42rem;
-  margin: 2rem 0 0;
+  max-width: 38rem;
+  margin: 1.25rem 0 0;
   color: var(--ink-muted);
-  font-size: clamp(1.25rem, 2.5vw, 2rem);
-  line-height: 1.4;
+  font-size: clamp(1.05rem, 1.7vw, 1.35rem);
+  line-height: 1.7;
 }
 
 .project-intro-notes {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.65rem 1.5rem;
-  margin-top: 2.5rem;
+  gap: 0.5rem;
+  margin-top: 1.9rem;
   color: var(--ink-soft);
-  font-family: var(--font-mono);
-  font-size: var(--fs-meta);
+  font-size: 0.82rem;
 }
 
 .project-intro-notes p {
   margin: 0;
-}
-
-.project-intro-notes p + p::before {
-  margin-right: 1.5rem;
-  color: var(--brand-cyan);
-  content: '✦';
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.66);
 }
 
 .prompt-builder {
-  margin: 0 0 clamp(5rem, 12vw, 10rem);
-  padding: clamp(1.5rem, 5vw, 4rem);
+  margin: 0 0 clamp(3rem, 8vw, 6rem);
+  padding: clamp(1.25rem, 3.5vw, 2.75rem);
   border: 1px solid var(--line-strong);
-  border-radius: 2rem;
+  border-radius: 1.6rem;
   background: rgba(255, 255, 255, 0.55);
   box-shadow: 0 2rem 5rem rgba(75, 113, 180, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .builder-heading {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.8fr);
-  gap: 1.5rem 4rem;
-  align-items: end;
-  padding-bottom: 2rem;
+  padding-bottom: 1.75rem;
   border-bottom: 1px solid var(--line);
 }
 
-.builder-heading .eyebrow,
 .builder-heading h2 {
-  grid-column: 1;
-}
-
-.builder-heading h2 {
-  margin: 0.75rem 0 0;
-  font-size: clamp(2rem, 5vw, 4.3rem);
-  letter-spacing: -0.08em;
-  line-height: 0.98;
+  margin: 0.6rem 0 0;
+  font-size: clamp(1.6rem, 3vw, 2.35rem);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
 }
 
 .builder-heading > p:last-child {
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  margin: 0;
+  max-width: 42rem;
+  margin: 0.9rem 0 0;
   color: var(--ink-muted);
-  font-size: 1.05rem;
+  font-size: 1rem;
+  line-height: 1.75;
 }
 
 .builder-progress {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1.5rem 0 2.5rem;
+  padding: 1.25rem 0 2rem;
   color: var(--ink-soft);
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
@@ -142,7 +135,7 @@
 }
 
 .builder-progress-track {
-  height: 3px;
+  height: 2px;
   flex: 1;
   overflow: hidden;
   border-radius: 99px;
@@ -159,28 +152,28 @@
 }
 
 .builder-step {
-  min-height: 30rem;
-  padding: clamp(1.5rem, 4vw, 3rem) 0;
+  min-height: 20rem;
+  padding: clamp(1.25rem, 3vw, 2.25rem) 0;
 }
 
 .step-heading {
   display: flex;
   gap: 1rem;
   align-items: flex-start;
-  margin-bottom: 2.25rem;
+  margin-bottom: 1.6rem;
 }
 
 .step-heading h3 {
-  margin: 0.45rem 0 0;
-  font-size: clamp(1.8rem, 4vw, 3.2rem);
-  letter-spacing: -0.07em;
-  line-height: 1;
+  margin: 0.35rem 0 0;
+  font-size: clamp(1.35rem, 2.4vw, 1.8rem);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
 }
 
 .step-number {
   display: inline-grid;
-  width: 2.8rem;
-  height: 2.8rem;
+  width: 2.35rem;
+  height: 2.35rem;
   flex: 0 0 auto;
   place-items: center;
   border-radius: 50%;
@@ -203,8 +196,9 @@
 
 .builder-field {
   display: grid;
+  max-width: 36rem;
   gap: 0.6rem;
-  margin-top: 1.25rem;
+  margin-top: 1.1rem;
   color: var(--brand-ink);
   font-weight: 700;
 }
@@ -220,19 +214,19 @@
 .builder-field textarea {
   width: 100%;
   border: 1px solid var(--line-strong);
-  border-radius: 1rem;
+  border-radius: 0.85rem;
   background: rgba(255, 255, 255, 0.82);
   color: var(--brand-ink);
   font: inherit;
   font-weight: 500;
-  line-height: 1.5;
-  padding: 0.9rem 1rem;
+  line-height: 1.55;
+  padding: 0.8rem 0.95rem;
   resize: vertical;
 }
 
 .builder-field--large input {
-  min-height: 4.5rem;
-  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  min-height: 3.75rem;
+  font-size: clamp(1.05rem, 1.8vw, 1.4rem);
 }
 
 .builder-field input::placeholder,
@@ -250,13 +244,13 @@
 .field-hint {
   margin: 0.8rem 0 0;
   color: var(--ink-soft);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 .choice-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.75rem;
+  gap: 0.6rem;
   margin: 0;
   padding: 0;
   border: 0;
@@ -270,12 +264,12 @@
 .choice-card {
   position: relative;
   display: grid;
-  min-height: 8.5rem;
+  min-height: 7.5rem;
   align-content: start;
-  gap: 0.4rem;
-  padding: 1rem;
+  gap: 0.35rem;
+  padding: 0.9rem;
   border: 1px solid var(--line);
-  border-radius: 1.2rem;
+  border-radius: 1rem;
   background: rgba(255, 255, 255, 0.64);
   cursor: pointer;
   transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
@@ -323,20 +317,21 @@
 
 .choice-card-label {
   color: var(--brand-ink);
-  font-weight: 750;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .choice-card-description {
   color: var(--ink-soft);
-  font-size: 0.86rem;
-  line-height: 1.45;
+  font-size: 0.82rem;
+  line-height: 1.5;
 }
 
 .choice-card--compact {
-  min-height: 4.5rem;
+  min-height: 3.9rem;
   align-items: center;
   grid-template-columns: auto 1fr;
-  padding: 0.85rem 1rem;
+  padding: 0.75rem 0.9rem;
 }
 
 .choice-card--compact .choice-card-label {
@@ -348,7 +343,7 @@
 }
 
 .choice-card--color {
-  min-height: 5.5rem;
+  min-height: 4.6rem;
   grid-template-columns: auto 1fr;
   align-items: center;
 }
@@ -362,7 +357,7 @@
 }
 
 .choice-card--layout {
-  min-height: 10rem;
+  min-height: 8.6rem;
 }
 
 .layout-glyph {
@@ -432,6 +427,7 @@
 }
 
 .builder-fields-stack .builder-field {
+  max-width: none;
   margin-top: 0;
 }
 
@@ -444,16 +440,16 @@
 
 .summary-grid {
   display: grid;
-  gap: 0.9rem;
-  margin: 1.5rem 0 0;
+  gap: 0.4rem;
+  margin: 1.25rem 0 0;
 }
 
 .summary-row {
   display: grid;
   grid-template-columns: max-content 1fr;
-  column-gap: 0.35em;
+  column-gap: 0;
   align-items: baseline;
-  padding-bottom: 0.9rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--line);
 }
 
@@ -463,8 +459,8 @@
 }
 
 .summary-row dt {
-  color: var(--ink-muted);
-  font-weight: 700;
+  color: var(--ink-soft);
+  font-weight: 600;
 }
 
 .summary-row dd {
@@ -549,13 +545,16 @@
 
 .result-heading h3 {
   margin: 0.6rem 0 0;
-  font-size: clamp(1.8rem, 4vw, 3rem);
-  letter-spacing: -0.07em;
+  font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
 }
 
 .result-heading p:last-child {
   margin: 1rem 0 0;
   color: var(--ink-muted);
+  max-width: 42rem;
+  line-height: 1.75;
 }
 
 .prompt-output {
@@ -599,17 +598,7 @@
 }
 
 @media (max-width: 900px) {
-  .builder-heading {
-    grid-template-columns: 1fr;
-  }
-
-  .builder-heading > p:last-child {
-    grid-column: 1;
-    grid-row: auto;
-  }
-
-  .choice-grid--avatars,
-  .choice-grid--styles {
+  .choice-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -633,25 +622,16 @@
   }
 
   .project-intro {
-    padding-top: 4rem;
+    padding-top: 3rem;
   }
 
   .project-intro h1 {
-    font-size: clamp(4rem, 24vw, 7rem);
-  }
-
-  .project-intro-notes {
-    display: grid;
-    gap: 0.65rem;
-  }
-
-  .project-intro-notes p + p::before {
-    display: none;
+    font-size: clamp(2.3rem, 11vw, 3.2rem);
   }
 
   .prompt-builder {
-    padding: 1.25rem;
-    border-radius: 1.25rem;
+    padding: 1.1rem;
+    border-radius: 1.2rem;
   }
 
   .builder-progress {
@@ -665,12 +645,13 @@
 
   .choice-grid,
   .choice-grid--avatars,
-  .choice-grid--styles {
+  .choice-grid--styles,
+  .choice-grid--layouts {
     grid-template-columns: 1fr 1fr;
   }
 
   .choice-card {
-    min-height: 8rem;
+    min-height: 7rem;
     padding: 0.8rem;
   }
 
@@ -684,7 +665,7 @@
 
   .selection-limit {
     width: 100%;
-    margin-left: 3.8rem;
+    margin-left: 3.2rem;
   }
 
   .builder-actions {
