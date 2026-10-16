@@ -222,5 +222,52 @@ export function validateAll(state) {
   }
   return { valid: true, message: '', stepIndex: -1 };
 }
+
+/**
+ * 复制文本到剪贴板，优先使用异步剪贴板 API，失败后降级到隐藏 textarea。
+ * 只有真正复制成功时才返回 true；调用方据此决定反馈文案。
+ * @param {string} text
+ * @param {any} environment 注入的宿主环境（默认全局对象），便于测试
+ */
+export async function copyTextToClipboard(text, environment = globalThis) {
+  const value = typeof text === 'string' ? text : '';
+  const clipboard = environment?.navigator?.clipboard;
+
+  if (clipboard && typeof clipboard.writeText === 'function') {
+    try {
+      await clipboard.writeText(value);
+      return true;
+    } catch {
+      // 非安全上下文或权限被拒绝时继续尝试降级方案。
+    }
+  }
+
+  const document = environment?.document;
+  if (!document?.createElement || !document.body?.appendChild) return false;
+
+  const textarea = document.createElement('textarea');
+  textarea.value = value;
+  textarea.setAttribute('readonly', '');
+  textarea.style.position = 'fixed';
+  textarea.style.top = '-9999px';
+  textarea.style.opacity = '0';
+
+  let copied = false;
+  try {
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    if (typeof textarea.setSelectionRange === 'function') {
+      textarea.setSelectionRange(0, value.length);
+    }
+    copied = typeof document.execCommand === 'function' && document.execCommand('copy') === true;
+  } catch {
+    copied = false;
+  } finally {
+    textarea.remove?.();
+  }
+
+  return copied;
+}
 /** @typedef {{ id: string, label: string, description?: string, hex?: string }} BuilderOption */
 /** @typedef {{ websiteName: string, avatars: string[], avatarCustom: string, intro: { self: string, favorite: string, known: string }, sections: string[], sectionsCustom: string, style: string, colors: string[], customColor: string, layout: string }} BuilderState */

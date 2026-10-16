@@ -228,6 +228,7 @@ import {
   // @ts-nocheck
   import {
     buildPrompt,
+    copyTextToClipboard,
     createInitialState,
     STEP_LABELS,
     validateAll,
@@ -301,7 +302,7 @@ import {
         const row = document.createElement('div');
         row.className = 'summary-row';
         const termElement = document.createElement('dt');
-        termElement.textContent = term;
+        termElement.textContent = `${term}：`;
         const valueElement = document.createElement('dd');
         valueElement.textContent = value;
         row.append(termElement, valueElement);
@@ -375,10 +376,10 @@ import {
 
     root.querySelector('[data-copy]')?.addEventListener('click', async () => {
       const prompt = promptOutput.textContent;
-      try {
-        await navigator.clipboard.writeText(prompt);
+      const copied = await copyTextToClipboard(prompt);
+      if (copied) {
         copyFeedback.textContent = '已复制，可以交给 AI 制作网站啦！';
-      } catch {
+      } else {
         copyFeedback.textContent = '复制没有成功，请长按或拖动选中文字复制。';
         promptOutput.focus();
       }

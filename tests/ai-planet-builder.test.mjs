@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {
   buildPrompt,
+  copyTextToClipboard,
   createInitialState,
   validateStep,
 } from '../src/lib/ai-planet-builder.mjs';
@@ -63,4 +64,117 @@ test('builder keeps options in the domain module instead of duplicating them in 
   assert.match(component, /ai-planet-builder/);
   assert.doesNotMatch(component, /像素建造师.*机器人发明家/s);
   assert.doesNotMatch(component, /localStorage|sessionStorage|fetch\(|innerHTML/);
+});
+
+/** @typedef {{ value: string, style: Record<string, string>, attributes: Record<string, string>, parentNode: unknown, removed: boolean, setAttribute(name: string, value: string): void, focus(): void, select(): void, setSelectionRange(start: number, end: number): void, remove(): void }} TextareaStub */
+
+/** @param {{ execCommandResult?: boolean }} [options] */
+const createDocumentStub = ({ execCommandResult = true } = {}) => {
+  /** @type {TextareaStub[]} */
+  const textareas = [];
+  const state = { lastCommand: /** @type {string | null} */ (null) };
+  const documentStub = {
+    body: { appendChild(/** @type {TextareaStub} */ node) { node.parentNode = documentStub.body; } },
+    createElement(/** @type {string} */ tagName) {
+      /** @type {TextareaStub & { tagName: string }} */
+      const node = {
+        tagName,
+        value: '',
+        style: {},
+        attributes: {},
+        parentNode: null,
+        removed: false,
+        setAttribute(/** @type {string} */ name, /** @type {string} */ value) { node.attributes[name] = value; },
+        focus() {},
+        select() {},
+        setSelectionRange() {},
+        remove() { node.removed = true; node.parentNode = null; },
+      };
+      textareas.push(node);
+      return node;
+    },
+    execCommand(/** @type {string} */ command) {
+      state.lastCommand = command;
+      return execCommandResult;
+    },
+  };
+  return { documentStub, textareas, state };
+};
+
+test('copy prefers the async clipboard API', async () => {
+  /** @type {string[]} */
+  const writes = [];
+  const { documentStub, textareas } = createDocumentStub();
+  const environment = {
+    navigator: { clipboard: { writeText: async (/** @type {string} */ text) => { writes.push(text); } } },
+    document: documentStub,
+  };
+
+  const copied = await copyTextToClipboard('AI星球提示词', environment);
+
+  assert.equal(copied, true);
+  assert.deepEqual(writes, ['AI星球提示词']);
+  assert.equal(textareas.length, 0);
+});
+
+test('copy falls back to a temporary textarea when the clipboard API is missing', async () => {
+  const { documentStub, textareas, state } = createDocumentStub();
+
+  const copied = await copyTextToClipboard('AI星球提示词', { navigator: {}, document: documentStub });
+
+  assert.equal(copied, true);
+  assert.equal(state.lastCommand, 'copy');
+  assert.equal(textareas.length, 1);
+  assert.equal(textareas[0].value, 'AI星球提示词');
+  assert.equal(textareas[0].removed, true);
+});
+
+test('copy falls back when the clipboard API rejects', async () => {
+  const { documentStub, state } = createDocumentStub();
+  const environment = {
+    navigator: { clipboard: { writeText: async () => { throw new Error('not allowed'); } } },
+    document: documentStub,
+  };
+
+  const copied = await copyTextToClipboard('AI星球提示词', environment);
+
+  assert.equal(copied, true);
+  assert.equal(state.lastCommand, 'copy');
+});
+
+test('copy reports failure when both strategies fail and still cleans up', async () => {
+  const { documentStub, textareas } = createDocumentStub({ execCommandResult: false });
+  const environment = {
+    navigator: { clipboard: { writeText: async () => { throw new Error('not allowed'); } } },
+    document: documentStub,
+  };
+
+  const copied = await copyTextToClipboard('AI星球提示词', environment);
+
+  assert.equal(copied, false);
+  assert.equal(textareas[0].removed, true);
+});
+
+test('copy reports failure when no DOM is available', async () => {
+  const copied = await copyTextToClipboard('AI星球提示词', {});
+
+  assert.equal(copied, false);
+});
+
+test('builder summary renders each label and answer on one line with a colon', () => {
+  const component = fs.readFileSync(path.join(root, 'src/components/ProjectPromptBuilder.astro'), 'utf8');
+  const styles = fs.readFileSync(path.join(root, 'src/styles/ai-planet-builder.css'), 'utf8');
+
+  assert.match(component, /termElement\.textContent = `\$\{term\}：`/);
+  assert.match(styles, /\.summary-row\s*\{[^}]*grid-template-columns:\s*max-content/s);
+  assert.match(styles, /\.summary-row dd\s*\{[^}]*margin:\s*0/s);
+  assert.match(styles, /\.summary-row dd\s*\{[^}]*overflow-wrap:\s*anywhere/s);
+});
+
+test('builder copy button uses the shared clipboard helper and reports real results', () => {
+  const component = fs.readFileSync(path.join(root, 'src/components/ProjectPromptBuilder.astro'), 'utf8');
+
+  assert.match(component, /copyTextToClipboard/);
+  assert.match(component, /已复制，可以交给 AI 制作网站啦！/);
+  assert.doesNotMatch(component, /navigator\.clipboard\.writeText/);
 });

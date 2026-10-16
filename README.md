@@ -179,8 +179,30 @@ git config --global http.https://github.com/.proxy http://127.0.0.1:7897
 | 公网旧站点 `/` | `HTTP 200` |
 | 公网旧站点 `/introduction/` | `HTTP 200` |
 
+### 复制与汇总修复验证记录（2026-10-16）
+
+修复两处公网反馈：公网 HTTP（IP 子路径）下 `navigator.clipboard` 不可用导致复制总失败；AI星球汇总草图标签与答案分成两行。
+
+- 复制策略：先尝试 `navigator.clipboard.writeText`，失败或不可用则降级到隐藏 `textarea` + `document.execCommand('copy')`，只有真实返回成功才提示「已复制」；两种方式都失败才提示手动复制。实现位于 `src/lib/ai-planet-builder.mjs` 的 `copyTextToClipboard`。
+- 汇总布局：`.summary-row` 改为 `dt` + `dd` 两列 grid，同一起始行，`dd` 可换行；标签在 `dt` 文本内补全角冒号。
+
+| 命令 / 检查 | 退出码 / 结果 | 关键输出 |
+|---|---|---|
+| `pnpm test` | `0` | 14 个测试通过（新增复制 5 个 + 汇总/复制契约 2 个） |
+| `pnpm check` | `0` | `0 errors, 0 warnings, 0 hints` |
+| `pnpm build` | `0` | 首页与 AI星球页构建完成；产物中含 `execCommand` 降级与 `${term}：` 模板 |
+| 本地预览 `127.0.0.1:4322`（安全上下文） | 已验证 | `secure_context=true`；汇总 7 行全部同一行；复制提示「已复制，可以交给 AI 制作网站啦！」；无控制台错误 |
+| 局域网 `192.168.0.115:4323`（**非安全上下文**，模拟公网 IP HTTP） | 已验证 | `isSecureContext=false`、`navigator.clipboard` 为 `undefined`；降级路径复制成功并提示「已复制」；临时 `textarea` 复制前后均为 `0` |
+| Windows 剪贴板内容比对（有头 Chromium，非安全上下文） | 已验证 | 点击复制后系统剪贴板 195 字符，与页面提示词逐字符一致（`True`） |
+| 375px / 768px 窄屏几何 | 已验证 | 汇总各行仍同一行；无横向溢出（`scrollWidth <= innerWidth + 1`） |
+
+以上均在本机 Windows + Chromium 测得；真实手机浏览器仍未测。
+
 ### 尚未核对 / 未验证
 
+- **真实移动设备**（iOS Safari、Android Chrome、微信内置浏览器）—— 未测。
+- **375px、768px、1440px 三档运行时几何**—— AI星球工具页 375px / 768px 已实测（见上一小节，无横向溢出）；首页与 1440px 档尚未逐档测量。
+- **`prefers-reduced-motion` 运行时切换**—— 已有 CSS 降级规则，尚未在浏览器中切换系统偏好实测。
 - **真实移动设备**（iOS Safari、Android Chrome、微信内置浏览器）—— 未测。
 - **375px、768px、1440px 三档运行时几何**—— 当前已写入响应式规则，尚未逐档测量。
 - **AI星球工具手机尺寸横向溢出**—— 响应式规则已实现，浏览器自动化连接在调整视口时中断，尚未完成运行时测量。
