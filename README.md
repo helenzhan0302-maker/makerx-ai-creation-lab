@@ -287,6 +287,41 @@ git config --global http.https://github.com/.proxy http://127.0.0.1:7897
 
 **4. `/makerx` 不带斜杠入口** —— 见下一节。
 
+### `/makerx` 无斜杠入口修复 + 上线部署（2026-10-16）
+
+**问题**：`http://124.222.99.128/makerx`（不带结尾斜杠）落到 nginx 原有的 `location /`，被三颗方糖官网兜底接走，显示的是旧站首页。
+
+**修复**：在 `/etc/nginx/conf.d/sugarcube.conf` 的 `location /makerx/ {` **之前**插入一条精确匹配：
+
+```nginx
+location = /makerx {
+    return 301 /makerx/;
+}
+```
+
+与配置里已有的 `/introduction` → `/introduction/` 是同一套写法。改动由 `scripts/server-deploy.sh` 自动完成：先备份配置，插入后用 `python3` 精确插到锚点前；`nginx -t` 不通过就自动回滚且不 reload。
+
+**部署通道**：OrcaTerm 网页终端（腾讯云控制台 → 轻量应用服务器 → 登录 → **免密连接（TAT）**）。服务器不接受本机 SSH 密码登录（`root` / `ubuntu` / `lighthouse` / `admin` 均返回 `AuthenticationException`），本机 `paramiko` 直连不可用。终端为 canvas 渲染读不到回显，因此用「命令执行 → 结果写入临时文件 → 从公网 HTTP 读回」的方式回收输出，事后已删除全部探针文件。
+
+| 命令 / 检查 | 结果 |
+|---|---|
+| `bash scripts/server-deploy.sh`（服务器端，root） | `EXIT=0`；`SOURCE-OK` / `SITE-BACKUP-OK` / `SITE-REPLACED-OK` / `CONF-BACKUP-OK` / `REDIRECT-WRITTEN` / `NGINX-RELOAD-OK` |
+| `nginx -t` | `test is successful`（另有两条与本次无关的既有 warning：`duplicate MIME type "text/html"`、`conflicting server name "124.222.99.128"`） |
+| 公网 `http://124.222.99.128/makerx` | `301` → `http://124.222.99.128/makerx/` |
+| 公网 `http://124.222.99.128/makerx/` | `200` |
+| 公网 `http://124.222.99.128/makerx/lab/001-ai-planet/` | `200` |
+| 公网 `http://124.222.99.128/makerx/_astro/001-ai-planet.B2ISDxcZ.css` | `200`；本地比对含 `clamp(2.1rem,4.2vw,3.25rem)` 与 `choice-grid--avatars` |
+| 公网 `ProjectPromptBuilder...BYdAZc3U.js` | `200`；含「这次先不写」，确认编号修复已上线 |
+| 公网 `http://124.222.99.128/`（三颗方糖旧站） | `200`；标题仍为「三颗方糖AI增长 \| 让AI主动推荐你的品牌」 |
+| 公网 `http://124.222.99.128/introduction/`（旧站介绍页） | `200` |
+| 浏览器实测 1440px 各步骤高度 | 名字 257px、头像 631px、自我介绍 294px、网站内容 416px、风格 339px、颜色 430px、布局 374px、汇总 427px |
+| 浏览器实测 1440px 页标题字号 | `52px`（`clamp(2.1rem,4.2vw,3.25rem)` 在 1440px 的上限值） |
+| 浏览器实测完整流程 | 7 步 → 汇总 → 生成提示词，编号「一…七」连续，未填自我介绍显示「三、我想这样介绍自己：这次先不写」 |
+| 横向溢出（1440px） | 无（`scrollWidth 1425 <= innerWidth 1440`） |
+| 服务器备份 | 站点 `/var/www/makerx.prev.20261016155924`；配置 `sugarcube.conf.bak.20261016155924` |
+
+> ⚠️ 首次验证公网页面时读到的是浏览器缓存里的旧 CSS（页标题 68px），强制刷新后才是 52px。判断线上样式是否更新应看 CSS 文件名哈希或绕过缓存。
+
 ### 尚未核对 / 未验证
 
 - **真实移动设备**（iOS Safari、Android Chrome、微信内置浏览器）—— 未测。
