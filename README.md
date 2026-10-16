@@ -198,14 +198,43 @@ git config --global http.https://github.com/.proxy http://127.0.0.1:7897
 
 以上均在本机 Windows + Chromium 测得；真实手机浏览器仍未测。
 
+### 公网重新部署（2026-10-16 实测）
+
+服务器上**没有安装 Node / npm / pnpm**（已用自动化助手实测：`NO-NODE` / `NO-NPM` / `NO-PNPM`），因此不能在服务器上构建。改用「本机构建 → 推送构建产物分支 → 服务器拉取」的零依赖方式。
+
+- 构建产物推送分支：`deploy`（仅含 `index.html`、`assets/`、`lab/`、`_astro/` 六个文件，不含源码与文档）。
+- 服务器拉取地址：`https://codeload.github.com/helenzhan0302-maker/makerx-ai-creation-lab/tar.gz/refs/heads/deploy`（服务器实测可访问，`HTTP 200`）。
+- 部署目录：`/var/www/makerx/`；旧版本先备份到 `/var/www/makerx.prev/` 再替换，全部用 `sudo` 执行并重置为 `www-data:www-data`。
+- Nginx 配置**未改动**（`/etc/nginx/conf.d/sugarcube.conf` 及其备份保持原样），仅替换静态文件。
+
+| 检查 | 结果 |
+|---|---|
+| 服务器端 `grep -c execCommand /var/www/makerx/_astro/*.js` | `1`（复制降级逻辑已在线上） |
+| 服务器端 `grep -o summary-row ...css` | 命中 `summary-row` |
+| 服务器端 `curl`：`/makerx/` / `/makerx/lab/001-ai-planet/` / `/` / `/introduction/` | 全部 `HTTP 200` |
+| 公网 `http://124.222.99.128/makerx/`（首页） | `HTTP 200` |
+| 公网 `http://124.222.99.128/makerx/lab/001-ai-planet/`（AI星球页） | `HTTP 200` |
+| 公网 CSS / JS 资源 | 均 `HTTP 200`，且含 `summary-row` 两列 grid、`overflow-wrap:anywhere`、`execCommand` |
+| 公网旧站点 `/`、`/introduction/` | 均 `HTTP 200`（未受影响） |
+
+**公网功能实测（无头 Chromium 直连公网 IP，非安全上下文）**
+
+| 检查 | 结果 |
+|---|---|
+| `window.isSecureContext` | `false` |
+| `typeof navigator.clipboard` | `undefined`（正是原先复制失败的根因） |
+| 复制按钮反馈 | 「已复制，可以交给 AI 制作网站啦！」 |
+| 临时 `textarea` 残留 | `0`（复制后已清理） |
+| 汇总 7 行 | 全部标签与答案同一行（`sameLine: true`） |
+| 控制台错误 / 横向溢出 | 无 / 无 |
+| Windows 系统剪贴板内容比对 | 195 字符，与页面提示词逐字符一致（`True`） |
+
+有头 Chromium 点击复制后，Windows 系统剪贴板确实收到了与页面提示词逐字符相同的 195 字符文本，说明非安全上下文下的降级复制真实生效，不是只显示成功文案。
+
 ### 尚未核对 / 未验证
 
 - **真实移动设备**（iOS Safari、Android Chrome、微信内置浏览器）—— 未测。
 - **375px、768px、1440px 三档运行时几何**—— AI星球工具页 375px / 768px 已实测（见上一小节，无横向溢出）；首页与 1440px 档尚未逐档测量。
-- **`prefers-reduced-motion` 运行时切换**—— 已有 CSS 降级规则，尚未在浏览器中切换系统偏好实测。
-- **真实移动设备**（iOS Safari、Android Chrome、微信内置浏览器）—— 未测。
-- **375px、768px、1440px 三档运行时几何**—— 当前已写入响应式规则，尚未逐档测量。
-- **AI星球工具手机尺寸横向溢出**—— 响应式规则已实现，浏览器自动化连接在调整视口时中断，尚未完成运行时测量。
 - **`prefers-reduced-motion` 运行时切换**—— 已有 CSS 降级规则，尚未在浏览器中切换系统偏好实测。
 - **关闭 JavaScript 的运行时页面**—— 已通过“无 JS 时 CSS 不隐藏内容”的代码结构设计，尚未在浏览器上下文中实测。
 - **真实屏幕阅读器**（VoiceOver / NVDA）—— 未测；目前只检查语义属性。
