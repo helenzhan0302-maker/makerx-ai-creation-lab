@@ -322,6 +322,30 @@ location = /makerx {
 
 > ⚠️ 首次验证公网页面时读到的是浏览器缓存里的旧 CSS（页标题 68px），强制刷新后才是 52px。判断线上样式是否更新应看 CSS 文件名哈希或绕过缓存。
 
+### 提示词开头对齐工作纸 + 布局卡片去蓝图（2026-10-17）
+
+用户反馈两件事：布局选择卡片上的蓝色示意图不想要；生成的提示词开头要改成工作纸里的那句话。
+
+**1. 提示词开头**（`src/lib/ai-planet-builder.mjs:184`）
+
+- 原：`请根据下面的想法，帮我设计一个个人网站。`
+- 现：`请帮我做一个【个人网站】。下面是我的想法：`
+- 与课堂工作纸（`references/research/2026-10-14-lesson01-extract.md` §三）和 `docs/content-model.md` 的 `p-site-template` 完全一致。此前设计稿里的写法属于历史版本，已在 `docs/decisions.md` 记为 C-16。
+
+**2. 布局卡片去掉蓝色示意图**（`src/components/ProjectPromptBuilder.astro:182`、`src/styles/ai-planet-builder.css`）
+
+- 删掉五个布局卡片上的 `.layout-glyph`（蓝青渐变方块拼出的队形示意图），改用与风格卡片一致的 `✦` 标记。
+- CSS 里对应的 `.layout-glyph*` 共 12 条规则一并删除，不留死代码。记为 C-17。
+
+| 命令 / 检查 | 结果 |
+|---|---|
+| `pnpm test` | `0`；16 个测试通过（新增布局卡片断言 1 个） |
+| `pnpm check` | `0`；0 errors / 0 warnings / 0 hints |
+| `pnpm build` | `0`；CSS 哈希更新为 `001-ai-planet.DmH2DGXH.css`，JS 为 `...DyPNS5W-.js` |
+| 构建产物比对 | JS 含「请帮我做一个【个人网站】」；`layout-glyph` 在 JS / CSS / HTML 中均已不存在 |
+| 浏览器实测（本地 1440px） | 布局步骤 5 张卡片，标记均为 `✦`，页面无 `linear-gradient(180deg, var(--brand-cyan)` |
+| 浏览器实测完整流程 | 生成提示词首行为新开头句；编号「一…七」仍连续 |
+
 ### 尚未核对 / 未验证
 
 - **真实移动设备**（iOS Safari、Android Chrome、微信内置浏览器）—— 未测。

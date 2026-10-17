@@ -179,7 +179,7 @@ import {
           {LAYOUT_OPTIONS.map((option) => (
             <label class="choice-card choice-card--layout">
               <input type="radio" name="layout" value={option.id} />
-              <span class={`layout-glyph layout-glyph--${option.id}`} aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="choice-card-mark" aria-hidden="true">✦</span>
               <span class="choice-card-label">{option.label}</span>
               <span class="choice-card-description">{option.description}</span>
             </label>

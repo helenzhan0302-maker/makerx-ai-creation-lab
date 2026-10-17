@@ -181,7 +181,7 @@ function introductionLines(state) {
 export function buildPrompt(state) {
   const lines = [
     '你是一位经验丰富的网站设计专家，特别擅长帮小学生做出好看又好用的个人网站。',
-    '请根据下面的想法，帮我设计一个个人网站。',
+    '请帮我做一个【个人网站】。下面是我的想法：',
     '',
     `一、网站名称：${clean(state.websiteName)}`,
     `二、我的头像 / 形象：${avatarLabels(state).join('、')}`,

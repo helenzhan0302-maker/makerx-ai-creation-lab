@@ -42,9 +42,20 @@ test('prompt omits empty introduction fields and includes selected Chinese value
   assert.match(prompt, /我的星空屋/);
   assert.match(prompt, /太空旅行者/);
   assert.match(prompt, /我的梦想/);
+  assert.match(prompt, /^你是一位经验丰富的网站设计专家，特别擅长帮小学生做出好看又好用的个人网站。$/m);
+  assert.match(prompt, /^请帮我做一个【个人网站】。下面是我的想法：$/m);
   assert.match(prompt, /五、整体风格：梦幻想象/);
   assert.match(prompt, /七、页面布局：中间开花/);
   assert.doesNotMatch(prompt, /一句话介绍我自己：\s*\n/);
+});
+
+test('layout cards drop the blue diagram and use the shared mark', () => {
+  const component = fs.readFileSync(path.join(root, 'src/components/ProjectPromptBuilder.astro'), 'utf8');
+  const styles = fs.readFileSync(path.join(root, 'src/styles/ai-planet-builder.css'), 'utf8');
+
+  assert.doesNotMatch(component, /layout-glyph/);
+  assert.doesNotMatch(styles, /layout-glyph/);
+  assert.match(component, /choice-card--layout[\s\S]*?choice-card-mark[\s\S]*?choice-card-label/);
 });
 
 test('prompt keeps fixed numbering when introduction fields are empty', () => {
