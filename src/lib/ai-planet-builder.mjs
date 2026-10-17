@@ -207,8 +207,6 @@ export function buildPrompt(state) {
     `五、整体风格：${styleLabel}`,
     `六、主色与搭配色：主色是${primaryColor}${supportingColors.length ? `，搭配色是${supportingColors.join('、')}` : ''}`,
     `七、页面布局：${layoutLabel}`,
-    '',
-    '请先理解我的想法，再用适合小学生的方式完成网站。不要添加我没有提到的个人信息。',
   );
 
   return lines.join('\n');

@@ -47,6 +47,8 @@ test('prompt omits empty introduction fields and includes selected Chinese value
   assert.match(prompt, /五、整体风格：梦幻想象/);
   assert.match(prompt, /七、页面布局：中间开花/);
   assert.doesNotMatch(prompt, /一句话介绍我自己：\s*\n/);
+  assert.doesNotMatch(prompt, /不要添加我没有提到的个人信息/);
+  assert.match(prompt, /七、页面布局：中间开花$/);
 });
 
 test('layout cards drop the blue diagram and use the shared mark', () => {
