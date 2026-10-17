@@ -380,6 +380,19 @@ location = /makerx {
 | TAT 执行记录 | `inv-ua0t8j07fu`，命令成功，`ExitCode 0`，15 秒 |
 | 服务器备份 | 站点 `/var/www/makerx.prev.<时间戳>`（由部署命令生成） |
 
+### 服务器旧备份清理（2026-10-17）
+
+历史部署累积了多份站点备份、nginx 配置备份与 `/tmp` 工作目录。经用户确认后，用 TAT 命令 `makerx-cleanup-20261017`（`cmd-q5hb0s3k`）清理，**每类保留最新一份作为回滚点**。
+
+| 项目 | 清理前 | 清理后 |
+|---|---|---|
+| 站点备份 `/var/www/makerx.prev*` | 4 份（`.prev`、`.prev2`、`.prev.20261016155924`、`.prev.20261017101711`） | 保留 `makerx.prev.20261017101711` |
+| nginx 配置备份 `/etc/nginx/conf.d/*.bak*` | 3 份 | 保留 `sugarcube.conf.bak.20261016155924` |
+| `/tmp/makerx-*` 工作目录 | 5 份 | 保留 `makerx-20261017101711`（最新一次部署的临时目录） |
+
+清理后服务器自检（同一次命令内执行）：`makerx=200`、`lab=200`、`root=200`；`df -h` 显示根分区 40G 中已用 7.9G（21%）。
+TAT 执行记录 `inv-va0tvsghdr`，**命令成功，ExitCode 0，耗时小于 1 秒**。
+
 ### 尚未核对 / 未验证
 
 - **真实移动设备**（iOS Safari、Android Chrome、微信内置浏览器）—— 未测。
