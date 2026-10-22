@@ -10,7 +10,7 @@ const baseUrl = import.meta.env.BASE_URL;
   <div class="project-page-shell">
     <header class="project-page-header">
       <a class="project-back-link" href={baseUrl}>← MakerX AI 造物实验室</a>
-      <span class="project-page-status">实验编号 001 / 研发中</span>
+      <span class="project-page-status">实验编号 001 / 第 1 节课 / 研发中</span>
     </header>
 
     <main id="main-content">
@@ -24,6 +24,9 @@ const baseUrl = import.meta.env.BASE_URL;
           <p>不上传内容</p>
           <p>刷新后重新开始</p>
         </div>
+        <p class="project-intro-notes">
+          <a class="lesson-next-link" href={`${baseUrl}lab/001-ai-planet/upgrade/`}>做完了？进入第 2 节课：升级你的 AI星球 2.0 ↗</a>
+        </p>
       </section>
 
       <ProjectPromptBuilder />

@@ -1,0 +1,608 @@
+---
+import {
+  AVATAR_EFFECT_OPTIONS,
+  CURSOR_EFFECT_OPTIONS,
+  MAX_AVATAR_EFFECTS,
+  PET_ACTION_OPTIONS,
+  PET_TYPE_OPTIONS,
+} from '../lib/planet-upgrade.mjs';
+---
+
+<section class="upgrade-builder" id="upgrade-builder" aria-labelledby="upgrade-title">
+  <div class="builder-heading">
+    <p class="eyebrow">lesson 02 / upgrade workshop</p>
+    <h2 id="upgrade-title">一步一步，把 AI星球升级成 2.0。</h2>
+    <p>这些效果会写进一段中文提示词。你只要点选，不用打字。这里不会保存或上传你的内容，刷新后重新开始。</p>
+  </div>
+
+  <div class="builder-progress" aria-label="填写进度">
+    <div class="builder-progress-track"><span data-progress-bar></span></div>
+    <p><span data-progress-current>1</span> / 3　<span data-progress-label>头像升级</span></p>
+  </div>
+
+  <form data-upgrade-form novalidate>
+    <div class="builder-panels">
+      <section class="builder-step is-active" data-step-panel="0" aria-labelledby="upgrade-step-title-0">
+        <div class="step-heading">
+          <span class="step-number">01</span>
+          <div>
+            <p class="eyebrow">必做任务</p>
+            <h3 id="upgrade-step-title-0">你想让头像怎么动？</h3>
+          </div>
+          <span class="selection-limit">最多选择 {MAX_AVATAR_EFFECTS} 个</span>
+        </div>
+
+        <div class="upgrade-avatar-stage" data-avatar-stage>
+          <div class="avatar-preview" data-avatar-preview aria-hidden="true">
+            <svg viewBox="0 0 120 120" role="presentation" focusable="false">
+              <defs>
+                <radialGradient id="upgrade-avatar-glow" cx="50%" cy="50%" r="50%">
+                  <stop offset="60%" stop-color="#7ba4f0" stop-opacity="0" />
+                  <stop offset="100%" stop-color="#55d7f9" stop-opacity="0.55" />
+                </radialGradient>
+              </defs>
+              <circle class="avatar-glow" cx="60" cy="62" r="46" fill="url(#upgrade-avatar-glow)" />
+              <g class="avatar-body" data-avatar-body>
+                <circle cx="60" cy="62" r="32" fill="#eef4ff" stroke="#2f4bc7" stroke-width="2.5" />
+                <path class="avatar-hair" d="M34 46 Q44 24 62 26 Q82 28 86 48 Q74 38 60 40 Q44 42 34 46 Z" fill="#7ba4f0" />
+                <g class="avatar-eyes" data-avatar-eyes>
+                  <ellipse cx="49" cy="62" rx="7" ry="8" fill="#ffffff" stroke="#2f4bc7" stroke-width="1.5" />
+                  <ellipse cx="71" cy="62" rx="7" ry="8" fill="#ffffff" stroke="#2f4bc7" stroke-width="1.5" />
+                  <circle class="avatar-pupil" data-pupil data-eye="left" data-base-cx="49" data-base-cy="62" cx="49" cy="62" r="3.4" fill="#111315" />
+                  <circle class="avatar-pupil" data-pupil data-eye="right" data-base-cx="71" data-base-cy="62" cx="71" cy="62" r="3.4" fill="#111315" />
+                </g>
+                <path class="avatar-mouth" data-avatar-mouth d="M53 76 Q60 81 67 76" fill="none" stroke="#2f4bc7" stroke-width="2.2" stroke-linecap="round" />
+                <ellipse class="avatar-blush" cx="40" cy="72" rx="4.5" ry="2.6" fill="#f2a8c3" opacity="0.7" />
+                <ellipse class="avatar-blush" cx="80" cy="72" rx="4.5" ry="2.6" fill="#f2a8c3" opacity="0.7" />
+              </g>
+              <text class="avatar-bubble" data-avatar-bubble x="60" y="18" text-anchor="middle">嘿嘿，好痒</text>
+            </svg>
+          </div>
+          <p class="avatar-preview-hint">把鼠标移到脸上试试：眼睛会跟着你转，摸摸头顶会有反应。</p>
+
+          <fieldset class="choice-grid choice-grid--avatar-effects">
+            <legend class="sr-only">选择头像效果，最多三个</legend>
+            {AVATAR_EFFECT_OPTIONS.map((option, index) => (
+              <label class="choice-card">
+                <input
+                  type="checkbox"
+                  name="avatarEffects"
+                  value={option.id}
+                  checked={index < 2}
+                  data-default-checked={index < 2 ? 'true' : 'false'}
+                />
+                <span class="choice-card-mark" aria-hidden="true">✦</span>
+                <span class="choice-card-label">{option.label}</span>
+                <span class="choice-card-description">{option.description}</span>
+              </label>
+            ))}
+          </fieldset>
+        </div>
+        <p class="builder-error" data-error-for="0" role="alert"></p>
+      </section>
+
+      <section class="builder-step" data-step-panel="1" aria-labelledby="upgrade-step-title-1" hidden>
+        <div class="step-heading">
+          <span class="step-number">02</span>
+          <div>
+            <p class="eyebrow">选做任务</p>
+            <h3 id="upgrade-step-title-1">鼠标移动时，要不要留下一点魔法？</h3>
+          </div>
+        </div>
+
+        <div class="upgrade-trail-stage">
+          <div class="trail-preview" data-trail-preview aria-hidden="true">
+            <canvas data-trail-canvas></canvas>
+            <p class="trail-preview-label">在这个框里移动鼠标试试</p>
+          </div>
+          <fieldset class="choice-grid choice-grid--cursor-effects">
+            <legend class="sr-only">选择一种鼠标特效</legend>
+            {CURSOR_EFFECT_OPTIONS.map((option, index) => (
+              <label class="choice-card choice-card--compact">
+                <input type="radio" name="cursorEffect" value={option.id} checked={index === 0} />
+                <span class="choice-card-mark" aria-hidden="true">✦</span>
+                <span class="choice-card-label">{option.label}</span>
+              </label>
+            ))}
+          </fieldset>
+        </div>
+        <p class="builder-error" data-error-for="1" role="alert"></p>
+      </section>
+
+      <section class="builder-step" data-step-panel="2" aria-labelledby="upgrade-step-title-2" hidden>
+        <div class="step-heading">
+          <span class="step-number">03</span>
+          <div>
+            <p class="eyebrow">挑战任务</p>
+            <h3 id="upgrade-step-title-2">要不要养一只屏幕宠物？</h3>
+          </div>
+        </div>
+
+        <div class="upgrade-pet-stage">
+          <div class="pet-preview" data-pet-preview aria-hidden="true">
+            <div class="pet-avatar" data-pet-avatar>
+              <span class="pet-ears" data-pet-ears>ᐕ</span>
+              <span class="pet-face" data-pet-face>ᴥ</span>
+            </div>
+          </div>
+          <fieldset class="choice-grid choice-grid--pet-types">
+            <legend class="sr-only">选择一种屏幕宠物</legend>
+            {PET_TYPE_OPTIONS.map((option, index) => (
+              <label class="choice-card choice-card--compact">
+                <input type="radio" name="petType" value={option.id} checked={index === 0} />
+                <span class="choice-card-mark" aria-hidden="true">✦</span>
+                <span class="choice-card-label">{option.label}</span>
+              </label>
+            ))}
+          </fieldset>
+        </div>
+
+        <div class="upgrade-pet-details">
+          <label class="builder-field">
+            <span>宠物叫什么名字 <em>可以不写</em></span>
+            <input name="petName" type="text" maxlength="20" autocomplete="off" placeholder="例如：豆豆" />
+          </label>
+          <label class="builder-field" data-pet-custom-field hidden>
+            <span>描述你的宠物 <em>必填</em></span>
+            <input name="petCustom" type="text" maxlength="40" autocomplete="off" placeholder="例如：一只会发光的小水母" />
+          </label>
+        </div>
+
+        <fieldset class="choice-grid choice-grid--pet-actions">
+          <legend>它会做什么？最多选 2 个</legend>
+          {PET_ACTION_OPTIONS.map((option) => (
+            <label class="choice-card choice-card--compact">
+              <input type="checkbox" name="petActions" value={option.id} />
+              <span class="choice-card-mark" aria-hidden="true">+</span>
+              <span class="choice-card-label">{option.label}</span>
+            </label>
+          ))}
+        </fieldset>
+        <p class="builder-error" data-error-for="2" role="alert"></p>
+      </section>
+
+      <section class="builder-step builder-step--summary" data-step-panel="3" aria-labelledby="upgrade-step-title-3" hidden>
+        <div class="step-heading">
+          <span class="step-number">04</span>
+          <div>
+            <p class="eyebrow">回头检查一下</p>
+            <h3 id="upgrade-step-title-3">这就是你的 2.0 升级方案</h3>
+          </div>
+        </div>
+        <dl class="summary-grid" data-summary></dl>
+        <p class="builder-error" data-error-for="3" role="alert"></p>
+      </section>
+    </div>
+
+    <div class="builder-actions">
+      <button class="builder-button builder-button--quiet" type="button" data-previous hidden>上一步</button>
+      <span class="builder-actions-spacer"></span>
+      <button class="builder-button builder-button--secondary" type="button" data-next>下一步</button>
+      <button class="builder-button builder-button--primary" type="button" data-generate hidden>生成升级提示词</button>
+    </div>
+  </form>
+
+  <section class="builder-result" data-result hidden aria-labelledby="upgrade-result-title">
+    <div class="result-heading">
+      <p class="eyebrow">your upgrade prompt / 升级提示词</p>
+      <h3 id="upgrade-result-title">复制这段话，回到上次做网站的那个对话。</h3>
+      <p>把它发给你上次使用的 AI 工具。它会在这个网站上修改，而不是重做一个。</p>
+    </div>
+    <pre class="prompt-output" data-prompt-output tabindex="0"></pre>
+    <div class="result-actions">
+      <button class="builder-button builder-button--primary" type="button" data-copy>复制提示词</button>
+      <button class="builder-button builder-button--quiet" type="button" data-edit>返回修改</button>
+    </div>
+    <p class="copy-feedback" data-copy-feedback role="status" aria-live="polite"></p>
+
+    <div class="upgrade-checklist">
+      <h4>改完以后，自己检查这 4 件事</h4>
+      <ul>
+        <li>网站名字和自我介绍还在吗？</li>
+        <li>原来的板块有没有被删掉？</li>
+        <li>新效果会不会挡住文字和按钮？</li>
+        <li>眼睛真的会跟着鼠标动吗？</li>
+      </ul>
+    </div>
+
+    <div class="roadshow-card">
+      <h4>路演卡：站上台，照着说</h4>
+      <pre class="roadshow-output" data-roadshow-output tabindex="0"></pre>
+      <button class="builder-button builder-button--quiet" type="button" data-copy-roadshow>复制路演卡</button>
+      <p class="copy-feedback" data-roadshow-feedback role="status" aria-live="polite"></p>
+    </div>
+  </section>
+</section>
+
+<script>
+  // @ts-nocheck
+  import {
+    buildRoadshowCard,
+    buildUpgradePrompt,
+    createUpgradeState,
+    MAX_AVATAR_EFFECTS,
+    MAX_PET_ACTIONS,
+    validateUpgradeAll,
+    validateUpgradeStep,
+    UPGRADE_STEP_LABELS,
+  } from '../lib/planet-upgrade.mjs';
+  import { copyTextToClipboard } from '../lib/ai-planet-builder.mjs';
+
+  const root = document.querySelector('.upgrade-builder');
+  const form = root?.querySelector('[data-upgrade-form]');
+
+  if (root && form) {
+    const panels = [...root.querySelectorAll('[data-step-panel]')];
+    const state = createUpgradeState();
+    let avatarOrder = [...state.avatarEffects];
+    let currentStep = 0;
+    const progressBar = root.querySelector('[data-progress-bar]');
+    const progressCurrent = root.querySelector('[data-progress-current]');
+    const progressLabel = root.querySelector('[data-progress-label]');
+    const previousButton = root.querySelector('[data-previous]');
+    const nextButton = root.querySelector('[data-next]');
+    const generateButton = root.querySelector('[data-generate]');
+    const summary = root.querySelector('[data-summary]');
+    const result = root.querySelector('[data-result]');
+    const promptOutput = root.querySelector('[data-prompt-output]');
+    const copyFeedback = root.querySelector('[data-copy-feedback]');
+    const roadshowOutput = root.querySelector('[data-roadshow-output]');
+    const roadshowFeedback = root.querySelector('[data-roadshow-feedback]');
+    const petCustomField = root.querySelector('[data-pet-custom-field]');
+
+    const named = (name) => form.elements.namedItem(name);
+    const checkedValues = (name) => [...form.querySelectorAll(`input[name="${name}"]:checked`)].map((element) => element.value);
+
+    const readState = () => {
+      state.avatarEffects = avatarOrder.length ? [...avatarOrder] : checkedValues('avatarEffects');
+      state.cursorEffect = named('cursorEffect')?.value || 'none';
+      state.petType = named('petType')?.value || 'none';
+      state.petCustom = named('petCustom')?.value || '';
+      state.petName = named('petName')?.value || '';
+      state.petActions = checkedValues('petActions');
+      return state;
+    };
+
+    const labelFor = (name, value) => {
+      const control = form.querySelector(`input[name="${name}"][value="${CSS.escape(value)}"]`);
+      return control?.closest('label')?.querySelector('.choice-card-label')?.textContent.trim() || value;
+    };
+
+    const showError = (stepIndex, message) => {
+      const error = root.querySelector(`[data-error-for="${stepIndex}"]`);
+      if (error) error.textContent = message;
+    };
+
+    const clearErrors = () => root.querySelectorAll('.builder-error').forEach((error) => { error.textContent = ''; });
+
+    const renderSummary = () => {
+      const avatarText = state.avatarEffects.map((value) => labelFor('avatarEffects', value)).join('、') || '还没有选';
+      const cursorText = labelFor('cursorEffect', state.cursorEffect);
+      const petText = state.petType === 'none'
+        ? '这次不加'
+        : [state.petType === 'custom' ? state.petCustom : labelFor('petType', state.petType), state.petName.trim(), state.petActions.map((value) => labelFor('petActions', value)).join('、')].filter(Boolean).join(' / ');
+      const rows = [
+        ['头像效果', avatarText],
+        ['鼠标特效', cursorText],
+        ['屏幕宠物', petText],
+      ];
+      summary.replaceChildren(...rows.map(([term, value]) => {
+        const row = document.createElement('div');
+        row.className = 'summary-row';
+        const termElement = document.createElement('dt');
+        termElement.textContent = `${term}：`;
+        const valueElement = document.createElement('dd');
+        valueElement.textContent = value;
+        row.append(termElement, valueElement);
+        return row;
+      }));
+    };
+
+    const showStep = (stepIndex) => {
+      currentStep = stepIndex;
+      panels.forEach((panel, index) => {
+        const active = index === currentStep;
+        panel.hidden = !active;
+        panel.classList.toggle('is-active', active);
+      });
+      const isSummary = currentStep === 3;
+      progressCurrent.textContent = String(Math.min(currentStep + 1, 3));
+      progressLabel.textContent = UPGRADE_STEP_LABELS[Math.min(currentStep, 3)];
+      progressBar.style.width = `${(Math.min(currentStep, 3) / 3) * 100}%`;
+      previousButton.hidden = currentStep === 0;
+      nextButton.hidden = isSummary;
+      generateButton.hidden = !isSummary;
+      if (isSummary) renderSummary();
+      clearErrors();
+    };
+
+    const goNext = () => {
+      readState();
+      const validation = validateUpgradeStep(state, currentStep);
+      if (!validation.valid) {
+        showError(currentStep, validation.message);
+        return;
+      }
+      showStep(Math.min(3, currentStep + 1));
+    };
+
+    form.addEventListener('change', (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLInputElement)) return;
+      if (target.name === 'avatarEffects') {
+        const selected = checkedValues('avatarEffects');
+        if (target.checked && selected.length > MAX_AVATAR_EFFECTS) {
+          target.checked = false;
+          showError(0, `头像效果最多选择 ${MAX_AVATAR_EFFECTS} 个。`);
+          return;
+        }
+        avatarOrder = avatarOrder.filter((value) => value !== target.value);
+        if (target.checked) avatarOrder.push(target.value);
+        document.dispatchEvent(new CustomEvent('upgrade:avatar-change', { detail: { effects: [...avatarOrder] } }));
+      }
+      if (target.name === 'petActions') {
+        const selected = checkedValues('petActions');
+        if (target.checked && selected.length > MAX_PET_ACTIONS) {
+          target.checked = false;
+          showError(2, `宠物动作最多选择 ${MAX_PET_ACTIONS} 个。`);
+        }
+      }
+      if (target.name === 'petType') {
+        if (petCustomField) petCustomField.hidden = target.value !== 'custom';
+        document.dispatchEvent(new CustomEvent('upgrade:pet-change', { detail: { petType: target.value } }));
+      }
+      if (target.name === 'cursorEffect') {
+        document.dispatchEvent(new CustomEvent('upgrade:cursor-change', { detail: { cursorEffect: target.value } }));
+      }
+    });
+
+    nextButton?.addEventListener('click', goNext);
+    previousButton?.addEventListener('click', () => showStep(Math.max(0, currentStep - 1)));
+    generateButton?.addEventListener('click', () => {
+      readState();
+      const validation = validateUpgradeAll(state);
+      if (!validation.valid) {
+        showStep(validation.stepIndex);
+        showError(validation.stepIndex, validation.message);
+        return;
+      }
+      promptOutput.textContent = buildUpgradePrompt(state);
+      roadshowOutput.textContent = buildRoadshowCard(state);
+      result.hidden = false;
+      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    root.querySelector('[data-copy]')?.addEventListener('click', async () => {
+      const copied = await copyTextToClipboard(promptOutput.textContent);
+      copyFeedback.textContent = copied
+        ? '已复制，可以粘贴给 AI 啦！'
+        : '复制没有成功，请长按或拖动选中文字复制。';
+      if (!copied) promptOutput.focus();
+    });
+
+    root.querySelector('[data-copy-roadshow]')?.addEventListener('click', async () => {
+      const copied = await copyTextToClipboard(roadshowOutput.textContent);
+      roadshowFeedback.textContent = copied
+        ? '路演卡已复制。'
+        : '复制没有成功，请长按或拖动选中文字复制。';
+      if (!copied) roadshowOutput.focus();
+    });
+
+    root.querySelector('[data-edit]')?.addEventListener('click', () => {
+      result.hidden = true;
+      showStep(3);
+    });
+
+    showStep(0);
+  }
+
+  // 预览动效：整段用 try 隔离，任何失败都不影响选项卡本身。
+  try {
+    const preview = document.querySelector('[data-avatar-preview]');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const finePointer = window.matchMedia('(pointer: fine)').matches;
+    const body = document.querySelector('[data-avatar-body]');
+    const pupils = [...document.querySelectorAll('[data-pupil]')];
+    const bubble = document.querySelector('[data-avatar-bubble]');
+    const mouth = document.querySelector('[data-avatar-mouth]');
+    let activeEffects = ['follow-cursor', 'glow'];
+    let headPatTimer = 0;
+
+    const applyEffects = () => {
+      if (!body) return;
+      body.classList.toggle('has-glow', activeEffects.includes('glow'));
+      body.classList.toggle('has-float', activeEffects.includes('float'));
+      body.classList.toggle('has-blink', activeEffects.includes('blink'));
+      preview?.classList.toggle('has-expression', activeEffects.includes('expression'));
+    };
+
+    document.addEventListener('upgrade:avatar-change', (event) => {
+      activeEffects = event.detail.effects;
+      applyEffects();
+    });
+
+    if (preview && !reduceMotion && finePointer) {
+      preview.addEventListener('pointermove', (event) => {
+        if (!activeEffects.includes('follow-cursor')) return;
+        const rect = preview.getBoundingClientRect();
+        const normalizedX = (event.clientX - rect.left) / rect.width - 0.5;
+        const normalizedY = (event.clientY - rect.top) / rect.height - 0.5;
+        pupils.forEach((pupil) => {
+          const offsetX = Math.max(-2.6, Math.min(2.6, normalizedX * 6));
+          const offsetY = Math.max(-2.2, Math.min(2.2, normalizedY * 5));
+          pupil.setAttribute('cx', String(Number(pupil.dataset.baseCx || pupil.getAttribute('cx')) + offsetX));
+          pupil.setAttribute('cy', String(Number(pupil.dataset.baseCy || pupil.getAttribute('cy')) + offsetY));
+        });
+      });
+
+      const patHead = () => {
+        if (!activeEffects.includes('head-pat')) return;
+        window.clearTimeout(headPatTimer);
+        body?.classList.add('is-patting');
+        if (mouth) mouth.setAttribute('d', 'M52 75 Q60 84 68 75');
+        if (bubble) bubble.classList.add('is-visible');
+        headPatTimer = window.setTimeout(() => {
+          body?.classList.remove('is-patting');
+          if (mouth) mouth.setAttribute('d', 'M53 76 Q60 81 67 76');
+          bubble?.classList.remove('is-visible');
+        }, 900);
+      };
+
+      // 只有鼠标进入头顶那一块（上半部分）才触发摸头。
+      preview.addEventListener('pointermove', (event) => {
+        const rect = preview.getBoundingClientRect();
+        if ((event.clientY - rect.top) / rect.height < 0.4) patHead();
+      });
+    }
+    applyEffects();
+  } catch {
+    // 预览失败时保持静态，选项卡照常可用。
+  }
+
+  try {
+    const canvas = document.querySelector('[data-trail-canvas]');
+    const frame = document.querySelector('[data-trail-preview]');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const finePointer = window.matchMedia('(pointer: fine)').matches;
+    let cursorStyle = 'none';
+
+    document.addEventListener('upgrade:cursor-change', (event) => {
+      cursorStyle = event.detail.cursorEffect;
+    });
+
+    if (canvas instanceof HTMLCanvasElement && frame && !reduceMotion) {
+      const context = canvas.getContext('2d');
+      if (context) {
+        const particles = [];
+        let lastPointer = null;
+        let frameId = 0;
+
+        const resize = () => {
+          const ratio = Math.min(window.devicePixelRatio || 1, 2);
+          const rect = frame.getBoundingClientRect();
+          canvas.width = Math.max(1, Math.round(rect.width * ratio));
+          canvas.height = Math.max(1, Math.round(rect.height * ratio));
+          context.setTransform(ratio, 0, 0, ratio, 0, 0);
+        };
+
+        const draw = () => {
+          const rect = frame.getBoundingClientRect();
+          context.clearRect(0, 0, rect.width, rect.height);
+          context.globalCompositeOperation = 'lighter';
+          for (let index = particles.length - 1; index >= 0; index -= 1) {
+            const particle = particles[index];
+            particle.life -= 0.03;
+            particle.x += particle.vx;
+            particle.y += particle.vy;
+            particle.vx *= 0.97;
+            particle.vy *= 0.97;
+            if (particle.life <= 0) {
+              particles.splice(index, 1);
+              continue;
+            }
+            const size = particle.size * particle.life;
+            if (particle.shape === 'square') {
+              context.fillStyle = `hsla(${particle.hue}, 92%, 68%, ${particle.life})`;
+              context.fillRect(particle.x - size / 2, particle.y - size / 2, size, size);
+            } else {
+              context.beginPath();
+              context.fillStyle = `hsla(${particle.hue}, 95%, 72%, ${particle.life * 0.85})`;
+              context.arc(particle.x, particle.y, Math.max(0.6, size), 0, Math.PI * 2);
+              context.fill();
+            }
+          }
+          frameId = particles.length > 0 ? requestAnimationFrame(draw) : 0;
+        };
+
+        const spawn = (x, y, count) => {
+          for (let index = 0; index < count; index += 1) {
+            const hueBase = cursorStyle === 'rainbow' ? (performance.now() / 12) % 360 : 200;
+            particles.push({
+              x,
+              y,
+              vx: (Math.random() - 0.5) * (cursorStyle === 'bubbles' ? 0.5 : 1.3),
+              vy: cursorStyle === 'bubbles' ? -0.9 - Math.random() : (Math.random() - 0.5) * 1.3,
+              hue: hueBase + Math.random() * 40,
+              life: 0.7 + Math.random() * 0.3,
+              size: cursorStyle === 'pixel' ? 3 + Math.random() * 3 : 1.6 + Math.random() * 2.6,
+              shape: cursorStyle === 'pixel' ? 'square' : 'dot',
+            });
+          }
+          if (particles.length > 140) particles.splice(0, particles.length - 140);
+          if (frameId === 0) frameId = requestAnimationFrame(draw);
+        };
+
+        resize();
+        window.addEventListener('resize', resize, { passive: true });
+        // 步骤隐藏时容器尺寸为 0，切回本步要重新量一次。
+        if (typeof ResizeObserver === 'function') {
+          new ResizeObserver(() => {
+            if (frame.getBoundingClientRect().width > 0) resize();
+          }).observe(frame);
+        }
+
+        if (finePointer) {
+          frame.addEventListener('pointermove', (event) => {
+            if (cursorStyle === 'none') return;
+            const rect = frame.getBoundingClientRect();
+            const point = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+            const previous = lastPointer || point;
+            const distance = Math.hypot(point.x - previous.x, point.y - previous.y);
+            spawn(point.x, point.y, Math.min(6, Math.max(1, Math.ceil(distance / 10))));
+            lastPointer = point;
+          }, { passive: true });
+        }
+
+        frame.addEventListener('pointerdown', (event) => {
+          const rect = frame.getBoundingClientRect();
+          spawn(event.clientX - rect.left, event.clientY - rect.top, 14);
+        });
+      }
+    }
+  } catch {
+    // 尾焰预览失败不影响选择。
+  }
+
+  try {
+    const petPreview = document.querySelector('[data-pet-preview]');
+    const petAvatar = document.querySelector('[data-pet-avatar]');
+    const petFace = document.querySelector('[data-pet-face]');
+    const petEars = document.querySelector('[data-pet-ears]');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const finePointer = window.matchMedia('(pointer: fine)').matches;
+    const faces = {
+      'robot-dog': ['ᐕ', 'ᴥ'],
+      cat: ['ᨓ', 'ᴥ'],
+      dinosaur: ['ᨏ', 'ᴥ'],
+      robot: ['◉', '‿'],
+      fox: ['ᨓ', 'ᴥ'],
+      octopus: ['ʚ', 'ᴥ'],
+      custom: ['✦', 'ᴥ'],
+      none: ['ᐕ', 'ᴥ'],
+    };
+
+    document.addEventListener('upgrade:pet-change', (event) => {
+      const pair = faces[event.detail.petType] || faces['robot-dog'];
+      if (petEars) petEars.textContent = pair[0];
+      if (petFace) petFace.textContent = pair[1];
+    });
+
+    if (petAvatar && petPreview && !reduceMotion && finePointer) {
+      petPreview.addEventListener('pointermove', (event) => {
+        const rect = petPreview.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width - 0.5;
+        const y = (event.clientY - rect.top) / rect.height - 0.5;
+        petAvatar.style.transform = `translate(${x * 26}px, ${y * 18}px)`;
+      });
+      petPreview.addEventListener('pointerleave', () => {
+        petAvatar.style.transform = 'translate(0, 0)';
+      });
+      petAvatar.addEventListener('pointerdown', () => {
+        petAvatar.classList.add('is-jumping');
+        window.setTimeout(() => petAvatar.classList.remove('is-jumping'), 420);
+      });
+    }
+  } catch {
+    // 宠物预览失败不影响选择。
+  }
+</script>

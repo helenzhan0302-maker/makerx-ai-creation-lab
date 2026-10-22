@@ -89,6 +89,20 @@
   background: rgba(255, 255, 255, 0.66);
 }
 
+.lesson-next-link {
+  display: inline-block;
+  color: var(--accent-wire);
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(47, 75, 199, 0.35);
+}
+
+.lesson-next-link:hover,
+.lesson-next-link:focus-visible {
+  border-bottom-color: var(--accent-wire);
+}
+
 .prompt-builder {
   margin: 0 0 clamp(3rem, 8vw, 6rem);
   padding: clamp(1rem, 2.5vw, 2rem);

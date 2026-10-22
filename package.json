@@ -8,7 +8,7 @@
     "build": "cross-env ASTRO_TELEMETRY_DISABLED=1 astro build",
     "preview": "cross-env ASTRO_TELEMETRY_DISABLED=1 astro preview",
     "check": "cross-env ASTRO_TELEMETRY_DISABLED=1 astro check",
-    "test": "node --test tests/homepage.test.mjs tests/ai-planet-builder.test.mjs"
+    "test": "node --test tests/homepage.test.mjs tests/ai-planet-builder.test.mjs tests/planet-upgrade.test.mjs"
   },
   "dependencies": {
     "astro": "^7.3.8"

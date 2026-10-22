@@ -40,7 +40,9 @@
 | [首屏图实测](references/research/2026-10-15-hero-image-measurement.md) | 用户提供的首屏视觉参考（1774×887）的文件实测与校正记录 |
 | [参考站实测（haoqi / hiesther）](references/research/2026-10-14-reference-measurements.md) | 第一手 DOM / 计算样式 / 动画实测记录 |
 | [参考站实测（20 站）](references/research/2026-10-14-portfolio-sites-20.md) | 参考清单里另外 20 站的逐站实测 + 综合原则 |
-| [第 1 节 PPT 提取记录](references/research/2026-10-14-lesson01-extract.md) | 15 页 PPT 的逐页 OCR + 两份工作纸全文 |
+| [第 1 节 PPT 提取记录（旧版课件）](references/research/2026-10-14-lesson01-extract.md) | 15 页旧版《我的 AI 小基地》PPT 的逐页 OCR + 两份工作纸全文 |
+| [第 1 节课堂素材（2026-10-17 实际交付）](references/research/2026-10-17-lesson01-delivered.md) | 新版《我的AI星球》16 页 PPT 逐页 OCR + 当天真实课堂流程 + 孩子表现（脱敏） |
+| [第 1 节课课堂复盘与改进建议](docs/classroom/2026-10-17-lesson01-review.md) | 面向团队的复盘：四个孩子的教学机会、家长反馈的准确结论、明天要改的四处 |
 
 ### 首屏素材
 
@@ -392,6 +394,36 @@ location = /makerx {
 
 清理后服务器自检（同一次命令内执行）：`makerx=200`、`lab=200`、`root=200`；`df -h` 显示根分区 40G 中已用 7.9G（21%）。
 TAT 执行记录 `inv-va0tvsghdr`，**命令成功，ExitCode 0，耗时小于 1 秒**。
+
+### 第 2 节课升级工坊（2026-10-22）
+
+新增路由 `/makerx/lab/001-ai-planet/upgrade/`：四步点选（头像 → 鼠标特效 → 屏幕宠物 → 检查并生成），产出修改型中文提示词、自检清单与路演卡。第 1 节课页只加了「第 1 节课」标签与进入第 2 节课的入口，七步生成器未改动。
+
+**命令实测**
+
+| 命令 | 结果 |
+|---|---|
+| `pnpm test` | 28 项，28 通过，0 失败，0 跳过（基线 16 + 新增 12） |
+| `pnpm build` | 通过，3 个页面；`dist/lab/001-ai-planet/upgrade/index.html` 已生成 |
+| `pnpm check` | 11 个错误，全部在 `design/poster/**`（未跟踪文件）；`src/` 下 0 个错误 |
+| 反向验证 | 把 `MAX_AVATAR_EFFECTS` 改成 4 → 测试变红（27 过 1 失败）；改回 3 → 28 全绿 |
+
+**浏览器实测**（Playwright + Chromium，本地 dev server）
+
+| 检查 | 实测值 |
+|---|---|
+| 375px | `scrollWidth=375`，`clientWidth=375`，无横向溢出 |
+| 768px | `scrollWidth=768`，`clientWidth=768`，无横向溢出 |
+| 1440px | `scrollWidth=1440`，`clientWidth=1440`，无横向溢出 |
+| `prefers-reduced-motion: reduce` | 头像 `animationName=none`；24 张选项卡仍在，文字不丢失 |
+| 眼睛跟随 | 瞳孔 `cx` 49 → 51.4、`cy` 62 → 64.0，仍在眼眶范围内 |
+| 摸头 | 鼠标进入头顶热区后气泡 `is-visible`，头像回弹 |
+| 尾焰 | 预览框内 canvas 实测尺寸 288×154，移动后绘制 97 个像素 |
+| 复制提示词 | 反馈「已复制，可以粘贴给 AI 啦！」，剪贴板内容与提示词一致 |
+| 提示词首行 | 「请在我上一条消息做好的网站基础上继续修改，做出「我的AI星球 2.0」。」 |
+| 路演卡 | 三问齐全：介绍网站 / 相对 1.0 改了什么 / 未来还想怎么改 |
+
+**未验证**：真实手机与微信内置浏览器未测；真实课堂使用效果待验证。
 
 ### 尚未核对 / 未验证
 
