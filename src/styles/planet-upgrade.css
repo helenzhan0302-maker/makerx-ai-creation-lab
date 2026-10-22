@@ -1,5 +1,20 @@
 /* 第 2 节课「升级工坊」：复用第 1 课的视觉令牌，只补预览与新增区块。 */
 
+/* 第 1 节课页进入第 2 节课的入口链接（该页引入本文件，不改动第 1 课原样式表）。 */
+.lesson-next-link {
+  display: inline-block;
+  color: var(--accent-wire);
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(47, 75, 199, 0.35);
+}
+
+.lesson-next-link:hover,
+.lesson-next-link:focus-visible {
+  border-bottom-color: var(--accent-wire);
+}
+
 .upgrade-builder {
   margin: 0 0 clamp(3rem, 8vw, 6rem);
   padding: clamp(1rem, 2.5vw, 2rem);

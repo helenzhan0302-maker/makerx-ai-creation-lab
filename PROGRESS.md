@@ -35,7 +35,10 @@ Playwright + Chromium 实测（详见 README「第 2 节课升级工坊」）：
 - 复制：反馈正确，剪贴板与提示词一致。
 - 提示词首行与路演卡三问均正确。
 
-## 补充说明（超出任务书指定路径的两处小改动）
+## 完工审计（白名单复核）
 
-- `src/styles/ai-planet-builder.css` 增加 `.lesson-next-link` 样式（第 1 节课入口链接需要可读样式），只新增 14 行，未改任何既有规则。
+- 曾把 `.lesson-next-link` 写进白名单外的 `src/styles/ai-planet-builder.css`，审计时撤回；该文件现与开工前逐字节一致（`git diff quiet` 通过）。
+- 样式改放白名单内的 `src/styles/planet-upgrade.css`，第 1 节课页引入该文件（该页本身在白名单内）。
 - `package.json` 的 test 脚本仅追加 `tests/planet-upgrade.test.mjs`，未改动前两条。
+- 白名单外文件（已有测试、`ai-planet-builder.mjs`、`ProjectPromptBuilder.astro`、`index.astro`、`astro.config.mjs`、`design/`、`docs/superpowers/specs/`、`pnpm-lock.yaml`）`git diff` 全部为空。
+- 依赖未变：`dependencies` 仍只有 `astro`。
