@@ -20,7 +20,7 @@ export const AVATAR_EFFECT_OPTIONS = [
   { id: 'head-pat', label: '摸头有反应', description: '鼠标移到头顶，头像会眯眼、轻轻弹一下' },
   { id: 'blink', label: '会眨眼', description: '每隔几秒眨一次眼' },
   { id: 'float', label: '轻轻浮动', description: '头像上下轻轻飘' },
-  { id: 'expression', label: '换表情', description: '鼠标停留时换一个表情' },
+  { id: 'expression', label: '点击换表情', description: '点一下头像，就换一个表情' },
 ];
 
 export const CURSOR_EFFECT_OPTIONS = [
@@ -54,7 +54,29 @@ export const UPGRADE_STEP_LABELS = ['头像升级', '鼠标特效', '屏幕宠�
 
 export const MAX_AVATAR_EFFECTS = 3;
 export const MAX_PET_ACTIONS = 2;
-export const DEFAULT_AVATAR_EFFECTS = ['follow-cursor', 'glow'];
+export const DEFAULT_AVATAR_EFFECTS = ['follow-cursor', 'glow', 'expression'];
+
+/** 每一步只生成自己那一段提示词，避免一次改太多、改坏别的部分。 */
+export const UPGRADE_STEP_PROMPTS = [
+  {
+    id: 'avatar',
+    title: '头像升级',
+    resultTitle: '第 1 步：只改头像',
+    instruction: '请只修改头像相关的代码和样式，网站名字、介绍、板块和布局都保持原样。',
+  },
+  {
+    id: 'cursor',
+    title: '鼠标特效',
+    resultTitle: '第 2 步：只加鼠标特效',
+    instruction: '请只添加鼠标特效，头像、网站名字、介绍、板块和布局都保持上一步完成后的样子。',
+  },
+  {
+    id: 'pet',
+    title: '屏幕宠物',
+    resultTitle: '第 3 步：只加屏幕宠物',
+    instruction: '请只添加屏幕宠物，头像、鼠标特效、网站名字、介绍、板块和布局都保持上一步完成后的样子。',
+  },
+];
 
 /** @returns {UpgradeState} */
 export function createUpgradeState() {
@@ -192,6 +214,63 @@ export function buildUpgradePrompt(state) {
   );
 
   return lines.join('\n');
+}
+
+/** @param {UpgradeState} state @param {number} stepIndex */
+function stepChangeLine(state, stepIndex) {
+  if (stepIndex === 0) {
+    const avatarLabels = labelsFor(state.avatarEffects || [], AVATAR_EFFECT_OPTIONS);
+    return avatarLabels.length > 0 ? `头像效果：${avatarLabels.join('、')}。` : '';
+  }
+  if (stepIndex === 1) {
+    const cursorLabel = CURSOR_EFFECT_OPTIONS.find((option) => option.id === state.cursorEffect)?.label || '';
+    return state.cursorEffect !== 'none' && cursorLabel ? `鼠标特效：${cursorLabel}。` : '';
+  }
+  if (stepIndex === 2) {
+    if (!hasPet(state)) return '';
+    const petParts = [petLabel(state)];
+    const petName = clean(state.petName);
+    const actionLabels = labelsFor(state.petActions || [], PET_ACTION_OPTIONS);
+    if (petName) petParts.push(`名字叫「${petName}」`);
+    if (actionLabels.length > 0) petParts.push(actionLabels.join('、'));
+    return `屏幕宠物：${petParts.join('，')}。`;
+  }
+  return '';
+}
+
+/**
+ * 只生成当前步骤的修改提示词，孩子复制一次、让 AI 只改这一块。
+ * 头像与鼠标特效步骤始终生成；宠物步骤选择「这次不加」时返回空字符串，由页面提示跳过。
+ * @param {UpgradeState} state @param {number} stepIndex
+ */
+export function buildUpgradeStepPrompt(state, stepIndex) {
+  if (stepIndex === 2 && !hasPet(state)) return '';
+  if (stepIndex < 0 || stepIndex > 2) return '';
+
+  const step = UPGRADE_STEP_PROMPTS[stepIndex];
+  const changeLine = stepChangeLine(state, stepIndex);
+  if (!changeLine) return '';
+
+  return [
+    `请在我上一条消息做好的网站基础上继续修改。这是第 ${stepIndex + 1} 步：${step.title}。`,
+    step.instruction,
+    '',
+    '一、这次只改这里',
+    changeLine,
+    '',
+    '二、必须保留',
+    '网站名字、自我介绍、已有内容板块、原来的主色和布局都保留。',
+    '前面已经做好的升级也保留：不要删掉或重写上一步已经完成的效果。',
+    '如果这个改动会影响到这些内容，先停下来告诉我，不要直接删改。',
+    '',
+    '三、不要做的事',
+    '不要重新做一个新网站；不要删除我没提到的内容；不要编造我的经历、奖项和事实；',
+    '不要添加我没有要求的板块；特效不要挡住文字和按钮。',
+    '',
+    '四、完成后请告诉我',
+    '1. 你只改了哪些地方。',
+    '2. 哪些地方需要我自己检查。',
+  ].join('\n');
 }
 
 /**

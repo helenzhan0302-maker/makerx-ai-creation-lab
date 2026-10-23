@@ -11,6 +11,9 @@ importers:
       astro:
         specifier: ^7.3.8
         version: 7.3.8(@types/node@26.6.5)(yaml@2.9.1)
+      mesh-avatar-element:
+        specifier: 0.1.1
+        version: 0.1.1
     devDependencies:
       '@astrojs/check':
         specifier: ^0.9.10
@@ -21,6 +24,9 @@ importers:
       cross-env:
         specifier: ^10.1.0
         version: 10.1.0
+      playwright-core:
+        specifier: ^1.64.1
+        version: 1.64.1
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -862,6 +868,9 @@ packages:
       picomatch:
         optional: true
 
+  fflate@0.8.3:
+    resolution: {integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==}
+
   find-proc@0.2.0:
     resolution: {integrity: sha512-a6h2nTrgB3g5Wrn4au9Ux4kMk7IJtyF6oA8uGn+mk3weLZssUtc1cp6meHIzzuW2o1srrBAxzkmXLbqjRkgB6w==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -1036,6 +1045,12 @@ packages:
   mdn-data@2.27.1:
     resolution: {integrity: sha512-9Yubnt3e8A0OKwxYSXyhLymGW4sCufcLG6VdiDdUGVkPhpqLxlvP5vl1983gQjJl3tqbrM731mjaZaP68AgosQ==}
 
+  mesh-avatar-element@0.1.1:
+    resolution: {integrity: sha512-oeJTn5jiPIk7IXu7NkTmlLwUq2ec2ZM5pUOAg5vbJK+2N/fMvyNI69PRSnG6wpwpwqa4dZ3Veh1fJuKcfWV2dQ==}
+
+  mesh-avatar@0.2.1:
+    resolution: {integrity: sha512-ivddBt81dayDE+kh4gYUmLzZt6CRBGBvZdjgGu0wwffeM0l1U70OfwCTfpiYYRRQOzWj/6pPxiaDW5iylFKpjw==}
+
   micromark-util-character@2.1.1:
     resolution: {integrity: sha512-wv8tdUTJ3thSFFFJKtpYKOYiGP2+v96Hvk4Tu8KpCAsTMs6yi+nVmGh1syvSCsaxz45J6Jbw+9DD6g97+NV67Q==}
 
@@ -1134,6 +1149,11 @@ packages:
   picomatch@4.0.7:
     resolution: {integrity: sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==}
     engines: {node: '>=12'}
+
+  playwright-core@1.64.1:
+    resolution: {integrity: sha512-BC4s8y6SEVA6Q1rSxZTto8hI1KUI3xXlHGZgvGqP4IqPdI/a6FX9H29IDNz7vKo9l21b6LfYosScPL6M3xxyDQ==}
+    engines: {node: '>=20'}
+    hasBin: true
 
   postcss@8.5.30:
     resolution: {integrity: sha512-zkd+e9S1AQHhmaBKye9zlFHWjOwVgqXl1q3ECYy8561K7qxR2cREf/STLskulBFd78k6AOFeA+ff1TtEzk9bAA==}
@@ -2433,6 +2453,8 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.7
 
+  fflate@0.8.3: {}
+
   find-proc@0.2.0: {}
 
   flattie@1.1.1: {}
@@ -2587,6 +2609,14 @@ snapshots:
 
   mdn-data@2.27.1: {}
 
+  mesh-avatar-element@0.1.1:
+    dependencies:
+      mesh-avatar: 0.2.1
+
+  mesh-avatar@0.2.1:
+    dependencies:
+      fflate: 0.8.3
+
   micromark-util-character@2.1.1:
     dependencies:
       micromark-util-symbol: 2.0.1
@@ -2668,6 +2698,8 @@ snapshots:
   picomatch@2.3.2: {}
 
   picomatch@4.0.7: {}
+
+  playwright-core@1.64.1: {}
 
   postcss@8.5.30:
     dependencies:

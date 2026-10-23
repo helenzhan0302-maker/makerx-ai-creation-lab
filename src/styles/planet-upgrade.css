@@ -1,19 +1,96 @@
-/* 第 2 节课「升级工坊」：复用第 1 课的视觉令牌，只补预览与新增区块。 */
+/* AI星球课程总览 + 第 2 节课「升级工坊」。复用第 1 课视觉令牌。 */
 
-/* 第 1 节课页进入第 2 节课的入口链接（该页引入本文件，不改动第 1 课原样式表）。 */
-.lesson-next-link {
-  display: inline-block;
-  color: var(--accent-wire);
-  font-size: 0.86rem;
-  font-weight: 600;
+/* ---------- 课程总览：两节课各一张独立卡片 ---------- */
+
+.lesson-hub {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  gap: clamp(1rem, 2.4vw, 1.75rem);
+  margin: 0 0 clamp(3rem, 8vw, 6rem);
+}
+
+.lesson-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 17rem;
+  padding: clamp(1.15rem, 2.4vw, 1.7rem);
+  border: 1px solid var(--line-strong);
+  border-radius: 1.35rem;
+  background: rgba(255, 255, 255, 0.66);
+  box-shadow: 0 1.5rem 3.5rem rgba(75, 113, 180, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  color: inherit;
   text-decoration: none;
-  border-bottom: 1px solid rgba(47, 75, 199, 0.35);
+  transition: transform 260ms var(--ease-out), box-shadow 260ms var(--ease-out), border-color 260ms var(--ease-out);
 }
 
-.lesson-next-link:hover,
-.lesson-next-link:focus-visible {
-  border-bottom-color: var(--accent-wire);
+.lesson-card:hover,
+.lesson-card:focus-visible {
+  transform: translateY(-4px);
+  border-color: rgba(47, 75, 199, 0.5);
+  box-shadow: 0 2rem 4.5rem rgba(75, 113, 180, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
+
+.lesson-card-top {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.lesson-card-index {
+  display: inline-grid;
+  width: 2.4rem;
+  height: 2.4rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--brand-ink);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+
+.lesson-card-label {
+  color: var(--accent-wire);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+}
+
+.lesson-card-meta {
+  margin-left: auto;
+  padding: 0.24rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.lesson-card-title {
+  margin: 0;
+  color: var(--brand-ink);
+  font-size: clamp(1.25rem, 2vw, 1.55rem);
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+
+.lesson-card-description {
+  margin: 0.7rem 0 1.4rem;
+  color: var(--ink-muted);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.lesson-card-action {
+  margin-top: auto;
+  color: var(--accent-wire);
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+/* ---------- 升级工坊 ---------- */
 
 .upgrade-builder {
   margin: 0 0 clamp(3rem, 8vw, 6rem);
@@ -24,33 +101,148 @@
   box-shadow: 0 2rem 5rem rgba(75, 113, 180, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
-.upgrade-avatar-stage {
+/* 头像与选项环绕：中间头像，六个选项围在四周 */
+.avatar-orbit {
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(10rem, 14rem) minmax(0, 1fr);
-  gap: clamp(1rem, 2.4vw, 2rem);
-  align-items: start;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 22rem) minmax(0, 1fr);
+  grid-template-areas:
+    "top-left  preview  top-right"
+    "mid-left  preview  mid-right"
+    "bot-left  preview  bot-right";
+  gap: 0.7rem 1rem;
+  align-items: center;
+  margin-bottom: 0.6rem;
 }
 
 .avatar-preview {
+  grid-area: preview;
+  position: relative;
   display: grid;
-  gap: 0.5rem;
-  justify-items: center;
-  padding: 1rem;
-  border: 1px solid var(--line);
-  border-radius: 1rem;
-  background:
-    radial-gradient(circle at 50% 30%, rgba(123, 164, 240, 0.18), transparent 62%),
-    rgba(255, 255, 255, 0.75);
+  place-items: center;
+  padding: 0.5rem;
 }
 
-.avatar-preview svg {
-  width: min(100%, 12rem);
-  height: auto;
-  overflow: visible;
+.avatar-art {
+  position: relative;
+  display: block;
+  width: min(100%, 21rem);
+  aspect-ratio: 1;
+  margin: 0;
+  cursor: pointer;
+  isolation: isolate;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  filter: drop-shadow(0 0.9rem 1.2rem rgba(43, 30, 22, 0.22));
+}
+
+.avatar-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+
+/* ---------- 可动五官：视线帧 + 眨眼压缩 + 嘴型帧 ---------- */
+.avatar-eye,
+.avatar-mouth {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+.avatar-eye-gaze,
+.avatar-mouth-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+}
+
+.avatar-eye {
+  overflow: hidden;
+}
+
+.avatar-eye--left {
+  left: 38.3333%;
+  top: 25%;
+  width: 14.4444%;
+  height: 10%;
+}
+
+.avatar-eye--right {
+  left: 55.5556%;
+  top: 28.3333%;
+  width: 14.4444%;
+  height: 10%;
+}
+
+.avatar-eye-gaze {
+  background-image: var(--eye-src);
+  background-repeat: no-repeat;
+  background-size: 500% 500%;
+  background-position: var(--eye-x, 50%) var(--eye-y, 50%);
+  transform-origin: 50% 60%;
+  transition: background-position 90ms linear, transform 90ms var(--ease-out);
+  -webkit-mask-image: radial-gradient(ellipse 62% 58% at 50% 50%, #000 38%, transparent 72%);
+  mask-image: radial-gradient(ellipse 62% 58% at 50% 50%, #000 38%, transparent 72%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+.avatar-preview.fx-blink .avatar-eye-gaze {
+  animation: avatar-eye-blink 5.4s infinite;
+}
+
+.avatar-preview.is-patting .avatar-eye-gaze,
+.avatar-preview.expression-happy .avatar-eye-gaze,
+.avatar-preview.expression-wink .avatar-eye--right .avatar-eye-gaze {
+  animation: none;
+}
+
+.avatar-preview.is-patting .avatar-eye-gaze,
+.avatar-preview.expression-happy .avatar-eye-gaze {
+  transform: translateY(9%) scaleY(0.15);
+}
+
+.avatar-preview.expression-wink .avatar-eye--right .avatar-eye-gaze {
+  transform: translateY(9%) scaleY(0.15);
+}
+
+.avatar-mouth {
+  left: 47.1111%;
+  top: 43.1111%;
+  width: 12.4444%;
+  height: 8.4444%;
+}
+
+.avatar-mouth-frame {
+  background-image: var(--mouth-src);
+  background-repeat: no-repeat;
+  background-size: 500% 100%;
+  background-position: var(--mouth-x, 0%) 0;
+  transition: background-position 110ms var(--ease-out);
+}
+
+.avatar-preview.expression-happy .avatar-mouth-frame { --mouth-x: 25%; }
+.avatar-preview.expression-wink .avatar-mouth-frame { --mouth-x: 25%; }
+.avatar-preview.expression-ooh .avatar-mouth-frame { --mouth-x: 100%; }
+.avatar-preview.is-patting .avatar-mouth-frame { --mouth-x: 50%; }
+
+@keyframes avatar-eye-blink {
+  0%, 91%, 96%, 100% { transform: translateY(0) scaleY(1); }
+  93%, 94% { transform: translateY(9%) scaleY(0.15); }
 }
 
 .avatar-preview-hint {
-  margin: 0;
+  margin: 0.4rem 0 0;
   color: var(--ink-soft);
   font-size: 0.78rem;
   line-height: 1.55;
@@ -58,60 +250,257 @@
 }
 
 .avatar-body {
+  position: absolute;
+  inset: 0;
+  transform-box: border-box;
+  transform-origin: 50% 88%;
+  transition: transform 260ms var(--ease-out);
+}
+
+
+.avatar-art {
+  transform-box: border-box;
+  transform-origin: center;
+  transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform 320ms var(--ease-out), filter 320ms var(--ease-out);
+}
+.avatar-art:focus-visible {
+  outline: 3px solid rgba(47, 75, 199, 0.72);
+  outline-offset: 7px;
+  border-radius: 50%;
+}
+
+/* ---------- 头像各效果的独立表现 ---------- */
+
+/* 发光呼吸：外圈明显放大、变亮，还有一圈描边光弧与星点闪烁 */
+.avatar-aura,
+.avatar-aura-ring,
+.avatar-aura-sparks {
+  opacity: 0;
   transform-box: fill-box;
   transform-origin: center;
-  transition: transform 320ms var(--ease-out);
+  transition: opacity 400ms var(--ease-out);
 }
 
-.avatar-body.has-glow .avatar-glow {
-  animation: avatar-breathe 3.2s ease-in-out infinite;
+.avatar-aura-ring {
+  fill: none;
+  stroke: rgba(133, 212, 255, 0.85);
+  stroke-width: 2.4;
+  stroke-dasharray: 10 14;
+  filter: blur(0.4px);
 }
 
-.avatar-body.has-float {
-  animation: avatar-float 4s ease-in-out infinite;
+.avatar-aura-sparks circle {
+  fill: #cfeaff;
 }
 
-.avatar-body.has-blink .avatar-eyes {
-  animation: avatar-blink 4.6s ease-in-out infinite;
-  transform-box: fill-box;
-  transform-origin: center;
+.avatar-preview.fx-glow .avatar-aura {
+  opacity: 1;
+  animation: avatar-breathe 2.6s ease-in-out infinite;
 }
 
-.avatar-body.is-patting {
-  transform: translateY(-3px) scale(1.03);
+.avatar-preview.fx-glow .avatar-aura-ring {
+  opacity: 1;
+  animation: avatar-halo 2.6s ease-in-out infinite;
 }
 
-.avatar-preview.has-expression .avatar-mouth {
-  d: path('M51 74 Q60 86 69 74');
+.avatar-preview.fx-glow .avatar-aura-sparks {
+  opacity: 1;
+  animation: avatar-twinkle 1.9s ease-in-out infinite;
+}
+
+.avatar-preview.fx-glow .avatar-art {
+  filter: drop-shadow(0 0 1.1rem rgba(122, 199, 255, 0.85)) drop-shadow(0 0.9rem 1.2rem rgba(43, 30, 22, 0.18));
+}
+
+/* 轻轻浮动：整个头像上下漂，和发光的光圈完全是两种感觉 */
+.avatar-preview.fx-float .avatar-body {
+  animation: avatar-float 3.4s ease-in-out infinite;
+}
+
+/* 点击 / 摸头的弹动优先级高于待机浮动 */
+.avatar-preview.is-cheering .avatar-body {
+  animation: avatar-cheer 420ms var(--ease-out);
+}
+
+.avatar-preview.is-patting .avatar-body {
+  animation: avatar-pat 1000ms var(--ease-out);
+}
+
+/* 点击换表情 */
+.avatar-preview.fx-expression .avatar-art {
+  cursor: pointer;
+}
+
+/* 摸头气泡：白色对话框 */
+.avatar-bubble-card {
+  position: absolute;
+  top: 1.2rem;
+  left: 50%;
+  z-index: 3;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid rgba(47, 75, 199, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 0.6rem 1.4rem rgba(47, 75, 199, 0.18);
+  color: var(--brand-ink);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms var(--ease-out), transform 220ms var(--ease-out);
+  transform: translate(-50%, 5px) scale(0.96);
+}
+
+.avatar-bubble-card.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
 }
 
 .avatar-bubble {
+  color: var(--brand-ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+/* 点击时四散的星星 */
+.avatar-sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.avatar-sparkles span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: var(--brand-cyan);
+  font-size: 0.9rem;
   opacity: 0;
-  fill: var(--accent-wire);
-  font-family: var(--font-sans);
-  font-size: 9px;
-  font-weight: 650;
-  transition: opacity 200ms var(--ease-out);
 }
 
-.avatar-bubble.is-visible {
-  opacity: 1;
+.avatar-sparkles.is-bursting span {
+  animation: sparkle-burst 600ms var(--ease-out);
 }
 
-.trail-preview,
-.pet-preview {
+.avatar-sparkles span:nth-child(1) { --sx: -62px; --sy: -54px; }
+.avatar-sparkles span:nth-child(2) { --sx: 58px; --sy: -62px; color: var(--brand-peri); }
+.avatar-sparkles span:nth-child(3) { --sx: -54px; --sy: 48px; color: var(--brand-peri); }
+.avatar-sparkles span:nth-child(4) { --sx: 62px; --sy: 42px; }
+
+/* 环绕的选项胶囊 */
+.effect-orbit {
+  display: contents;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.effect-chip {
   position: relative;
-  min-height: 9.5rem;
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.86);
+  cursor: pointer;
+  transition: border-color 200ms var(--ease-out), background 200ms var(--ease-out), transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
+}
+
+.effect-chip:hover {
+  transform: translateY(-2px);
+  border-color: rgba(47, 75, 199, 0.42);
+}
+
+.effect-chip:has(input:checked) {
+  border-color: var(--accent-wire);
+  background: rgba(233, 242, 253, 0.95);
+  box-shadow: 0 0.6rem 1.4rem rgba(47, 75, 199, 0.14);
+}
+
+.effect-chip:has(input:focus-visible) {
+  outline: 2px solid var(--accent-wire);
+  outline-offset: 2px;
+}
+
+.effect-chip input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.effect-chip-mark {
+  display: inline-grid;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: 0 0 auto;
+  place-items: center;
+  margin-top: 0.1rem;
+  border: 1px solid rgba(47, 75, 199, 0.4);
+  border-radius: 50%;
+  color: var(--accent-wire);
+  font-size: 0.6rem;
+  line-height: 1;
+}
+
+.effect-chip:has(input:checked) .effect-chip-mark {
+  background: var(--accent-wire);
+  border-color: var(--accent-wire);
+  color: #fff;
+}
+
+.effect-chip-copy {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.effect-chip-label {
+  color: var(--brand-ink);
+  font-size: 0.88rem;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.effect-chip-description {
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+  line-height: 1.5;
+}
+
+.effect-chip--1 { grid-area: top-left; }
+.effect-chip--2 { grid-area: top-right; }
+.effect-chip--3 { grid-area: mid-left; }
+.effect-chip--4 { grid-area: mid-right; }
+.effect-chip--5 { grid-area: bot-left; }
+.effect-chip--6 { grid-area: bot-right; }
+
+/* ---------- 鼠标特效预览 ---------- */
+
+.upgrade-trail-stage,
+.upgrade-pet-stage {
+  display: grid;
+  grid-template-columns: minmax(12rem, 20rem) minmax(0, 1fr);
+  gap: clamp(1rem, 2.4vw, 2rem);
+  align-items: start;
+}
+
+.trail-preview {
+  position: relative;
+  min-height: 12rem;
   overflow: hidden;
   border: 1px dashed var(--line-strong);
   border-radius: 1rem;
-  background: rgba(233, 242, 253, 0.55);
+  background:
+    radial-gradient(circle at 50% 40%, rgba(123, 164, 240, 0.16), transparent 65%),
+    rgba(233, 242, 253, 0.5);
 }
 
 .trail-preview canvas {
   display: block;
   width: 100%;
-  height: 9.5rem;
+  height: 12rem;
 }
 
 .trail-preview-label,
@@ -125,41 +514,192 @@
   pointer-events: none;
 }
 
-.upgrade-trail-stage,
-.upgrade-pet-stage {
-  display: grid;
-  grid-template-columns: minmax(12rem, 18rem) minmax(0, 1fr);
-  gap: clamp(1rem, 2.4vw, 2rem);
-  align-items: start;
+/* ---------- 屏幕宠物：暖光微缩立体场景 ---------- */
+
+.pet-diorama {
+  position: relative;
+  min-height: 15rem;
+  overflow: hidden;
+  border-radius: 1.1rem;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 214, 158, 0.5), transparent 58%),
+    linear-gradient(180deg, #2b2a44 0%, #3a3554 46%, #242234 100%);
+  box-shadow: inset 0 0 3rem rgba(10, 8, 18, 0.55);
+}
+/* ---------- 屏幕宠物：暖光微缩立体场景 ---------- */
+
+.pet-diorama {
+  position: relative;
+  min-height: 17rem;
+  overflow: hidden;
+  border-radius: 1.1rem;
+  background:
+    radial-gradient(ellipse 60% 42% at 50% 8%, rgba(255, 226, 176, 0.5), transparent 70%),
+    radial-gradient(ellipse 80% 50% at 50% 92%, rgba(120, 88, 160, 0.34), transparent 72%),
+    linear-gradient(180deg, #2a2440 0%, #38304f 40%, #241f34 78%, #1a1626 100%);
+  box-shadow:
+    inset 0 0 4rem rgba(10, 8, 18, 0.65),
+    inset 0 -1rem 2.4rem rgba(10, 8, 18, 0.5),
+    0 1.4rem 2.6rem rgba(34, 24, 56, 0.28);
 }
 
-.pet-preview {
+/* 顶部暖光锥：模拟定格动画里的台灯 */
+.pet-diorama::before {
+  content: "";
+  position: absolute;
+  top: -6%;
+  left: 50%;
+  width: 78%;
+  height: 82%;
+  transform: translateX(-50%);
+  clip-path: polygon(34% 0, 66% 0, 100% 100%, 0 100%);
+  background: linear-gradient(180deg, rgba(255, 226, 178, 0.34), rgba(255, 208, 148, 0.06) 62%, transparent 100%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+/* 地面上的柔和光斑 */
+.pet-diorama::after {
+  content: "";
+  position: absolute;
+  bottom: 2.1rem;
+  left: 50%;
+  width: 13rem;
+  height: 3.4rem;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255, 214, 158, 0.34), transparent 70%);
+  pointer-events: none;
+}
+
+.pet-diorama-scene {
+  position: relative;
   display: grid;
   place-items: center;
-  border-style: solid;
+  height: 17rem;
+  perspective: 800px;
 }
 
-.pet-avatar {
-  display: grid;
-  justify-items: center;
-  padding: 0.4rem 0.9rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0.6rem 1.4rem rgba(75, 113, 180, 0.18);
-  color: var(--accent-wire);
-  font-size: 1.9rem;
-  line-height: 1.1;
-  transition: transform 220ms var(--ease-out);
+.pet-lamp-glow {
+  position: absolute;
+  top: -24%;
+  left: 50%;
+  width: 16rem;
+  height: 16rem;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 226, 178, 0.62), rgba(255, 190, 126, 0.2) 44%, transparent 68%);
+  pointer-events: none;
+  animation: lamp-flicker 6.5s ease-in-out infinite;
+}
+
+/* 浮岛：草皮 + 岩层 + 投影，做出立体厚度 */
+.pet-island {
+  position: absolute;
+  bottom: 2.35rem;
+  left: 50%;
+  width: 10.8rem;
+  height: 5rem;
+  transform: translateX(-50%) rotateX(4deg);
+  transform-style: preserve-3d;
+}
+
+.pet-island-top {
+  position: relative;
+  z-index: 2;
+  height: 1.35rem;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #a8e6b4 0%, #74c48c 46%, #4b9463 100%);
+  box-shadow:
+    0 0.3rem 0.55rem rgba(18, 26, 20, 0.42),
+    inset 0 0.18rem 0.3rem rgba(226, 255, 226, 0.6),
+    inset 0 -0.2rem 0.4rem rgba(32, 78, 48, 0.36);
+}
+
+/* 草皮边缘的小草与石子 */
+.pet-island-top::after {
+  content: "";
+  position: absolute;
+  inset: 0.1rem 0 auto;
+  height: 0.6rem;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 18% 60%, #93dd9f 0 2px, transparent 3px),
+    radial-gradient(circle at 34% 40%, #a8eab2 0 1.6px, transparent 2.6px),
+    radial-gradient(circle at 62% 66%, #86d295 0 2px, transparent 3px),
+    radial-gradient(circle at 82% 44%, #9fe3ab 0 1.6px, transparent 2.6px);
+}
+
+.pet-island-body {
+  position: relative;
+  z-index: 1;
+  height: 4.1rem;
+  margin: -0.4rem auto 0;
+  width: 9.6rem;
+  clip-path: polygon(0 0, 100% 0, 88% 26%, 76% 54%, 63% 78%, 54% 94%, 50% 100%, 46% 94%, 37% 78%, 24% 54%, 12% 26%);
+  background:
+    linear-gradient(96deg, rgba(255, 214, 158, 0.24) 0%, transparent 34%),
+    linear-gradient(180deg, #7d6650 0%, #5b4836 34%, #40311f 70%, #2a2014 100%);
+}
+
+/* 岩层纹理：横向层理让素色块有土石感 */
+.pet-island-body::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(178deg, rgba(255, 236, 205, 0.09) 0 2px, transparent 2px 11px),
+    radial-gradient(ellipse at 30% 26%, rgba(255, 226, 178, 0.2), transparent 56%);
+}
+
+.pet-figure {
+  position: relative;
+  z-index: 3;
+  width: 9.6rem;
+  margin-bottom: -2.6rem;
+  filter: drop-shadow(0 0.85rem 0.7rem rgba(10, 7, 16, 0.55));
+  transition: transform 200ms var(--ease-out);
   cursor: pointer;
 }
 
-.pet-avatar.is-jumping {
-  animation: pet-jump 420ms var(--ease-out);
+.pet-figure svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
 }
 
-.pet-ears,
-.pet-face {
-  display: block;
+[data-pet-shape][data-hidden] {
+  display: none;
+}
+
+/* 宠物呼吸式待机：静止时也有生命感 */
+.pet-body-group {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: pet-idle 3.6s ease-in-out infinite;
+}
+
+.pet-figure.is-jumping .pet-body-group {
+  animation: pet-jump 460ms var(--ease-out);
+}
+
+.pet-fireflies span {
+  position: absolute;
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 50%;
+  background: #ffd79a;
+  box-shadow: 0 0 0.65rem 0.22rem rgba(255, 200, 130, 0.6);
+  animation: firefly 5s ease-in-out infinite;
+}
+
+.pet-fireflies span:nth-child(1) { top: 26%; left: 16%; animation-delay: 0s; }
+.pet-fireflies span:nth-child(2) { top: 38%; right: 15%; animation-delay: 1.4s; }
+.pet-fireflies span:nth-child(3) { bottom: 30%; left: 24%; animation-delay: 2.6s; }
+
+.pet-diorama .pet-preview-label {
+  color: rgba(255, 244, 226, 0.82);
+  text-shadow: 0 1px 3px rgba(12, 8, 20, 0.75);
 }
 
 .upgrade-pet-details {
@@ -171,14 +711,11 @@
 
 .choice-grid--pet-actions legend,
 .choice-grid--pet-types legend,
-.choice-grid--cursor-effects legend,
-.choice-grid--avatar-effects legend {
+.choice-grid--cursor-effects legend {
   margin-bottom: 0.6rem;
   color: var(--ink-soft);
   font-size: 0.8rem;
 }
-
-.upgrade-checklist,
 .roadshow-card {
   margin-top: 1.4rem;
   padding: 1rem 1.15rem;
@@ -217,37 +754,152 @@
   white-space: pre-wrap;
 }
 
+/* 第 1 节课页进入第 2 节课的入口（该页引入本文件） */
+.lesson-next-link {
+  display: inline-block;
+  color: var(--accent-wire);
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(47, 75, 199, 0.35);
+}
+
+.lesson-next-link:hover,
+.lesson-next-link:focus-visible {
+  border-bottom-color: var(--accent-wire);
+}
+
+/* 呼吸：外圈光晕由暗到亮，同时明显放大 */
 @keyframes avatar-breathe {
-  0%, 100% { opacity: 0.45; }
-  50% { opacity: 0.95; }
+  0%, 100% { opacity: 0.22; transform: scale(0.86); }
+  50% { opacity: 1; transform: scale(1.14); }
 }
 
+/* 呼吸时外圈虚线光环缓慢旋转 + 明暗呼吸 */
+@keyframes avatar-halo {
+  0%, 100% { opacity: 0.18; transform: scale(0.9) rotate(0deg); }
+  50% { opacity: 0.95; transform: scale(1.06) rotate(24deg); }
+}
+
+@keyframes avatar-twinkle {
+  0%, 100% { opacity: 0.15; transform: scale(0.9); }
+  45% { opacity: 1; transform: scale(1.25); }
+}
+
+/* 浮动：幅度明显，能一眼看出在飘 */
 @keyframes avatar-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+  0%, 100% { transform: translateY(2px) rotate(-0.6deg); }
+  50% { transform: translateY(-12px) rotate(0.6deg); }
 }
 
+/* 眨眼：两次短促闭合 */
 @keyframes avatar-blink {
-  0%, 92%, 100% { transform: scaleY(1); }
-  95% { transform: scaleY(0.1); }
+  0%, 62%, 68%, 84%, 86%, 100% { transform: scaleY(1); }
+  64%, 66% { transform: scaleY(0.06); }
+  82% { transform: scaleY(0.06); }
 }
 
+/* 换表情：点头 + 弹跳 */
+@keyframes avatar-cheer {
+  0%, 100% { transform: scale(1) rotate(0deg) translateY(0); }
+  22% { transform: scale(1.07) rotate(-3.4deg) translateY(-5px); }
+  52% { transform: scale(1.03) rotate(3deg) translateY(-2px); }
+  78% { transform: scale(1.05) rotate(-1.4deg); }
+}
+
+/* 摸头：先缩脖子再弹起来 */
+@keyframes avatar-pat {
+  0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+  18% { transform: translateY(4px) scale(0.97) rotate(-1.2deg); }
+  46% { transform: translateY(-11px) scale(1.06) rotate(1.6deg); }
+  72% { transform: translateY(-2px) scale(1.01) rotate(-0.8deg); }
+}
+
+/* 宠物待机呼吸 */
+@keyframes pet-idle {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-2.5px) scale(1.014); }
+}
+
+/* 暖灯轻微闪烁，像定格动画的灯光 */
+@keyframes lamp-flicker {
+  0%, 100% { opacity: 0.72; }
+  38% { opacity: 1; }
+  62% { opacity: 0.84; }
+  81% { opacity: 0.96; }
+}
+
+@keyframes firefly {
+  0%, 100% { opacity: 0.22; transform: translateY(0) scale(0.85); }
+  40% { opacity: 1; transform: translateY(-9px) scale(1.15); }
+  70% { opacity: 0.5; transform: translateY(-3px) scale(0.95); }
+}
+
+/* 点击宠物：先蹲后跳，落地压扁 */
 @keyframes pet-jump {
-  0%, 100% { transform: translateY(0); }
-  40% { transform: translateY(-12px) scale(1.06); }
+  0%, 100% { transform: translateY(0) scale(1, 1); }
+  14% { transform: translateY(3px) scale(1.07, 0.9); }
+  42% { transform: translateY(-19px) scale(0.96, 1.06); }
+  68% { transform: translateY(-3px) scale(1.02, 0.99); }
+  84% { transform: translateY(2px) scale(1.05, 0.95); }
 }
 
-@media (max-width: 56rem) {
-  .upgrade-avatar-stage,
+@keyframes sparkle-burst {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.4); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(1.15); }
+}
+
+@media (max-width: 62rem) {
+  .avatar-orbit {
+    grid-template-columns: minmax(0, 1fr) minmax(13rem, 18rem) minmax(0, 1fr);
+    gap: 0.55rem 0.7rem;
+  }
+
+  .effect-chip-description {
+    display: none;
+  }
+}
+
+@media (max-width: 48rem) {
+  .avatar-orbit {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "preview preview"
+      "top-left top-right"
+      "mid-left mid-right"
+      "bot-left bot-right";
+    gap: 0.6rem;
+  }
+
+  .avatar-preview {
+    padding-bottom: 0.2rem;
+  }
+
+  .effect-chip-description {
+    display: block;
+  }
+
   .upgrade-trail-stage,
   .upgrade-pet-stage {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .avatar-preview,
   .trail-preview,
-  .pet-preview {
+  .pet-diorama {
     width: 100%;
+  }
+}
+
+/* 升级工坊的步骤标题在窄屏保持紧凑：限制提示不撑满整行 */
+@media (max-width: 48rem) {
+  .upgrade-builder .step-heading {
+    row-gap: 0.5rem;
+  }
+
+  .upgrade-builder .selection-limit {
+    width: auto;
+    margin-left: 0;
   }
 }
 
@@ -264,22 +916,136 @@
   .upgrade-builder {
     padding: 0.85rem;
   }
+
+  .avatar-orbit {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "preview"
+      "top-left"
+      "top-right"
+      "mid-left"
+      "mid-right"
+      "bot-left"
+      "bot-right";
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .lesson-card,
+  .avatar-art,
   .avatar-body,
-  .avatar-body.has-glow .avatar-glow,
-  .avatar-body.has-float,
-  .avatar-body.has-blink .avatar-eyes,
-  .pet-avatar,
+  .avatar-mesh-stage,
+  .avatar-aura,
   .avatar-bubble,
-  .pet-avatar.is-jumping {
+  .avatar-sparkles span,
+  .effect-chip,
+  .pet-figure,
+  .pet-body-group,
+  .pet-lamp-glow,
+  .pet-fireflies span,
+  .avatar-aura-ring,
+  .avatar-aura-sparks,
+  .trail-preview canvas {
     animation: none !important;
     transition: none !important;
     transform: none !important;
   }
 
-  .avatar-bubble {
+  .avatar-preview.fx-glow .avatar-mesh-stage {
+    box-shadow: 0 0 1.4rem rgba(122, 199, 255, 0.45);
+  }
+
+  .avatar-bubble,
+  .avatar-bubble-card,
+  .avatar-sparkles span {
     opacity: 0;
   }
+
+  .avatar-preview.fx-glow .avatar-aura {
+    opacity: 0.85;
+  }
+
+  .avatar-preview.fx-glow .avatar-aura-ring {
+    opacity: 0.6;
+  }
+
+  .avatar-preview.fx-glow .avatar-aura-sparks {
+    opacity: 0.8;
+  }
+
+  .avatar-eye-gaze,
+  .avatar-mouth-frame {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---------- 真实 Mesh 头像舞台 ---------- */
+.avatar-mesh-stage {
+  position: relative;
+  display: grid;
+  width: min(100%, 22rem);
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: 1.4rem;
+  overflow: hidden;
+}
+
+.avatar-mesh-stage mesh-avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.avatar-mesh-stage mesh-avatar:focus-visible {
+  outline: 3px solid rgba(47, 75, 199, 0.72);
+  outline-offset: 4px;
+  border-radius: 1.2rem;
+}
+
+.avatar-mesh-fallback {
+  margin: 0;
+  padding: 1.2rem;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* 发光呼吸作用在 WebGL 画布外框上 */
+.avatar-preview.fx-glow .avatar-mesh-stage {
+  animation: avatar-mesh-breathe 2.8s ease-in-out infinite;
+  box-shadow: 0 0 2.4rem rgba(122, 199, 255, 0.55);
+}
+
+/* 轻轻浮动：整个真实头像上下漂 */
+.avatar-preview.fx-float .avatar-mesh-stage {
+  animation: avatar-mesh-float 3.6s ease-in-out infinite;
+}
+
+.avatar-preview.fx-expression .avatar-mesh-stage mesh-avatar {
+  cursor: pointer;
+}
+
+/* 本步结果后的下一步按钮：单独一行，保持一页一个主按钮 */
+.result-next {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.result-next[hidden] {
+  display: none;
+}
+
+@keyframes avatar-mesh-breathe {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0.4rem rgba(122, 199, 255, 0.3)); }
+  50% { transform: scale(1.018); filter: drop-shadow(0 0 1.4rem rgba(122, 199, 255, 0.75)); }
+}
+
+@keyframes avatar-mesh-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }

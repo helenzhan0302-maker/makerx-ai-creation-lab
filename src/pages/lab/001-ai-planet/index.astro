@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import '../../../styles/ai-planet-builder.css';
+import '../../../styles/planet-upgrade.css';
+
+const baseUrl = import.meta.env.BASE_URL;
+const lessons = [
+  {
+    id: '01',
+    label: '第 1 节课',
+    title: '造出你的 AI星球',
+    description: '一步一步写下网站名字、头像、介绍、内容、风格和布局，生成第一段建站提示词。',
+    meta: '从 0 到 1.0',
+    href: `${baseUrl}lab/001-ai-planet/lesson-1/`,
+    action: '进入第 1 节课',
+  },
+  {
+    id: '02',
+    label: '第 2 节课',
+    title: '升级你的 AI星球 2.0',
+    description: '给头像加互动、给鼠标加特效、养一只屏幕宠物。选好效果，生成一段修改型提示词。',
+    meta: '从 1.0 到 2.0',
+    href: `${baseUrl}lab/001-ai-planet/upgrade/`,
+    action: '进入第 2 节课：升级你的 AI星球 2.0',
+  },
+];
+---
+
+<BaseLayout title="AI星球｜MakerX AI 造物实验室" description="AI星球的两节课：第 1 节课造出网站 1.0，第 2 节课升级成 2.0。">
+  <div class="project-page-shell">
+    <header class="project-page-header">
+      <a class="project-back-link" href={baseUrl}>← MakerX AI 造物实验室</a>
+      <span class="project-page-status">实验编号 001 / 两节课</span>
+    </header>
+
+    <main id="main-content">
+      <section class="project-intro" aria-labelledby="project-title">
+        <p class="eyebrow">project 001 / ai creation lab</p>
+        <h1 id="project-title">AI星球</h1>
+        <p class="project-intro-lead">两节课，做出并升级自己的 AI星球。先选你要去的那一节，两节课互不影响。</p>
+      </section>
+
+      <section class="lesson-hub" aria-label="选择课次">
+        {lessons.map((lesson) => (
+          <a class="lesson-card" href={lesson.href}>
+            <div class="lesson-card-top">
+              <span class="lesson-card-index" aria-hidden="true">{lesson.id}</span>
+              <span class="lesson-card-label">{lesson.label}</span>
+              <span class="lesson-card-meta">{lesson.meta}</span>
+            </div>
+            <h2 class="lesson-card-title">{lesson.title}</h2>
+            <p class="lesson-card-description">{lesson.description}</p>
+            <span class="lesson-card-action">{lesson.action} <span aria-hidden="true">↗</span></span>
+          </a>
+        ))}
+      </section>
+    </main>
+
+    <footer class="project-page-footer">
+      <p>MakerX AI 造物实验室</p>
+      <a href={baseUrl}>回到首页 ↗</a>
+    </footer>
+  </div>
+</BaseLayout>

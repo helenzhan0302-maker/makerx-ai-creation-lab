@@ -85,7 +85,7 @@ test('prompt keeps fixed numbering when introduction fields are empty', () => {
 });
 
 test('project page exposes the approved Chinese builder contract', () => {
-  const page = fs.readFileSync(path.join(root, 'src/pages/lab/001-ai-planet.astro'), 'utf8');
+  const page = fs.readFileSync(path.join(root, 'src/pages/lab/001-ai-planet/lesson-1.astro'), 'utf8');
   const component = fs.readFileSync(path.join(root, 'src/components/ProjectPromptBuilder.astro'), 'utf8');
 
   assert.match(page, /AI星球/);

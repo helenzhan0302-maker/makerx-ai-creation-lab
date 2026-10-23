@@ -11,12 +11,14 @@
     "test": "node --test tests/homepage.test.mjs tests/ai-planet-builder.test.mjs tests/planet-upgrade.test.mjs"
   },
   "dependencies": {
-    "astro": "^7.3.8"
+    "astro": "^7.3.8",
+    "mesh-avatar-element": "0.1.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@types/node": "^26.6.5",
     "cross-env": "^10.1.0",
+    "playwright-core": "^1.64.1",
     "typescript": "^6.0.3"
   }
 }

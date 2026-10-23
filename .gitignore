@@ -10,3 +10,8 @@ Thumbs.db
 .vscode/
 *.log
 .superpowers/
+
+# 本地设计中间产物：海报脚本与头像拆层实验图，体积大且不参与站点构建
+design/
+.agent-teams/
+/*.png
