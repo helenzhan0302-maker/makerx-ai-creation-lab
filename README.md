@@ -516,6 +516,31 @@ TAT 执行记录 `inv-va0tvsghdr`，**命令成功，ExitCode 0，耗时小于 1
 - 真实手机、微信内置浏览器未测；WebGL2 不可用的设备会显示静态说明，但头像本身不播放。
 - 头像最终观感仍需用户确认。
 
+
+### 线上部署（2026-10-23）
+
+通过 OrcaTerm 网页终端（`ubuntu@VM-0-11-ubuntu`，`sudo` 执行）把 `deploy` 分支产物同步到 `/var/www/makerx/`，部署前自动备份为 `/var/www/makerx.prev.<时间戳>`。
+
+> 两条踩过的坑：① 普通用户对 `/var/www` 无写权限，命令必须整体包在 `sudo bash -c` 里；② 该服务器的 `/tmp` 写入会报 `curl: (23) Failure writing output to destination`，改用 `/var/tmp` 后成功（磁盘本身有 30G 可用）。
+
+**线上实测（公网 HTTP，非本地）**
+
+| 检查 | 实测值 |
+|---|---|
+| `/makerx/` | `200`，11624 bytes |
+| `/makerx/lab/001-ai-planet/` | `200`，2749 bytes（课程总览） |
+| `/makerx/lab/001-ai-planet/lesson-1/` | `200`，21633 bytes |
+| `/makerx/lab/001-ai-planet/upgrade/` | `200`，25752 bytes（此前误返回 11358 bytes 的旧首页 fallback，已修复） |
+| `/_astro/planet-upgrade.SADskTjN.css` | `200`，27545 bytes |
+| `/assets/avatar/particle-avatar.mavatar` | `200`，1279610 bytes |
+| 旧站 `/` | `200`，26823 bytes（未受影响） |
+| 默认勾选 | `follow-cursor`、`glow`、`expression` |
+| 点击换表情 | 连续四次得到「嘿嘿，有点害羞～ / 哇，被发现啦！ / 哼，我可是很认真的！ / 今天也要发光！」，2.5 秒后仍保持 |
+| 头像包版本 | HTML 引用带 `?v=2` |
+| 控制台 | 0 条 pageerror |
+
+> 部署命令里的 `nginx -t` 输出两条既有 warning（`duplicate MIME type "text/html"`、`conflicting server name "124.222.99.128"`），属历史配置遗留，本次未改动 nginx 配置，测试结果 `syntax is ok` / `test is successful`。
+
 ### 尚未核对 / 未验证
 
 - **真实移动设备**（iOS Safari、Android Chrome、微信内置浏览器）—— 未测。
