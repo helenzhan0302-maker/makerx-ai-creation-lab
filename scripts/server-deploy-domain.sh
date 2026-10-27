@@ -8,12 +8,6 @@
 #
 # 在服务器上以 root 执行：
 #   bash server-deploy-domain.sh
-#
-# 安全约束：
-#   - 只写 /var/www/makerx-domain/ 和新增的 /etc/nginx/conf.d/makerx-domain.conf
-#   - 绝不修改 /etc/nginx/conf.d/sugarcube.conf（旧站配置）
-#   - 绝不触碰 /var/www/sugarcube/ 与 /var/www/makerx/
-#   - 改 nginx 前先备份；`nginx -t` 不通过自动回滚，不 reload
 set -euo pipefail
 
 REPO="helenzhan0302-maker/makerx-ai-creation-lab"
@@ -27,14 +21,11 @@ SRC="${WORK}/makerx-ai-creation-lab-deploy-domain"
 
 echo "=== MAKERX-DOMAIN-DEPLOY-START ${STAMP} ==="
 
-# 0. 记录改动前基线
 echo "--- 改动前基线 ---"
-BEFORE_ROOT="$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: 124.222.99.128' http://127.0.0.1/ || true)"
-BEFORE_MAKERX="$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: 124.222.99.128' http://127.0.0.1/makerx/ || true)"
-BEFORE_DOMAIN="$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: skftai.top' http://127.0.0.1/ || true)"
-echo "BASELINE ip_root=${BEFORE_ROOT} ip_makerx=${BEFORE_MAKERX} domain_root=${BEFORE_DOMAIN}"
+curl -s -o /dev/null -w 'baseline_ip_root=%{http_code}\n' -H 'Host: 124.222.99.128' http://127.0.0.1/ || true
+curl -s -o /dev/null -w 'baseline_ip_makerx=%{http_code}\n' -H 'Host: 124.222.99.128' http://127.0.0.1/makerx/ || true
+curl -s -o /dev/null -w 'baseline_domain=%{http_code}\n' -H 'Host: skftai.top' http://127.0.0.1/ || true
 
-# 1. 下载并解包 deploy-domain 分支产物
 mkdir -p "$WORK"
 curl -fsSL -o "${WORK}/site.tar.gz" "$TARBALL"
 tar xzf "${WORK}/site.tar.gz" -C "$WORK"
@@ -48,35 +39,34 @@ if grep -q '/makerx/_astro' "${SRC}/index.html"; then
 fi
 echo "SOURCE-OK ${SRC}"
 
-# 2. 备份并替换站点目录
 if [ -d "$SITE_DIR" ]; then
   cp -a "$SITE_DIR" "${SITE_DIR}.prev.${STAMP}"
   echo "SITE-BACKUP-OK ${SITE_DIR}.prev.${STAMP}"
 fi
 rm -rf "$SITE_DIR"
 cp -a "$SRC" "$SITE_DIR"
+printf 'deploy=%s\n' "$STAMP" > "${SITE_DIR}/DEPLOY_STAMP.txt"
 chown -R www-data:www-data "$SITE_DIR"
 chmod -R 755 "$SITE_DIR"
 echo "SITE-REPLACED-OK"
 
-# 3. 写入独立 server 块（不动 sugarcube.conf）
 if [ -f "$CONF" ]; then
   cp -a "$CONF" "${CONF}.bak.${STAMP}"
   echo "CONF-BACKUP-OK ${CONF}.bak.${STAMP}"
 fi
-cp -a "$LEGACY_CONF" "${LEGACY_CONF}.bak.domain.${STAMP}"
-echo "LEGACY-CONF-BACKUP-OK ${LEGACY_CONF}.bak.domain.${STAMP}"
+if [ -f "$LEGACY_CONF" ]; then
+  cp -a "$LEGACY_CONF" "${LEGACY_CONF}.bak.domain.${STAMP}"
+  echo "LEGACY-CONF-BACKUP-OK ${LEGACY_CONF}.bak.domain.${STAMP}"
+fi
 
 cat > "$CONF" <<'NGINX'
-# MakerX AI 造物实验室 · 域名根路径
-# 由 scripts/server-deploy-domain.sh 生成
+# MakerX AI 造物实验室 · 域名根路径（由 scripts/server-deploy-domain.sh 生成）
 server {
     listen 80;
     server_name skftai.top;
 
     root /var/www/makerx-domain;
     index index.html;
-
     charset utf-8;
 
     location / {
@@ -102,7 +92,6 @@ server {
         add_header Cache-Control "public, immutable";
         try_files $uri =404;
     }
-
 }
 
 server {
@@ -113,7 +102,6 @@ server {
 NGINX
 echo "CONF-WRITTEN-OK ${CONF}"
 
-# 4. 语法检查 → 失败则回滚
 if nginx -t; then
   systemctl reload nginx
   echo "NGINX-RELOAD-OK"
@@ -128,7 +116,6 @@ else
   exit 1
 fi
 
-# 5. 自检
 echo "--- 自检 ---"
 curl -s -o /dev/null -w 'domain_root=%{http_code}\n' -H 'Host: skftai.top' http://127.0.0.1/
 curl -s -o /dev/null -w 'domain_lab=%{http_code}\n' -H 'Host: skftai.top' http://127.0.0.1/lab/001-ai-planet/
@@ -138,5 +125,4 @@ curl -s -o /dev/null -w 'www_redirect=%{http_code} -> %{redirect_url}\n' -H 'Hos
 curl -s -o /dev/null -w 'ip_root=%{http_code}\n' -H 'Host: 124.222.99.128' http://127.0.0.1/
 curl -s -o /dev/null -w 'ip_makerx=%{http_code}\n' -H 'Host: 124.222.99.128' http://127.0.0.1/makerx/
 curl -s -H 'Host: skftai.top' http://127.0.0.1/ | grep -o '<title>[^<]*</title>' || true
-ls -l "$SITE_DIR"
 echo "=== MAKERX-DOMAIN-DEPLOY-END ==="
