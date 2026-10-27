@@ -570,6 +570,10 @@ TAT 执行记录 `inv-va0tvsghdr`，**命令成功，ExitCode 0，耗时小于 1
 | `http://skftai.top/DEPLOY_STAMP.txt` | `200`，`deploy=20261027192820` |
 | `http://124.222.99.128/`（旧站） | `200`，标题仍为「三颗方糖AI增长」 |
 | `http://124.222.99.128/makerx/` | `200`，11624 bytes |
+| `http://skftai.top/makerx/` 与 `/makerx` | `301` 跳转回 `http://skftai.top/` |
+| `http://skftai.top/not-a-real-page/` | `404`（不再回落旧站首页） |
+| `http://124.222.99.128/makerx` | 仍为 `301` 跳转到 `/makerx/` |
+| `http://124.222.99.128/introduction/` | 仍为 `200` |
 | 四个页面残留 `/makerx/` 绝对路径 | 0 处 |
 | 页面引用的 8 个静态资源 | 全部 `200`，0 失败 |
 | 桌面 1440x900 渲染四页 | 0 pageerror、0 console error、0 个大于等于 400 的响应、横向溢出 0 |
