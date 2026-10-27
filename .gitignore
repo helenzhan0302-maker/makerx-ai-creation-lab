@@ -15,3 +15,6 @@ Thumbs.db
 design/
 .agent-teams/
 /*.png
+
+# 域名根路径构建产物（deploy-domain 分支单独发布）
+dist-domain/
