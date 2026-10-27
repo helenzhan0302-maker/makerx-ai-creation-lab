@@ -541,6 +541,46 @@ TAT 执行记录 `inv-va0tvsghdr`，**命令成功，ExitCode 0，耗时小于 1
 
 > 部署命令里的 `nginx -t` 输出两条既有 warning（`duplicate MIME type "text/html"`、`conflicting server name "124.222.99.128"`），属历史配置遗留，本次未改动 nginx 配置，测试结果 `syntax is ok` / `test is successful`。
 
+### 域名上线：skftai.top 根路径（2026-10-27）
+
+**背景**：`skftai.top` 备案完成，A 记录指向 `124.222.99.128`。此前该域名根路径返回「三颗方糖」旧站，MakerX 只在 IP 子路径 `/makerx/` 下。
+
+**方案**：按域名分流，旧站保持不动。
+
+| 入口 | 指向 |
+|---|---|
+| `http://skftai.top/` | MakerX 根路径构建（`/var/www/makerx-domain/`） |
+| `http://www.skftai.top/*` | `301` 跳转到 `http://skftai.top/*` |
+| `http://124.222.99.128/` | 三颗方糖旧站（未改动） |
+| `http://124.222.99.128/makerx/` | MakerX 子路径版（未改动） |
+
+**构建**：新增 `astro.config.domain.mjs`（`site: https://skftai.top`、`base: '/'`），产物发布到独立分支 `deploy-domain`，与子路径版分支 `deploy` 分离。
+
+**服务器改动**：新增 `/etc/nginx/conf.d/makerx-domain.conf` 两个 server 块（主域 + www 跳转）；`/etc/nginx/conf.d/sugarcube.conf` 未修改。部署脚本 `scripts/server-deploy-domain.sh` 会先备份站点目录与配置，`nginx -t` 失败自动回滚且不 reload。
+
+**实测结果**（2026-10-27，公网 HTTP + Playwright 无头浏览器）：
+
+| 检查项 | 结果 |
+|---|---|
+| `http://skftai.top/` | `200`，11603 bytes，标题「MakerX AI 造物实验室」 |
+| `http://skftai.top/lab/001-ai-planet/` | `200`，2707 bytes |
+| `http://skftai.top/lab/001-ai-planet/lesson-1/` | `200`，21591 bytes |
+| `http://skftai.top/lab/001-ai-planet/upgrade/` | `200`，25710 bytes |
+| `http://www.skftai.top/lab/001-ai-planet/` | `301` 跳转主域后 `200` |
+| `http://skftai.top/DEPLOY_STAMP.txt` | `200`，`deploy=20261027192820` |
+| `http://124.222.99.128/`（旧站） | `200`，标题仍为「三颗方糖AI增长」 |
+| `http://124.222.99.128/makerx/` | `200`，11624 bytes |
+| 四个页面残留 `/makerx/` 绝对路径 | 0 处 |
+| 页面引用的 8 个静态资源 | 全部 `200`，0 失败 |
+| 桌面 1440x900 渲染四页 | 0 pageerror、0 console error、0 个大于等于 400 的响应、横向溢出 0 |
+| 移动端 390x844（首页 / lesson-1 / upgrade） | 均 `200`，横向溢出 0，无失败请求 |
+| Lesson 2 头像包 | `particle-avatar.mavatar?v=2` 返回 `200` |
+| Lesson 2 默认勾选 | `follow-cursor, glow, expression` |
+| 头像点击切表情 | 害羞、惊讶、生气、中性四档轮回正常；`Enter` 键同效 |
+| `prefers-reduced-motion: reduce` 首页 | 0 个元素停留在 `opacity: 0`，`#hero-title` 文本为「MakerX」 |
+
+**未验证**：HTTPS（当前仅 `http://`，尚未申请证书）、真实手机网络、真实移动浏览器、屏幕阅读器。
+
 ### 尚未核对 / 未验证
 
 - **真实移动设备**（iOS Safari、Android Chrome、微信内置浏览器）—— 未测。
@@ -549,7 +589,7 @@ TAT 执行记录 `inv-va0tvsghdr`，**命令成功，ExitCode 0，耗时小于 1
 - **关闭 JavaScript 的运行时页面**—— 已通过“无 JS 时 CSS 不隐藏内容”的代码结构设计，尚未在浏览器上下文中实测。
 - **真实屏幕阅读器**（VoiceOver / NVDA）—— 未测；目前只检查语义属性。
 - **真实移动网络**（手机 4G/5G、微信内置浏览器）—— 当前仅从外部公网请求验证，尚未在真实手机网络中手动打开。
-- **canonical / sitemap**—— 当前部署使用 IP 子路径，没有配置真实域名，也未生成 canonical / sitemap。
+- **canonical / sitemap**—— 域名版已在 `astro.config.domain.mjs` 设置 `site: https://skftai.top`，但仓库尚未生成 `sitemap.xml`，页面也未输出 canonical 链接。
 - **视觉观感**—— 已提供本地浏览器预览，但最终是否符合你的审美需要你确认。
 
 ---
