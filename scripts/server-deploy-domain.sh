@@ -72,7 +72,6 @@ cat > "$CONF" <<'NGINX'
 # 由 scripts/server-deploy-domain.sh 生成
 server {
     listen 80;
-    listen [::]:80;
     server_name skftai.top;
 
     root /var/www/makerx-domain;
@@ -108,7 +107,6 @@ server {
 
 server {
     listen 80;
-    listen [::]:80;
     server_name www.skftai.top;
     return 301 http://skftai.top$request_uri;
 }
