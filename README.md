@@ -541,7 +541,10 @@ TAT 执行记录 `inv-va0tvsghdr`，**命令成功，ExitCode 0，耗时小于 1
 
 > 部署命令里的 `nginx -t` 输出两条既有 warning（`duplicate MIME type "text/html"`、`conflicting server name "124.222.99.128"`），属历史配置遗留，本次未改动 nginx 配置，测试结果 `syntax is ok` / `test is successful`。
 
-### 域名上线：skftai.top 根路径（2026-10-27）
+### 域名上线：skftai.top 根路径（2026-10-27，**已于 2026-10-28 作废**）
+
+> ⚠️ 本节方案已被推翻：用户 2026-10-28 明确「`skftai.top/` 另有用途，MakerX 只放 `/makerx/`」。
+> 现行方案见下一节。本节保留是为了记录当时做过什么、以及为什么回退。
 
 **背景**：`skftai.top` 备案完成，A 记录指向 `124.222.99.128`。此前该域名根路径返回「三颗方糖」旧站，MakerX 只在 IP 子路径 `/makerx/` 下。
 
@@ -584,6 +587,56 @@ TAT 执行记录 `inv-va0tvsghdr`，**命令成功，ExitCode 0，耗时小于 1
 | `prefers-reduced-motion: reduce` 首页 | 0 个元素停留在 `opacity: 0`，`#hero-title` 文本为「MakerX」 |
 
 **未验证**：HTTPS（当前仅 `http://`，尚未申请证书）、真实手机网络、真实移动浏览器、屏幕阅读器。
+
+### 路径调整：MakerX 回到 `/makerx/` + HTTPS（2026-10-28，**现行方案**）
+
+**用户决定**：`skftai.top/` 根路径留作他用；MakerX 固定地址为 `https://skftai.top/makerx/`；同时启用 HTTPS。
+
+**目标分布**：
+
+| 入口 | 指向 | 说明 |
+|---|---|---|
+| `https://skftai.top/makerx/` | MakerX（`/var/www/makerx/`，子路径构建 `base: '/makerx'`） | 唯一对外地址 |
+| `https://skftai.top/` | 根路径站点（2026-10-28 起回到 `sugarcube.conf` 兜底） | 用户另行安排 |
+| `https://www.skftai.top/*` | `301` → `https://skftai.top/*` | 由 `skftai-www.conf` 单独承载 |
+| `http://124.222.99.128/` | 三颗方糖旧站 | 不动 |
+| `http://124.222.99.128/makerx/` | MakerX 子路径版 | 不动 |
+
+**为什么要先回退**：2026-10-27 新增的 `/etc/nginx/conf.d/makerx-domain.conf` 里含 `location ^~ /makerx/ { return 301 /; }`，导致域名下 `/makerx/` 被跳回根目录。必须移除该文件，`/makerx/` 才会重新由 `sugarcube.conf` 的 `location /makerx/` 提供。
+
+**服务器脚本**：`scripts/server-setup-skftai-https.sh`，两步执行、幂等、失败自动回滚。
+
+```bash
+# 第一步：移除 makerx-domain.conf + 写入 www 跳转 + certbot 签发并安装证书（不加跳转）
+sudo bash server-setup-skftai-https.sh
+
+# 第二步：确认腾讯云防火墙已放行 TCP:443 后，把 HTTP 全量 301 到 HTTPS
+sudo bash server-setup-skftai-https.sh --enable-redirect
+
+# 随时可预览将执行的动作（不改任何文件）
+bash server-setup-skftai-https.sh --dry-run
+```
+
+**脚本的安全边界**：
+
+- 改动前把 `sugarcube.conf`、`makerx-domain.conf`、`skftai-www.conf` 备份到 `/root/makerx-backup-<时间戳>/`
+- 每次改完跑 `nginx -t`；失败就整组还原并退出，不 reload
+- 证书由官方 `certbot --nginx` 插件签发，签发失败时 certbot 自行回滚它改过的配置
+- 只写 nginx 配置；不触碰 `/var/www/sugarcube`、`/var/www/makerx` 内的任何站点文件
+- 日志写到 `/var/log/makerx-skftai.log`，执行完可用 `tail -n 40 /var/log/makerx-skftai.log` 回看
+
+**已验证（本地，2026-10-28）**：
+
+| 检查项 | 结果 |
+|---|---|
+| `bash -n scripts/server-setup-skftai-https.sh` | 通过 |
+| `bash scripts/server-setup-skftai-https.sh --dry-run` | 动作序列正确，未改动任何文件 |
+| 脚本内嵌 Python 块 | `compile()` 通过 |
+| 生成的 `www` 跳转配置 | 用真实 nginx 1.28.3 二进制跑 `nginx -t` → `syntax is ok`（本机无权限绑定 80，故止步于 bind） |
+| `pnpm run test` | 31 pass / 0 fail |
+| `pnpm run build` | 4 pages built，退出码 0 |
+
+**未验证（必须由服务器执行后才能确认）**：证书签发结果、`nginx -t` 在真实服务器上的结果、`https://skftai.top/makerx/` 的线上状态、旧站根路径回退后的真实响应。以上都需要先放行 443 并运行脚本。
 
 ### 尚未核对 / 未验证
 
