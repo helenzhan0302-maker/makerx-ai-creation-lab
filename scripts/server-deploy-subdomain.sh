@@ -86,14 +86,35 @@ if [ "$DRY" -eq 1 ]; then
   say "[dry-run] download tarball ${BRANCH} -> ${SITE_DIR}"
 else
   GOT=0
-  for URL in     "https://codeload.github.com/${REPO}/tar.gz/refs/heads/${BRANCH}"     "https://ghproxy.net/https://github.com/${REPO}/archive/refs/heads/${BRANCH}.tar.gz"     "https://ghfast.top/https://github.com/${REPO}/archive/refs/heads/${BRANCH}.tar.gz"     "https://gh-proxy.com/https://github.com/${REPO}/archive/refs/heads/${BRANCH}.tar.gz"
+  for URL in \
+    "https://codeload.github.com/${REPO}/tar.gz/refs/heads/${BRANCH}" \
+    "https://ghfast.top/https://github.com/${REPO}/archive/refs/heads/${BRANCH}.tar.gz" \
+    "https://ghproxy.net/https://github.com/${REPO}/archive/refs/heads/${BRANCH}.tar.gz" \
+    "https://gh-proxy.com/https://github.com/${REPO}/archive/refs/heads/${BRANCH}.tar.gz"
   do
     say "try ${URL}"
     if curl -fsSL --max-time 90 -o "${WORK}/site.tar.gz" "${URL}" && tar tzf "${WORK}/site.tar.gz" >/dev/null 2>&1; then
       GOT=1; say "SOURCE-DOWNLOAD-OK ${URL}"; break
     fi
   done
-  if [ "$GOT" -ne 1 ]; then say "ERROR: 所有下载源都失败"; exit 1; fi
+  if [ "$GOT" -ne 1 ]; then
+    say "WARN: GitHub 系下载源全部失败，改用 jsDelivr 逐文件拉取"
+    JSD="https://cdn.jsdelivr.net/gh/${REPO}@${BRANCH}"
+    MANIFEST=$(curl -fsSL --max-time 60 "https://data.jsdelivr.com/v1/packages/gh/${REPO}@${BRANCH}?structure=flat" 2>/dev/null \
+      | python3 -c "import sys,json;d=json.load(sys.stdin);print(chr(10).join(f[chr(34)+chr(110)+chr(97)+chr(109)+chr(101)+chr(34)] for f in d["files"]))")
+    if [ -z "$MANIFEST" ]; then say "ERROR: 无法获取 jsDelivr 文件清单"; exit 1; fi
+    SRCDIR="${WORK}/${BRANCH}"
+    mkdir -p "$SRCDIR"
+    FAILN=0
+    for f in $MANIFEST; do
+      mkdir -p "${SRCDIR}$(dirname "$f")"
+      curl -fsSL --max-time 60 -o "${SRCDIR}${f}" "${JSD}${f}" || FAILN=$((FAILN+1))
+    done
+    if [ "$FAILN" -ne 0 ] || [ ! -f "${SRCDIR}/index.html" ]; then
+      say "ERROR: jsDelivr 下载失败 ${FAILN} 个文件"; exit 1
+    fi
+    GOT=1; say "SOURCE-DOWNLOAD-OK ${JSD}"
+  fi
 
   tar xzf "${WORK}/site.tar.gz" -C "$WORK"
   SRC=$(find "$WORK" -maxdepth 1 -mindepth 1 -type d -name "*${BRANCH}*" | head -n1)

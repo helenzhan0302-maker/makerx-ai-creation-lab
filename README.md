@@ -707,6 +707,118 @@ DNS 记录生效、nginx -t 在真实服务器上的结果、certbot 签发结�
 子域名与证书的真实成本：具名子域名（如 makerx.skftai.top）用 HTTP-01 验证即可，与主域成本相同；
 但通配域名 *.skftai.top 的证书强制要求 DNS-01 验证，需接 DNSPod API 或手动加 TXT 记录，复杂度明显上升。本次不使用通配域名。
 
+
+### 子域名上线实录（2026-11-03，**已验证成功**）
+
+**对外地址**：https://makerx.skftai.top/
+
+本次部署从「方案确定」到「线上可用」共跨越三次失败，全部由外部环境因素引起，代码与脚本本身无误。
+下面按「发生了什么 → 为什么 → 以后怎么防」记录，避免后续重复踩坑。
+
+#### 线上验收结果（公网独立实测，2026-11-03 16:40）
+
+| 检查项 | 结果 |
+|---|---|
+| https://makerx.skftai.top/ | 200 |
+| https://makerx.skftai.top/lab/001-ai-planet/ | 200 |
+| https://makerx.skftai.top/lab/001-ai-planet/lesson-1/ | 200 |
+| https://makerx.skftai.top/lab/001-ai-planet/upgrade/ | 200 |
+| http://makerx.skftai.top/ | 301 到 https://makerx.skftai.top/ |
+| 证书 | CN=makerx.skftai.top，Let's Encrypt 签发，2026-11-03 至 2027-02-01（89 天） |
+| 证书自动续期 | certbot 已注册 systemd 定时任务 |
+| 页面标题 | MakerX AI 造物实验室 |
+| DEPLOY_STAMP.txt | deploy=20261103163649，branch=deploy-subdomain |
+| DEPLOY_STATUS.txt | status=ok，https=on |
+| 旧入口 http://skftai.top/ | 200（原站点，未受影响） |
+| 旧入口 http://124.222.99.128/ | 200（三颗方糖旧站，未受影响） |
+| 旧入口 http://124.222.99.128/makerx/ | 200（子路径版，未受影响） |
+
+服务器侧自检日志（脚本输出，摘自用户终端）：
+
+@BT@@BT@@BT@
+https / => 200
+https /lab/001-ai-planet/ => 200
+https /lab/001-ai-planet/lesson-1/ => 200
+https /lab/001-ai-planet/upgrade/ => 200
+http_to_https=301 -> https://makerx.skftai.top/
+ip_root=200
+ip_makerx=200
+NGINX-RELOAD-OK
+@BT@@BT@@BT@
+
+#### 坑 1：DNS 记录不存在（NXDOMAIN）
+
+**现象**：脚本在 DNS 预检处退出，resolved=[]；dig +short 返回空。
+
+**原因**：DNSPod 里只有 @ 和 www 两条 A 记录，没有 makerx 子域。主域已备案、主域能解析，不代表子域自动存在。
+
+**以后怎么做**：
+
+1. 新增子域前先查：dig +short <子域>，返回 IP 才算就绪。
+2. DNSPod 里点进域名（不是停在域名列表），才能看到并添加记录。
+3. 主机记录只填 makerx，不要填 makerx.skftai.top（会被拼成 makerx.skftai.top.skftai.top）。
+4. 记录类型必须是 A，线路默认，TTL 600。
+
+#### 坑 2：raw.githubusercontent.com 在服务器上被阻断，curl 挂死
+
+**现象**：终端停在 curl 那行不动，看起来像「卡住」，实际是在等一个永远不来的响应。
+
+**原因**：腾讯云国内节点访问 raw.githubusercontent.com 常被阻断或极慢。这不是脚本问题，也不是服务器故障。
+
+**以后怎么做**（已实测可用，均返回 200 / 8269 bytes）：
+
+@BT@@BT@@BT@
+# 首选：jsDelivr CDN（国内通常最快）
+curl -fsSL https://cdn.jsdelivr.net/gh/helenzhan0302-maker/makerx-ai-creation-lab@main/scripts/server-deploy-subdomain.sh -o /tmp/sub.sh
+
+# 备用：ghproxy 镜像
+curl -fsSL https://ghproxy.net/https://raw.githubusercontent.com/helenzhan0302-maker/makerx-ai-creation-lab/main/scripts/server-deploy-subdomain.sh -o /tmp/sub.sh
+@BT@@BT@@BT@
+
+下载后先验证再执行：ls -l /tmp/sub.sh 应约 8269 字节；head -3 /tmp/sub.sh 应看到 shebang。
+如果文件不存在或为 0 字节，说明没下载成功，不要执行。
+
+#### 坑 3：curl 写 /root 失败（curl: (23) Failure writing output to destination）
+
+**现象**：curl -o /root/sub.sh 报 (23)。
+
+**原因**：当前登录用户是 ubuntu，/root 不可写。命令本身没错，路径选错。
+
+**以后怎么做**：下载一律写 /tmp（任何用户可写），只在执行时用 sudo：
+
+@BT@@BT@@BT@
+curl -fsSL <url> -o /tmp/sub.sh && sudo bash /tmp/sub.sh
+@BT@@BT@@BT@
+
+#### 坑 4：HTTP 200 是假象，nginx 默认站点在兜底
+
+**现象**：http://makerx.skftai.top/ 返回 200，看起来像部署成功，但 DEPLOY_STAMP.txt 还是旧戳、DEPLOY_STATUS.txt 是 404。
+
+**原因**：nginx 没匹配到 server_name 时，会落到默认 server（这里是 skftai.top 的根站点），于是任意域名都返回 200。
+
+**以后怎么做**——不要用「首页 200」判断部署成功，要看回执：
+
+@BT@@BT@@BT@
+curl -s https://<子域>/DEPLOY_STAMP.txt    # 应等于本次时间戳
+curl -s https://<子域>/DEPLOY_STATUS.txt   # 应为 status=ok
+@BT@@BT@@BT@
+
+也可以比对内容指纹：如果新子域首页与主域首页 sha256 完全相同，说明是兜底，不是部署。
+
+#### 坑 5：Codex 桌面端升级会覆盖 config.toml
+
+**现象**：手工改过的 config.toml 在桌面端重启+自动升级后被还原。
+
+**原因**：应用升级时会重写 config.toml，把运行时路径与部分 env 重新生成。
+
+**以后怎么做**：改 config.toml 前先备份；升级后检查改动是否还在；不要假设手工修改能长期存活。
+
+#### 一条被推翻的判断（如实记录）
+
+早期曾判断「443 从 TIMEOUT 变成 RST，说明云防火墙已放行」。这个推断当时未经验证。
+实际结果是：防火墙确实放行了，但主机上没有 listen 443，所以是 RST 而非 TIMEOUT。
+教训：端口状态推断必须用「探测 + 服务器侧确认」双向对齐，不能只靠单侧现象下结论。
+
 ### 尚未核对 / 未验证
 
 - **真实移动设备**（iOS Safari、Android Chrome、微信内置浏览器）—— 未测。

@@ -67,7 +67,11 @@
 
 > **编号重复提醒（2026-11-03 发现，未擅自改历史行）**：本文档中 C-33 与 C-34 各出现两次——一次是「根路径归属 / HTTPS」（排期类决策），一次是「眨眼问题 / 表情切换」（缺陷修复类）。新增决策统一从 C-35 起编号，避免继续冲突。是否重排历史编号待用户确认，本次不修改既有行。
 
-| C-35 | MakerX 的对外入口用子路径还是独立子域名 | 2026-10-28 方案用 skftai.top/makerx/（子路径，base 为 /makerx）；但该入口 2026-11-03 实测 301 跳回根目录（makerx-domain.conf 里的 location 规则返回 301 且尚未清理），同时 443 端口无监听、HTTPS 一直不可用。用户决定改用独立子域名以降低出错概率 | **MakerX 对外入口改为 https://makerx.skftai.top/ **：独立 server 块（makerx-subdomain.conf）+ 独立站点目录 /var/www/makerx-subdomain + 独立证书，base 为 /。**只新增配置，不改 sugarcube.conf / makerx-domain.conf**；skftai.top/ 与 124.222.99.128/makerx/ 保持原状不动。子域名需在 DNSPod 单独加 A 记录（当前无泛解析）。构建走 astro.config.subdomain.mjs，产物发布到 deploy-subdomain 分支 | 优先级 2（用户 2026-11-03 明确决定）；skftai.top/makerx/ 作为旧入口暂时保留，不再作为对外地址 |
+| C-35 | MakerX 的对外入口用子路径还是独立子域名 | 2026-10-28 方案用 skftai.top/makerx/（子路径，base 为 /makerx）；但该入口 2026-11-03 实测 301 跳回根目录（makerx-domain.conf 里的 location 规则返回 301 且尚未清理），同时 443 端口无监听、HTTPS 一直不可用。用户决定改用独立子域名以降低出错概率 | **MakerX 对外入口改为 https://makerx.skftai.top/ **：独立 server 块（makerx-subdomain.conf）+ 独立站点目录 /var/www/makerx-subdomain + 独立证书，base 为 /。**只新增配置，不改 sugarcube.conf / makerx-domain.conf**；skftai.top/ 与 124.222.99.128/makerx/ 保持原状不动。子域名需在 DNSPod 单独加 A 记录（当前无泛解析）。构建走 astro.config.subdomain.mjs，产物发布到 deploy-subdomain 分支 | 优先级 2（用户 2026-11-03 明确决定）；skftai.top/makerx/ 作为旧入口暂时保留，不再作为对外地址。**2026-11-03 16:36 已上线并验证通过**（见 README「子域名上线实录」） |
+
+| C-36 | 部署时脚本与产物的下载源怎么选 | 2026-11-03 实测：腾讯云服务器访问 `raw.githubusercontent.com` 被阻断，`curl` 长时间挂起，导致部署连续失败两次；而 `cdn.jsdelivr.net` 与 `ghfast.top` / `ghproxy.net` 均可在服务器侧正常拉取 | **脚本源优先用 jsDelivr CDN**：`https://cdn.jsdelivr.net/gh/<repo>@main/<path>`。产物 tarball 仍按 `codeload → ghfast → ghproxy → gh-proxy` 顺序尝试；全部失败时降级为 jsDelivr 逐文件拉取（已实测 11/11 文件成功，含 1.28 MB 的 `.mavatar`）。**不再把 raw.githubusercontent.com 作为唯一入口** | 优先级 3（工程可执行性，由实测证据支撑）；脚本内已内置多源自动回退，无需人工切换 |
+
+| C-37 | 如何判定一次部署真的成功 | 2026-11-03 踩坑：`http://makerx.skftai.top/` 返回 `200`，但实际是 nginx 默认站点兜底（首页 sha256 与 `skftai.top/` 完全相同），真实部署并未发生 | **以回执文件为准，不以首页状态码为准**：`DEPLOY_STAMP.txt` 必须等于本次时间戳、`DEPLOY_STATUS.txt` 必须是 `status=ok`。补充判据：若新子域首页与主域首页内容指纹（sha256）相同，即为兜底，判定部署未生效 | 优先级 3（验收方法学）；已写入 README「坑 4」 |
 
 **C-08 / C-09 的详细说明**：原来只有一个 `status` 字段，同时承担了两件事——「课程内容做好了没」和「页面能不能点」。这两件事在实验 001 上正好相反：页面已实现（可以点），但第 2 节课内容未定（不算「开放中」）。因此拆成：
 
