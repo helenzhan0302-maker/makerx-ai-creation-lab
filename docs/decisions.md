@@ -65,6 +65,10 @@
 | C-33 | 眨眼像「眼皮肌无力」、下眼睑糊住一片 | 运行时默认 `autoMotion = true`，会随机播放 `giggle`（闭眼 1.8s）/ `no`（1.4s）/ `greet`（1s）/ `wink`；同时 `build-layers` 切掉眼球后把眼窝填成扁平肤色，闭眼时露出色块 | **两层一起修**：(1) 页面常驻关闭 `setAutoMotion(false)` / `setAutoIdle(false)`，只有勾选「会眨眼」才把眼睑交还运行时做约 0.17 秒的自然短眨；(2) 用同侧脸颊的真实珠粒皮肤重建 `built/base.png` 眼窝，闭眼露出的是皮肤纹理而非平板色块 | 优先级 2（用户 2026-10-23 反馈「眨眼感觉像眼皮肌无力」「眼睛会被下眼睑糊住一片」）；闭眼画面已用截图确认 |
 | C-34 | 点击头像无法替换表情 | 旧默认只勾选 `follow-cursor`、`glow`，`expression` 未勾选，`cycleExpression` 直接 early-return；且旧循环用 `smile → giggle`、`wink → wink`，闭眼动作盖过了表情变化 | **「点击换表情」改为默认勾选**（`DEFAULT_AVATAR_EFFECTS` 与模板 `checked` 同源）；表情改为 `shy / surprise / angry / neutral` 并保持到下一次点击，气泡单独淡出；摸头改用 `shy + tilt`，不再闭眼 | 优先级 2（用户 2026-10-23 反馈「替换表情无法替换」）；四档已实测 `getExpression().name` 依次变化 |
 
+> **编号重复提醒（2026-11-03 发现，未擅自改历史行）**：本文档中 C-33 与 C-34 各出现两次——一次是「根路径归属 / HTTPS」（排期类决策），一次是「眨眼问题 / 表情切换」（缺陷修复类）。新增决策统一从 C-35 起编号，避免继续冲突。是否重排历史编号待用户确认，本次不修改既有行。
+
+| C-35 | MakerX 的对外入口用子路径还是独立子域名 | 2026-10-28 方案用 skftai.top/makerx/（子路径，base 为 /makerx）；但该入口 2026-11-03 实测 301 跳回根目录（makerx-domain.conf 里的 location 规则返回 301 且尚未清理），同时 443 端口无监听、HTTPS 一直不可用。用户决定改用独立子域名以降低出错概率 | **MakerX 对外入口改为 https://makerx.skftai.top/ **：独立 server 块（makerx-subdomain.conf）+ 独立站点目录 /var/www/makerx-subdomain + 独立证书，base 为 /。**只新增配置，不改 sugarcube.conf / makerx-domain.conf**；skftai.top/ 与 124.222.99.128/makerx/ 保持原状不动。子域名需在 DNSPod 单独加 A 记录（当前无泛解析）。构建走 astro.config.subdomain.mjs，产物发布到 deploy-subdomain 分支 | 优先级 2（用户 2026-11-03 明确决定）；skftai.top/makerx/ 作为旧入口暂时保留，不再作为对外地址 |
+
 **C-08 / C-09 的详细说明**：原来只有一个 `status` 字段，同时承担了两件事——「课程内容做好了没」和「页面能不能点」。这两件事在实验 001 上正好相反：页面已实现（可以点），但第 2 节课内容未定（不算「开放中」）。因此拆成：
 
 - `status`：`developing` \| `open` \| `planned` —— 课程就绪度，决定**状态徽标**。

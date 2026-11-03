@@ -16,5 +16,6 @@ design/
 .agent-teams/
 /*.png
 
-# 域名根路径构建产物（deploy-domain 分支单独发布）
+# 域名 / 子域名构建产物（deploy-domain、deploy-subdomain 分支单独发布）
 dist-domain/
+dist-subdomain/

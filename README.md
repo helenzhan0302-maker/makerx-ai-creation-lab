@@ -638,6 +638,75 @@ bash server-setup-skftai-https.sh --dry-run
 
 **未验证（必须由服务器执行后才能确认）**：证书签发结果、`nginx -t` 在真实服务器上的结果、`https://skftai.top/makerx/` 的线上状态、旧站根路径回退后的真实响应。以上都需要先放行 443 并运行脚本。
 
+### 切到独立子域名 makerx.skftai.top（2026-11-03，现行方案）
+
+> 上一节「路径调整：MakerX 回到 /makerx/ + HTTPS（2026-10-28）」已作废。
+> 原因：那套方案里的修复脚本从未在服务器上执行；skftai.top/makerx/ 在 2026-11-03 实测仍为 301 跳回根目录，且 443 端口无监听。
+
+用户决定：改用独立子域名 https://makerx.skftai.top/ ，降低与既有站点配置互相干扰的概率。
+
+目标分布：
+
+| 入口 | 指向 | 说明 |
+|---|---|---|
+| https://makerx.skftai.top/ | MakerX（/var/www/makerx-subdomain/，base 为 /） | 对外地址 |
+| https://skftai.top/ | 根路径站点 | 用户另行安排，不动 |
+| https://skftai.top/makerx/ | 旧子路径入口 | 暂时保留，不再作为对外地址 |
+| http://124.222.99.128/ | 三颗方糖旧站 | 不动 |
+| http://124.222.99.128/makerx/ | MakerX 子路径版 | 不动 |
+
+为什么子域名更少出错：每个子域名有独立的 server 块、独立根目录、独立证书。根路径 / 就是应用根，不需要 base 前缀，也不会被其他站点的 location 规则截胡。
+
+构建配置：astro.config.subdomain.mjs（site 为 https://makerx.skftai.top，base 为 /）。
+产物发布到独立分支 deploy-subdomain，与子路径版 deploy 分支、根路径版 deploy-domain 分支互不影响。
+
+本地构建命令：
+
+```
+pnpm exec astro build --config astro.config.subdomain.mjs --outDir dist-subdomain
+```
+
+服务器脚本：scripts/server-deploy-subdomain.sh，一次执行完成部署 + 证书 + 跳转。
+
+```
+# 预演（不改任何文件）
+bash server-deploy-subdomain.sh --dry-run
+
+# 正式执行
+sudo bash server-deploy-subdomain.sh
+```
+
+脚本的安全边界（严格「只新增」）：
+
+- 只新增 /etc/nginx/conf.d/makerx-subdomain.conf；不修改 sugarcube.conf、makerx-domain.conf 或任何其他既有配置
+- 站点目录 /var/www/makerx-subdomain，替换前整体备份为 .prev.<时间戳>
+- 每次改完跑 nginx -t；失败自动还原且不 reload
+- 不触碰 /var/www/sugarcube、/var/www/makerx
+- 上线前先检查 DNS；子域名未解析则直接退出并提示去 DNSPod 添加 A 记录
+- 部署完写 /var/www/makerx-subdomain/DEPLOY_STATUS.txt 作为回执，供公网验证
+
+前置条件（必须先做）：DNSPod 中为 skftai.top 添加一条记录——主机记录 makerx、类型 A、记录值 124.222.99.128。
+当前实测 makerx.skftai.top 为 NXDOMAIN，且无泛解析，每个子域名都需要单独添加。
+
+验证记录（本地，2026-11-03）：
+
+| 检查项 | 结果 |
+|---|---|
+| bash -n scripts/server-deploy-subdomain.sh | 通过 |
+| bash scripts/server-deploy-subdomain.sh --dry-run | 动作序列正确；正确识别出 makerx.skftai.top 尚未解析并给出提示 |
+| 子域名版构建 | 4 page(s) built，退出码 0 |
+| 产物残留 /makerx 绝对路径 | 0 处 |
+| dist-subdomain 与 dist-domain 逐文件对比 | 完全一致 |
+| 本地静态服务器访问 8 个路径（含 CSS、mavatar、hero 图） | 全部 200 |
+| deploy-subdomain 分支已推送 | codeload 拉取 200，2,544,800 bytes |
+
+未验证（必须在服务器执行后才能确认）：
+DNS 记录生效、nginx -t 在真实服务器上的结果、certbot 签发结果、https://makerx.skftai.top/ 的公网响应，
+以及旧入口 skftai.top/ 与 124.222.99.128/makerx/ 是否仍为 200。
+
+子域名与证书的真实成本：具名子域名（如 makerx.skftai.top）用 HTTP-01 验证即可，与主域成本相同；
+但通配域名 *.skftai.top 的证书强制要求 DNS-01 验证，需接 DNSPod API 或手动加 TXT 记录，复杂度明显上升。本次不使用通配域名。
+
 ### 尚未核对 / 未验证
 
 - **真实移动设备**（iOS Safari、Android Chrome、微信内置浏览器）—— 未测。
