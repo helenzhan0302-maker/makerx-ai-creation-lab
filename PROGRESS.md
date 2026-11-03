@@ -42,3 +42,12 @@ Playwright + Chromium 实测（详见 README「第 2 节课升级工坊」）：
 - `package.json` 的 test 脚本仅追加 `tests/planet-upgrade.test.mjs`，未改动前两条。
 - 白名单外文件（已有测试、`ai-planet-builder.mjs`、`ProjectPromptBuilder.astro`、`index.astro`、`astro.config.mjs`、`design/`、`docs/superpowers/specs/`、`pnpm-lock.yaml`）`git diff` 全部为空。
 - 依赖未变：`dependencies` 仍只有 `astro`。
+
+## 实验 002「故事放映机」交付（2026-11-03）
+
+- 完成第 1、2 节课页面与课堂工具：苏格拉底式追问、6 页分镜、本地工程文件 v1/v2、版本递增、画风/角色/逐页插画提示词、检查单与路演卡。
+- `npm test`：73 pass / 0 fail / 0 skipped。
+- subdomain 构建：7 pages built，退出码 0。
+- 浏览器端到端：44/44 通过（含导出前置条件、重复保存升版、导入后导出、三档响应式、reduced motion、无 JS）。
+- 部署产物已推送 `origin/deploy-subdomain`，提交 `df816ca`。
+- **服务器端未发布**：SSH 全部被拒绝，缺少腾讯云 TAT/API 凭据；公网 002 路由仍 404，旧回执未更新。

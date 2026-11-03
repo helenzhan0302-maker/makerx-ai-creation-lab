@@ -39,3 +39,12 @@ test('homepage uses the approved HTML stage contract', () => {
 test('reference image remains available without being used as Hero markup', () => {
   assert.equal(fs.existsSync(path.join(root, 'references/MakerX AI造物实验室.png')), true);
 });
+
+test('homepage lists project 002 with a real detail route', () => {
+  const page = read('src/pages/index.astro');
+  const content = read('src/content/projects/002-picturebook.md');
+  assert.match(page, /002-picturebook/);
+  assert.match(page, /picturebookProject\.title/);
+  assert.match(content, /title: 故事放映机/);
+  assert.match(content, /id: '002'/);
+});

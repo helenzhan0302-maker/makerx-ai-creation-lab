@@ -819,6 +819,33 @@ curl -s https://<子域>/DEPLOY_STATUS.txt   # 应为 status=ok
 实际结果是：防火墙确实放行了，但主机上没有 listen 443，所以是 RST 而非 TIMEOUT。
 教训：端口状态推断必须用「探测 + 服务器侧确认」双向对齐，不能只靠单侧现象下结论。
 
+### 实验 002「故事放映机」两节课页面（2026-11-03）
+
+**课堂决策**：项目对外名「故事放映机」，固定 6 页；两节课分两个周六上；第 1 节导出 `story-project-v1.json`，第 2 节导入 v1 后继续，结束导出 v2 并保留 v1。网站不做账号、上传、数据库或浏览器持久化，因此**没有真正的浏览器用户隔离**；隔离只发生在每个孩子自己的电脑文件这一层。
+
+**新增路由**：
+
+- `/lab/002-picturebook/`
+- `/lab/002-picturebook/lesson-1/`
+- `/lab/002-picturebook/lesson-2/`
+
+**本机实测（Windows PowerShell，2026-11-03）**：
+
+| 检查项 | 结果 |
+|---|---|
+| `npm test` | **73 pass / 0 fail / 0 skipped** |
+| `pnpm exec astro build --config astro.config.subdomain.mjs --outDir dist-subdomain` | 退出码 0，**7 pages built**，002 三条路由均生成 |
+| `bash -n scripts/server-deploy-subdomain.sh` | 退出码 0 |
+| `node tests/browser-picturebook.mjs`（本地 `http://127.0.0.1:4321`） | **44/44 通过** |
+
+浏览器检查覆盖：五要素追问与原文保留、6 页分镜完整性、第 1 节未填完时导出禁用、导出 v1、同页第二次保存自动升为 v2、刷新后内存清空、第 2 节未导入时导出禁用、导入 v1 后恢复 6 页、主角参考图/逐页/单页修改提示词、每页选图状态与四项检查、四项总检查、路演卡、导出 v2 且 v1 仍在、375/768/1440 无横向溢出、reduced motion、无 JS 时说明与检查项可读、控制台 0 错误。
+
+**部署产物**：已镜像到 `deploy-subdomain` 工作树并提交 `df816ca`，推送到 `origin/deploy-subdomain` 成功（`1c52058..df816ca`）。
+
+**未完成 / 阻塞**：服务器端尚未发布。本机没有腾讯云 API 凭据、`tccli` 或自动化助手通道；SSH 22 端口开放，但 `ubuntu` / `root` / `lighthouse` 与两把本机密钥全部返回 `Permission denied (publickey,password)`。因此不能执行服务器脚本、不能生成新的 `DEPLOY_STAMP.txt`，也不能声称 `https://makerx.skftai.top/` 已上线 002。公网实测仍为旧回执 `deploy=20261103163649`，`/lab/002-picturebook/` 返回 404。
+
+**类型检查**：`pnpm check` 未成功完成（`design/` 既有错误导致 heap OOM，退出码 134），不能声称 `src/` 零错误；生产构建与浏览器测试均已通过。
+
 ### 尚未核对 / 未验证
 
 - **真实移动设备**（iOS Safari、Android Chrome、微信内置浏览器）—— 未测。

@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ProjectFileBar from '../../../components/ProjectFileBar.astro';
+import PicturebookStudio from '../../../components/PicturebookStudio.astro';
+import '../../../styles/ai-planet-builder.css';
+import '../../../styles/planet-upgrade.css';
+import '../../../styles/picturebook.css';
+
+const baseUrl = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="第 2 节课 · 故事放映机｜MakerX AI 造物实验室" description="导入第 1 节的工程文件，统一画风与角色，逐页生成插画、检查、制作首映礼路演卡。">
+  <div class="project-page-shell pb-page-shell">
+    <header class="project-page-header">
+      <a class="project-back-link" href={`${baseUrl}lab/002-picturebook/`}>← 故事放映机课程总览</a>
+      <span class="project-page-status">实验编号 002 / 第 2 节课</span>
+    </header>
+
+    <main id="main-content">
+      <section class="project-intro pb-intro" aria-labelledby="project-title">
+        <p class="eyebrow">project 002 / lesson 02</p>
+        <h1 id="project-title">让 6 页分镜变成一本绘本。</h1>
+        <p class="project-intro-lead">先找回上节课的故事，再统一画风和主角长相，一页一页画，一页一页检查。最后带着绘本参加首映礼，并保存第二版工程文件。</p>
+        <div class="project-intro-notes">
+          <p>两个周六中的第 2 节</p>
+          <p>先导入 v1 才能开始</p>
+          <p>不上传图片</p>
+          <p>结束时导出 v2</p>
+        </div>
+      </section>
+
+      <aside class="pb-boundary" aria-label="导入与保存说明">
+        <p><strong>这一页不会记住你上次的内容。</strong>先导入自己保存的 <code>story-project-v1.json</code>；下课前再保存一次，得到 <code>story-project-v2.json</code>。两个文件都留着，v1 是你的“反悔按钮”。</p>
+      </aside>
+
+      <ProjectFileBar mode="import" title="第一步：找回上节课的故事工程" />
+      <PicturebookStudio />
+
+      <section class="pb-section pb-stack-end" aria-labelledby="lesson-two-save">
+        <div class="pb-save-heading">
+          <p class="pb-kicker">save v2 / 保存第二版</p>
+          <h2 id="lesson-two-save">把绘本、检查单和路演卡一起带走。</h2>
+          <p>这次的版本号会自动变成 v2。v1 仍然留在你的电脑里，想回去看看原来的想法随时可以打开。</p>
+        </div>
+        <ProjectFileBar
+          mode="export"
+          baseVersion={2}
+          title="保存第二版：绘本 + 检查单 + 路演卡"
+          requireImport={true}
+          requireStoryboard={true}
+        />
+      </section>
+    </main>
+
+    <footer class="project-page-footer">
+      <p>MakerX AI 造物实验室</p>
+      <a href={baseUrl}>回到首页 ↗</a>
+    </footer>
+  </div>
+</BaseLayout>

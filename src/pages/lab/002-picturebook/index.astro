@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import '../../../styles/ai-planet-builder.css';
+import '../../../styles/planet-upgrade.css';
+import '../../../styles/picturebook.css';
+
+const baseUrl = import.meta.env.BASE_URL;
+const lessons = [
+  {
+    id: '01',
+    label: '第 1 节课',
+    title: '把故事问清楚',
+    description: '从愿望、怪事或角色出发，用一次一个问题的追问写下故事卡，再拆成 6 页分镜，保存 v1 工程文件。',
+    meta: '故事 + 分镜',
+    href: `${baseUrl}lab/002-picturebook/lesson-1/`,
+    action: '进入第 1 节课',
+  },
+  {
+    id: '02',
+    label: '第 2 节课',
+    title: '让故事上映',
+    description: '导入 v1，统一画风与主角长相，逐页生成并检查插画，最后完成首映礼路演卡，保存 v2 工程文件。',
+    meta: '插画 + 首映',
+    href: `${baseUrl}lab/002-picturebook/lesson-2/`,
+    action: '进入第 2 节课',
+  },
+];
+---
+
+<BaseLayout title="故事放映机｜MakerX AI 造物实验室" description="故事放映机：两节课把一个小念头做成 6 页绘本，并参加一场作品首映礼。">
+  <div class="project-page-shell pb-page-shell">
+    <header class="project-page-header">
+      <a class="project-back-link" href={baseUrl}>← MakerX AI 造物实验室</a>
+      <span class="project-page-status">实验编号 002 / 两节课</span>
+    </header>
+
+    <main id="main-content">
+      <section class="project-intro pb-intro" aria-labelledby="project-title">
+        <p class="eyebrow">project 002 / story cinema</p>
+        <h1 id="project-title">故事放映机</h1>
+        <p class="project-intro-lead">两节课，把一个小念头做成一本 6 页绘本：先问清楚故事，再一页一页画出来，最后放映给同伴看。</p>
+        <div class="project-intro-notes">
+          <p>两个周六</p>
+          <p>6 页绘本</p>
+          <p>工程文件跨周继续</p>
+          <p>不填写姓名</p>
+        </div>
+      </section>
+
+      <aside class="pb-boundary" aria-label="跨周保存方式">
+        <p><strong>两节课之间，网站不保存你的内容。</strong>第 1 节结束把工程文件下载到自己的电脑；第 2 节上课时再导入。站点没有账号，也不存在浏览器里的用户隔离；文件在谁手里，内容就属于谁。</p>
+      </aside>
+
+      <section class="lesson-hub pb-lesson-hub" aria-label="选择课次">
+        {lessons.map((lesson) => (
+          <a class="lesson-card" href={lesson.href}>
+            <div class="lesson-card-top">
+              <span class="lesson-card-index" aria-hidden="true">{lesson.id}</span>
+              <span class="lesson-card-label">{lesson.label}</span>
+              <span class="lesson-card-meta">{lesson.meta}</span>
+            </div>
+            <h2 class="lesson-card-title">{lesson.title}</h2>
+            <p class="lesson-card-description">{lesson.description}</p>
+            <span class="lesson-card-action">{lesson.action} <span aria-hidden="true">↗</span></span>
+          </a>
+        ))}
+      </section>
+
+      <section class="pb-how-it-works" aria-labelledby="how-title">
+        <p class="pb-kicker">how it works / 怎么配合</p>
+        <h2 id="how-title">AI 是搭档，不是代写。</h2>
+        <div class="pb-how-grid">
+          <article>
+            <span>01</span>
+            <h3>你决定故事</h3>
+            <p>主角是谁、想要什么、遇到什么困难、最后怎么变化，都由你说。网站只用一个问题接一个问题，帮你讲清楚。</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>你决定画面</h3>
+            <p>每页写清画面、动作、情绪。课堂智能体负责生成提示词和图片；保留哪一版、要不要重做，仍然由你决定。</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>你带走作品</h3>
+            <p>保存 v1 和 v2 工程文件，就是留下两条时间线。旧版不是废稿，是你可以随时回去看的“反悔按钮”。</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="project-page-footer">
+      <p>MakerX AI 造物实验室</p>
+      <a href={baseUrl}>回到首页 ↗</a>
+    </footer>
+  </div>
+</BaseLayout>

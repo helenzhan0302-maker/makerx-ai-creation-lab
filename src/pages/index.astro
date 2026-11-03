@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { frontmatter as aiBaseProject } from '../content/projects/001-ai-base.md';
+import { frontmatter as picturebookProject } from '../content/projects/002-picturebook.md';
 
 const baseUrl = import.meta.env.BASE_URL;
 ---
@@ -127,18 +128,29 @@ const baseUrl = import.meta.env.BASE_URL;
 
         <div class="project-list" id="project-list" aria-labelledby="project-list-title">
           <div class="project-list-heading">
-            <p class="section-label">project 001 / archive entry</p>
-            <h3 id="project-list-title">第一个造物项目</h3>
+            <p class="section-label">project archive / two entries</p>
+            <h3 id="project-list-title">正在生长的造物项目</h3>
           </div>
-          <a class="project-card" href={`${baseUrl}lab/001-ai-planet/`} data-reveal style="--reveal-delay: 160ms">
-            <div class="project-card-index" aria-hidden="true">001</div>
-            <div class="project-card-copy">
-              <p class="project-card-status"><span aria-hidden="true"></span>{aiBaseProject.status}</p>
-              <h4>{aiBaseProject.title}</h4>
-              <p>{aiBaseProject.summary}</p>
-            </div>
-            <span class="project-card-arrow" aria-hidden="true">↗</span>
-          </a>
+          <div class="project-list-cards">
+            <a class="project-card" href={`${baseUrl}lab/001-ai-planet/`} data-reveal style="--reveal-delay: 160ms">
+              <div class="project-card-index" aria-hidden="true">{aiBaseProject.id}</div>
+              <div class="project-card-copy">
+                <p class="project-card-status"><span aria-hidden="true"></span>{aiBaseProject.status}</p>
+                <h4>{aiBaseProject.title}</h4>
+                <p>{aiBaseProject.summary}</p>
+              </div>
+              <span class="project-card-arrow" aria-hidden="true">↗</span>
+            </a>
+            <a class="project-card" href={`${baseUrl}lab/002-picturebook/`} data-reveal style="--reveal-delay: 240ms">
+              <div class="project-card-index" aria-hidden="true">{picturebookProject.id}</div>
+              <div class="project-card-copy">
+                <p class="project-card-status"><span aria-hidden="true"></span>{picturebookProject.status}</p>
+                <h4>{picturebookProject.title}</h4>
+                <p>{picturebookProject.summary}</p>
+              </div>
+              <span class="project-card-arrow" aria-hidden="true">↗</span>
+            </a>
+          </div>
         </div>
       </section>
     </main>

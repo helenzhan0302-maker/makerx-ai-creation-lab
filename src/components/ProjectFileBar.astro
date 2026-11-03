@@ -1,0 +1,204 @@
+---
+interface Props {
+  mode?: 'import' | 'export';
+  baseVersion?: number;
+  title?: string;
+  requireImport?: boolean;
+  requireStoryboard?: boolean;
+}
+
+const {
+  mode = 'export',
+  baseVersion = 1,
+  title,
+  requireImport = false,
+  requireStoryboard = false,
+} = Astro.props;
+const isImport = mode === 'import';
+const heading = title || (isImport ? '先打开上次的故事工程' : '把这次的故事带回自己的电脑');
+---
+
+<section
+  class:list={['pb-file-bar', { 'pb-file-bar--import': isImport }]}
+  data-project-file-bar
+  data-mode={mode}
+  data-base-version={baseVersion}
+  data-require-import={requireImport}
+  data-require-storyboard={requireStoryboard}
+  aria-labelledby={`file-bar-title-${mode}`}
+>
+  <div class="pb-file-bar-heading">
+    <p class="pb-kicker">{isImport ? 'open project / 继续上次' : 'save project / 版本管理'}</p>
+    <h2 id={`file-bar-title-${mode}`}>{heading}</h2>
+    {isImport ? (
+      <p>选择上节课保存的 <code>story-project-v1.json</code>。网站不会自动保存，也不会把文件上传到任何地方。</p>
+    ) : (
+      <p>保存一份，旧版就不会被覆盖。文件名里的 <code>v1</code>、<code>v2</code> 就是你的时间线。</p>
+    )}
+  </div>
+
+  {isImport ? (
+    <div class="pb-import-controls">
+      <label class="pb-file-picker">
+        <span>打开工程文件</span>
+        <input type="file" accept=".json,application/json" data-project-file-input />
+      </label>
+      <p class="pb-file-feedback" data-file-feedback role="status" aria-live="polite">还没有打开工程文件。</p>
+    </div>
+  ) : (
+    <div class="pb-export-controls">
+      <button
+        class="pb-button pb-button--primary"
+        type="button"
+        data-export-project
+        disabled={requireImport || requireStoryboard}
+      >保存工程文件</button>
+      <button
+        class="pb-button pb-button--quiet"
+        type="button"
+        data-copy-project
+        disabled={requireImport || requireStoryboard}
+      >复制工程文本</button>
+      <p class="pb-file-feedback" data-file-feedback role="status" aria-live="polite">还没有保存。</p>
+    </div>
+  )}
+
+  <div class="pb-version-note">
+    <span aria-hidden="true">◉</span>
+    <p>
+      {isImport
+        ? '换电脑也能继续：工程文件里只有故事、分镜和检查状态，不含姓名、学校、电话或照片。'
+        : '共用电脑时，下课前一定把文件带走。浏览器关掉后，这一页不会替你保留内容。'}
+    </p>
+  </div>
+</section>
+
+<script>
+  // @ts-nocheck
+  import { copyTextToClipboard } from '../lib/ai-planet-builder.mjs';
+  import { buildFileName, parseProjectFile, stringifyProjectFile } from '../lib/picturebook-project-file.mjs';
+  import {
+    applyImportedProject,
+    createWorkspaceFile,
+    nextExportVersion,
+    storyboardIsComplete,
+    workspace,
+  } from '../lib/picturebook-workspace.mjs';
+
+  document.querySelectorAll('[data-project-file-bar]').forEach((bar) => {
+    const mode = bar.dataset.mode;
+    const baseVersion = Number(bar.dataset.baseVersion) || 1;
+    const requireImport = bar.dataset.requireImport === 'true';
+    const requireStoryboard = bar.dataset.requireStoryboard === 'true';
+    const input = bar.querySelector('[data-project-file-input]');
+    const feedback = bar.querySelector('[data-file-feedback]');
+    const exportButton = bar.querySelector('[data-export-project]');
+    const copyButton = bar.querySelector('[data-copy-project]');
+    const defaultFeedback = feedback?.textContent || '';
+    let showingRequirement = false;
+
+    const say = (message, tone = 'neutral') => {
+      if (!feedback) return;
+      feedback.textContent = message;
+      feedback.dataset.tone = tone;
+    };
+
+    const exportVersion = () => nextExportVersion(baseVersion);
+
+    const blockers = () => {
+      if (requireImport && !workspace.imported) return '先导入上节课的工程文件，才能保存这一版。';
+      if (requireStoryboard && !storyboardIsComplete()) return '先把 6 页分镜的画面、动作和情绪都填完，再保存。';
+      return '';
+    };
+
+    const syncExportState = () => {
+      if (mode !== 'export') return;
+      const blocker = blockers();
+      if (exportButton) exportButton.disabled = Boolean(blocker);
+      if (copyButton) copyButton.disabled = Boolean(blocker);
+      if (blocker) {
+        say(blocker, 'neutral');
+        showingRequirement = true;
+      } else if (showingRequirement) {
+        say(defaultFeedback, 'neutral');
+        showingRequirement = false;
+      }
+    };
+
+    const download = (text, fileName) => {
+      const blob = new Blob([text], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    };
+
+    if (mode === 'export') {
+      exportButton?.addEventListener('click', () => {
+        const blocker = blockers();
+        if (blocker) {
+          syncExportState();
+          say(blocker, 'error');
+          return;
+        }
+        try {
+          const version = exportVersion();
+          const file = createWorkspaceFile(version);
+          download(stringifyProjectFile(file), buildFileName(version));
+          workspace.lastExportedVersion = version;
+          say(`已保存 ${buildFileName(version)}。旧版本还在，不用删。`, 'ok');
+        } catch {
+          say('保存没有完成，请检查浏览器是否允许下载文件。', 'error');
+        }
+      });
+
+      copyButton?.addEventListener('click', async () => {
+        const blocker = blockers();
+        if (blocker) {
+          syncExportState();
+          say(blocker, 'error');
+          return;
+        }
+        try {
+          const version = exportVersion();
+          const copied = await copyTextToClipboard(stringifyProjectFile(createWorkspaceFile(version)));
+          if (copied) workspace.lastExportedVersion = version;
+          say(
+            copied ? '工程文本已复制，可以粘到自己的文档里保存。' : '复制没有成功，请用保存按钮下载文件。',
+            copied ? 'ok' : 'error',
+          );
+        } catch {
+          say('复制没有成功，请用保存按钮下载文件。', 'error');
+        }
+      });
+    }
+
+    if (mode === 'export') {
+      document.addEventListener('picturebook:workspace-change', syncExportState);
+      document.addEventListener('picturebook:project-imported', syncExportState);
+      syncExportState();
+    }
+
+    input?.addEventListener('change', async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      try {
+        const result = parseProjectFile(await file.text());
+        if (!result.ok) {
+          say(result.message, 'error');
+          return;
+        }
+        applyImportedProject(result.data);
+        say(`已导入第 ${result.data.version} 版，包含 ${result.data.storyboard.length} 页分镜。`, 'ok');
+        document.dispatchEvent(new CustomEvent('picturebook:project-imported', { detail: result.data }));
+        syncExportState();
+      } catch {
+        say('文件没有读出来。请确认选择的是工程文件，再试一次。', 'error');
+      }
+    });
+  });
+</script>

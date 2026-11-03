@@ -1,0 +1,416 @@
+---
+import { CHARACTER_TRAITS, PAGE_COUNT, STYLE_OPTIONS, createStoryboard } from '../lib/picturebook-prompts.mjs';
+
+const pages = createStoryboard();
+const styleGroups = [
+  { id: 'ratio', label: '比例', hint: '先决定每一页的形状' },
+  { id: 'artStyle', label: '画风', hint: '整本绘本只选一种' },
+  { id: 'palette', label: '色调', hint: '颜色会影响故事的情绪' },
+];
+---
+
+<section class="pb-studio" data-picturebook-studio aria-labelledby="studio-title">
+  <div class="pb-import-gate" data-import-gate>
+    <p class="pb-kicker">waiting for project / 等待工程文件</p>
+    <h2>先导入第 1 节的故事，再开始画。</h2>
+    <p>上面的文件框里选择 <code>story-project-v1.json</code>。导入成功后，这里会显示你的 6 页分镜。</p>
+    <div class="pb-import-preview" aria-label="导入后会出现的内容">
+      <p>导入后，这一页会依次出现：</p>
+      <ol>
+        <li>画风三组选择：比例、画风、色调</li>
+        <li>主角四项固定特征：颜色、发型或外形、衣服、标志物</li>
+        <li>6 页插画提示词与逐页检查</li>
+        <li>绘本出厂检查单：故事读得懂、页序清楚、图片符合情节、主角基本统一</li>
+        <li>首映礼路演卡与同伴反馈句式</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="pb-studio-body" data-studio-body hidden>
+    <div class="pb-studio-status">
+      <span class="pb-status-dot" aria-hidden="true"></span>
+      <p data-import-status>还没有导入工程文件。</p>
+      <span data-studio-page-count>0 / {PAGE_COUNT} 页有分镜</span>
+    </div>
+
+    <section class="pb-section pb-style" aria-labelledby="style-title">
+      <div class="pb-section-heading">
+        <p class="pb-kicker">step 03 / visual rules</p>
+        <h2 id="style-title">先定下整本绘本的样子。</h2>
+        <p>比例、画风、色调每组只选一个。它们会被写进每一页提示词，避免画到后面越来越不像同一本书。</p>
+      </div>
+
+      <div class="pb-style-groups">
+        {styleGroups.map((group) => (
+          <fieldset class="pb-style-group" data-style-group={group.id}>
+            <legend>{group.label}</legend>
+            <p class="pb-group-hint">{group.hint}</p>
+            <div class="pb-style-options">
+              {STYLE_OPTIONS[group.id].map((option, index) => (
+                <label class="pb-radio-card">
+                  <input type="radio" name={`style-${group.id}`} value={option} checked={index === 0} data-style={group.id} />
+                  <span>{option}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        ))}
+      </div>
+    </section>
+
+    <section class="pb-section pb-character" aria-labelledby="character-title">
+      <div class="pb-section-heading">
+        <p class="pb-kicker">step 04 / character sheet</p>
+        <h2 id="character-title">把主角固定成四件事。</h2>
+        <p>颜色、发型或外形、衣服、标志物。每一页都带着这四项，AI 才有机会画出同一个角色。</p>
+      </div>
+
+      <div class="pb-trait-grid">
+        {CHARACTER_TRAITS.map((trait) => (
+          <label class="pb-answer-field pb-answer-field--compact">
+            <span>{trait.label}</span>
+            <input type="text" maxlength="80" data-trait={trait.id} placeholder={trait.placeholder} autocomplete="off" />
+          </label>
+        ))}
+      </div>
+
+      <div class="pb-copy-panel">
+        <div>
+          <h3>先画一张主角参考图</h3>
+          <p>参考图只用来确认长相。确认后再逐页生成，不要一开始就画整本。</p>
+        </div>
+        <div class="pb-inline-actions">
+          <button class="pb-button pb-button--secondary" type="button" data-generate-reference>生成主角参考图提示词</button>
+          <button class="pb-button pb-button--quiet" type="button" data-copy-reference hidden>复制参考图提示词</button>
+        </div>
+        <pre class="pb-output" data-reference-output hidden tabindex="0"></pre>
+        <p class="pb-feedback" data-reference-feedback role="status"></p>
+      </div>
+    </section>
+
+    <section class="pb-section pb-pages" aria-labelledby="pages-title">
+      <div class="pb-section-heading">
+        <p class="pb-kicker">step 05 / page by page</p>
+        <h2 id="pages-title">一页一页画，一页一页检查。</h2>
+        <p>每次只生成一页。选到满意的图就标成“已选用”；不满意就写清楚要改什么，不要整本重做。</p>
+      </div>
+
+      <div class="pb-pages-grid">
+        {pages.map((page) => (
+          <article class="pb-page-card" data-studio-page={page.page}>
+            <div class="pb-card-topline">
+              <span class="pb-card-number">第 {page.page} 页</span>
+              <span class="pb-status" data-image-status>未开始</span>
+            </div>
+            <div class="pb-mini-storyboard">
+              <p><span>画面</span><strong data-mini-scene>待导入</strong></p>
+              <p><span>动作</span><strong data-mini-action>待导入</strong></p>
+              <p><span>情绪</span><strong data-mini-emotion>待导入</strong></p>
+            </div>
+
+            <div class="pb-inline-actions">
+              <button class="pb-button pb-button--secondary" type="button" data-generate-page data-page={page.page}>生成这一页提示词</button>
+              <button class="pb-button pb-button--quiet" type="button" data-toggle-revision data-page={page.page}>我要改这一页</button>
+            </div>
+            <pre class="pb-output pb-output--small" data-page-output hidden tabindex="0"></pre>
+            <div class="pb-inline-actions" data-page-copy-row hidden>
+              <button class="pb-button pb-button--quiet" type="button" data-copy-page data-page={page.page}>复制这一页提示词</button>
+            </div>
+
+            <div class="pb-revision" data-revision hidden>
+              <label class="pb-answer-field pb-answer-field--compact">
+                <span>要改什么</span>
+                <textarea rows="2" maxlength="160" data-revision-change placeholder="例如：把雨画小一点"></textarea>
+              </label>
+              <label class="pb-answer-field pb-answer-field--compact">
+                <span>必须保留什么</span>
+                <textarea rows="2" maxlength="160" data-revision-keep placeholder="例如：衣服和背上的铃铛"></textarea>
+              </label>
+              <button class="pb-button pb-button--secondary" type="button" data-generate-revision data-page={page.page}>生成修改提示词</button>
+              <pre class="pb-output pb-output--small" data-revision-output hidden tabindex="0"></pre>
+              <div class="pb-inline-actions" data-revision-copy-row hidden>
+                <button class="pb-button pb-button--quiet" type="button" data-copy-revision data-page={page.page}>复制修改提示词</button>
+              </div>
+            </div>
+
+            <fieldset class="pb-image-state">
+              <legend>这张图现在怎么样</legend>
+              <label><input type="radio" name={`image-status-${page.page}`} value="not-started" checked data-image-state={page.page} /><span>未开始</span></label>
+              <label><input type="radio" name={`image-status-${page.page}`} value="selected" data-image-state={page.page} /><span>已选用</span></label>
+              <label><input type="radio" name={`image-status-${page.page}`} value="redo" data-image-state={page.page} /><span>需重做</span></label>
+            </fieldset>
+
+            <fieldset class="pb-page-checks">
+              <legend>这一页检查</legend>
+              <label><input type="checkbox" data-page-check="action" data-page={page.page} /><span>动作</span></label>
+              <label><input type="checkbox" data-page-check="expression" data-page={page.page} /><span>表情</span></label>
+              <label><input type="checkbox" data-page-check="environment" data-page={page.page} /><span>环境</span></label>
+              <label><input type="checkbox" data-page-check="color" data-page={page.page} /><span>色彩</span></label>
+            </fieldset>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="pb-section pb-final-checks" aria-labelledby="final-title">
+      <div class="pb-section-heading">
+        <p class="pb-kicker">step 06 / release check</p>
+        <h2 id="final-title">绘本出厂前，再看四件事。</h2>
+        <p>四项都确认后再去首映。任何一项没把握，都可以回到对应页修改。</p>
+      </div>
+      <fieldset class="pb-final-check-list">
+        <legend class="sr-only">绘本出厂检查单</legend>
+        <label><input type="checkbox" data-final-check="storyUnderstandable" /><span>故事读得懂<small>别人不看解释也能明白发生了什么</small></span></label>
+        <label><input type="checkbox" data-final-check="pageOrderClear" /><span>页序清楚<small>6 页顺序正确，没有缺页或重页</small></span></label>
+        <label><input type="checkbox" data-final-check="imagesMatchPlot" /><span>图片符合情节<small>画面、动作和情绪都对得上分镜</small></span></label>
+        <label><input type="checkbox" data-final-check="characterConsistent" /><span>主角基本统一<small>颜色、外形、衣服、标志物没有跑掉</small></span></label>
+      </fieldset>
+    </section>
+
+    <section class="pb-section pb-roadshow" aria-labelledby="roadshow-title">
+      <div class="pb-section-heading">
+        <p class="pb-kicker">step 07 / premiere</p>
+        <h2 id="roadshow-title">首映礼：讲给同伴听。</h2>
+        <p>不用背台词，回答三个问题就好。同伴的反馈不是打分，是帮你看到自己没注意的地方。</p>
+      </div>
+
+      <div class="pb-roadshow-layout">
+        <div class="pb-roadshow-form">
+          <label class="pb-answer-field">
+            <span>01 我的故事讲什么</span>
+            <textarea rows="3" maxlength="220" data-roadshow="story" placeholder="主角是谁，他做了什么，最后发生了什么变化"></textarea>
+          </label>
+          <label class="pb-answer-field">
+            <span>02 我最满意的一页</span>
+            <select data-roadshow="favoritePage">
+              <option value="">选择页码</option>
+              {Array.from({ length: PAGE_COUNT }, (_, index) => (
+                <option value={index + 1}>第 {index + 1} 页</option>
+              ))}
+            </select>
+          </label>
+          <label class="pb-answer-field">
+            <span>为什么最满意这一页</span>
+            <textarea rows="2" maxlength="180" data-roadshow="reason" placeholder="可以说画面、颜色或角色的动作"></textarea>
+          </label>
+          <label class="pb-answer-field">
+            <span>03 我最想继续改进什么</span>
+            <textarea rows="2" maxlength="180" data-roadshow="improvement" placeholder="下一版最想动的地方"></textarea>
+          </label>
+        </div>
+
+        <div class="pb-peer-feedback" aria-label="给同伴的反馈句式">
+          <p class="pb-kicker">peer feedback / 同伴反馈</p>
+          <p>我看懂了：____________________</p>
+          <p>我最喜欢：____________________</p>
+          <p>我有一个建议：____________________</p>
+          <p class="pb-peer-note">先说看见的，再说喜欢的，最后才给建议。</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<script>
+  // @ts-nocheck
+  import { copyTextToClipboard } from '../lib/ai-planet-builder.mjs';
+  import {
+    PAGE_COUNT,
+    buildPagePrompt,
+    buildReferencePrompt,
+    buildRevisionPrompt,
+  } from '../lib/picturebook-prompts.mjs';
+  import {
+    setFinalCheck,
+    setImageCheck,
+    setImageStatus,
+    setRoadshow,
+    setTrait,
+    setVisual,
+    workspace,
+  } from '../lib/picturebook-workspace.mjs';
+
+  const root = document.querySelector('[data-picturebook-studio]');
+
+  if (root) {
+    const gate = root.querySelector('[data-import-gate]');
+    const body = root.querySelector('[data-studio-body]');
+    const importStatus = root.querySelector('[data-import-status]');
+    const pageCount = root.querySelector('[data-studio-page-count]');
+    const labels = { 'not-started': '未开始', selected: '已选用', redo: '需重做' };
+
+    const pageSize = () => PAGE_COUNT;
+
+    const render = () => {
+      const hasProject = workspace.imported;
+      if (gate) gate.hidden = hasProject;
+      if (body) body.hidden = !hasProject;
+      if (!hasProject) return;
+
+      if (!workspace.visual.ratio) workspace.visual.ratio = '横版 4:3';
+      if (!workspace.visual.artStyle) workspace.visual.artStyle = '治愈水彩';
+      if (!workspace.visual.palette) workspace.visual.palette = '暖色';
+
+      if (importStatus) {
+        importStatus.textContent = `已导入第 ${workspace.importedVersion} 版，包含 ${pageSize()} 页分镜。`;
+      }
+
+      const filled = workspace.storyboard.filter((page) => page.scene.trim() && page.action.trim()).length;
+      if (pageCount) pageCount.textContent = `${filled} / ${pageSize()} 页有分镜`;
+
+      workspace.storyboard.forEach((page) => {
+        const card = root.querySelector(`[data-studio-page="${page.page}"]`);
+        if (!card) return;
+        const scene = card.querySelector('[data-mini-scene]');
+        const action = card.querySelector('[data-mini-action]');
+        const emotion = card.querySelector('[data-mini-emotion]');
+        if (scene) scene.textContent = page.scene || '待补充';
+        if (action) action.textContent = page.action || '待补充';
+        if (emotion) emotion.textContent = page.emotion || '待补充';
+      });
+
+      workspace.images.forEach((image) => {
+        const card = root.querySelector(`[data-studio-page="${image.page}"]`);
+        if (!card) return;
+        const status = card.querySelector('[data-image-status]');
+        if (status) {
+          status.textContent = labels[image.status] || labels['not-started'];
+          status.dataset.state = image.status;
+        }
+      });
+
+      Object.entries(workspace.visual).forEach(([key, value]) => {
+        if (key === 'traits') return;
+        root.querySelectorAll(`[data-style="${key}"]`).forEach((radio) => {
+          radio.checked = radio.value === value;
+        });
+      });
+      Object.entries(workspace.visual.traits).forEach(([key, value]) => {
+        const field = root.querySelector(`[data-trait="${key}"]`);
+        if (field && document.activeElement !== field) field.value = value;
+      });
+      root.querySelectorAll('[data-final-check]').forEach((checkbox) => {
+        checkbox.checked = Boolean(workspace.checks[checkbox.dataset.finalCheck]);
+      });
+      root.querySelectorAll('[data-page-check]').forEach((checkbox) => {
+        const image = workspace.images.find((item) => item.page === Number(checkbox.dataset.page));
+        checkbox.checked = Boolean(image?.checks?.[checkbox.dataset.pageCheck]);
+      });
+      root.querySelectorAll('[data-image-state]').forEach((radio) => {
+        const image = workspace.images.find((item) => item.page === Number(radio.dataset.imageState));
+        radio.checked = image?.status === radio.value;
+      });
+      const roadshowStory = root.querySelector('[data-roadshow="story"]');
+      const roadshowFavorite = root.querySelector('[data-roadshow="favoritePage"]');
+      const roadshowReason = root.querySelector('[data-roadshow="reason"]');
+      const roadshowImprovement = root.querySelector('[data-roadshow="improvement"]');
+      if (roadshowStory && document.activeElement !== roadshowStory) roadshowStory.value = workspace.roadshow.story || '';
+      if (roadshowFavorite) roadshowFavorite.value = workspace.roadshow.favoritePage || '';
+      if (roadshowReason && document.activeElement !== roadshowReason) roadshowReason.value = workspace.roadshow.reason || '';
+      if (roadshowImprovement && document.activeElement !== roadshowImprovement) {
+        roadshowImprovement.value = workspace.roadshow.improvement || '';
+      }
+    };
+
+    const visualPayload = () => ({
+      ...workspace.visual,
+      traits: workspace.visual.traits,
+    });
+
+    const copyOutput = async (selector, feedbackSelector, okMessage) => {
+      const output = root.querySelector(selector);
+      const feedback = root.querySelector(feedbackSelector);
+      const copied = await copyTextToClipboard(output?.textContent || '');
+      if (feedback) feedback.textContent = copied ? okMessage : '复制没有成功，请手动选中文字。';
+    };
+
+    root.addEventListener('change', (event) => {
+      const target = event.target;
+      if (target.matches('[data-style]')) setVisual(target.dataset.style, target.value);
+      if (target.matches('[data-image-state]')) setImageStatus(target.dataset.imageState, target.value);
+      if (target.matches('[data-final-check]')) setFinalCheck(target.dataset.finalCheck, target.checked);
+      if (target.matches('[data-page-check]')) setImageCheck(target.dataset.page, target.dataset.pageCheck, target.checked);
+      if (target.matches('[data-roadshow]')) setRoadshow(target.dataset.roadshow, target.value);
+    });
+
+    root.addEventListener('input', (event) => {
+      const target = event.target;
+      if (target.matches('[data-trait]')) setTrait(target.dataset.trait, target.value);
+      if (target.matches('[data-roadshow="story"], [data-roadshow="reason"], [data-roadshow="improvement"]')) {
+        setRoadshow(target.dataset.roadshow, target.value);
+      }
+    });
+
+    root.querySelector('[data-generate-reference]')?.addEventListener('click', () => {
+      const output = root.querySelector('[data-reference-output]');
+      const feedback = root.querySelector('[data-reference-feedback]');
+      const copy = root.querySelector('[data-copy-reference]');
+      if (output) {
+        output.textContent = buildReferencePrompt(visualPayload());
+        output.hidden = false;
+      }
+      if (copy) copy.hidden = false;
+      if (feedback) feedback.textContent = '先生成一张主角参考图，确认长相后再逐页画。';
+    });
+    root.querySelector('[data-copy-reference]')?.addEventListener('click', () =>
+      copyOutput('[data-reference-output]', '[data-reference-feedback]', '已复制参考图提示词。'),
+    );
+
+    root.querySelectorAll('[data-generate-page]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const pageNumber = Number(button.dataset.page);
+        const page = workspace.storyboard.find((item) => item.page === pageNumber);
+        const card = button.closest('[data-studio-page]');
+        const output = card?.querySelector('[data-page-output]');
+        const copyRow = card?.querySelector('[data-page-copy-row]');
+        if (!page || !output) return;
+        output.textContent = buildPagePrompt({ page, visual: visualPayload(), traits: workspace.visual.traits });
+        output.hidden = false;
+        if (copyRow) copyRow.hidden = false;
+      });
+    });
+
+    root.querySelectorAll('[data-copy-page]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const card = button.closest('[data-studio-page]');
+        const copied = await copyTextToClipboard(card?.querySelector('[data-page-output]')?.textContent || '');
+        button.textContent = copied ? '已复制这一页提示词' : '复制没有成功，请手动选中';
+      });
+    });
+
+    root.querySelectorAll('[data-toggle-revision]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const panel = button.closest('[data-studio-page]')?.querySelector('[data-revision]');
+        if (panel) panel.hidden = !panel.hidden;
+      });
+    });
+
+    root.querySelectorAll('[data-generate-revision]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const card = button.closest('[data-studio-page]');
+        const output = card?.querySelector('[data-revision-output]');
+        const copyRow = card?.querySelector('[data-revision-copy-row]');
+        if (!output) return;
+        output.textContent = buildRevisionPrompt({
+          pageNumber: Number(button.dataset.page),
+          change: card.querySelector('[data-revision-change]')?.value || '',
+          keep: card.querySelector('[data-revision-keep]')?.value || '',
+        });
+        output.hidden = false;
+        if (copyRow) copyRow.hidden = false;
+      });
+    });
+
+    root.querySelectorAll('[data-copy-revision]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const card = button.closest('[data-studio-page]');
+        const copied = await copyTextToClipboard(card?.querySelector('[data-revision-output]')?.textContent || '');
+        button.textContent = copied ? '已复制修改提示词' : '复制没有成功，请手动选中';
+      });
+    });
+
+    document.addEventListener('picturebook:workspace-change', render);
+    document.addEventListener('picturebook:project-imported', render);
+    render();
+  }
+</script>

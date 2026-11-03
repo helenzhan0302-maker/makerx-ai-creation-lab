@@ -1,0 +1,121 @@
+---
+import { PAGE_COUNT, createStoryboard } from '../lib/picturebook-prompts.mjs';
+
+const pages = createStoryboard();
+---
+
+<section class="pb-section pb-storyboard" data-storyboard aria-labelledby="storyboard-title">
+  <div class="pb-section-heading">
+    <p class="pb-kicker">step 02 / storyboard</p>
+    <h2 id="storyboard-title">把故事拆成 {PAGE_COUNT} 页。</h2>
+    <p>每页只写三件事：画面发生什么、角色在做什么、情绪是什么。先写完，再让 AI 帮你整理，不要让它替你决定剧情。</p>
+  </div>
+
+  <div class="pb-progress-line">
+    <span data-storyboard-progress>已完成 0 / {PAGE_COUNT} 页</span>
+    <div class="pb-progress-track" aria-hidden="true"><span data-storyboard-bar></span></div>
+  </div>
+
+  <div class="pb-storyboard-grid">
+    {pages.map((page) => (
+      <article class="pb-storyboard-card" data-storyboard-page={page.page}>
+        <div class="pb-card-topline">
+          <span class="pb-card-number">第 {page.page} 页</span>
+          <span class="pb-status" data-page-status>空白</span>
+        </div>
+        <label class="pb-answer-field pb-answer-field--compact">
+          <span>画面发生什么</span>
+          <textarea rows="2" maxlength="180" data-page-field="scene" data-page={page.page} placeholder="例如：雨夜的旧车站"></textarea>
+        </label>
+        <label class="pb-answer-field pb-answer-field--compact">
+          <span>角色在做什么</span>
+          <textarea rows="2" maxlength="180" data-page-field="action" data-page={page.page} placeholder="例如：举起一把小伞"></textarea>
+        </label>
+        <label class="pb-answer-field pb-answer-field--compact">
+          <span>情绪是什么</span>
+          <textarea rows="2" maxlength="180" data-page-field="emotion" data-page={page.page} placeholder="例如：有点紧张，但没有后退"></textarea>
+        </label>
+      </article>
+    ))}
+  </div>
+
+  <div class="pb-copy-panel">
+    <div>
+      <h3>需要帮忙拆页时，再复制提示词</h3>
+      <p>提示词只带着你已经写下的故事卡。信息不够的地方会先问你，不会自己补。</p>
+    </div>
+    <div class="pb-inline-actions">
+      <button class="pb-button pb-button--secondary" type="button" data-generate-storyboard>生成分镜提示词</button>
+      <button class="pb-button pb-button--quiet" type="button" data-copy-storyboard hidden>复制分镜提示词</button>
+    </div>
+    <pre class="pb-output" data-storyboard-output hidden tabindex="0"></pre>
+    <p class="pb-feedback" data-storyboard-feedback role="status"></p>
+  </div>
+</section>
+
+<script>
+  // @ts-nocheck
+  import { copyTextToClipboard } from '../lib/ai-planet-builder.mjs';
+  import { PAGE_COUNT, buildStoryboardPrompt } from '../lib/picturebook-prompts.mjs';
+  import { setStoryboardPage, storyValues, workspace } from '../lib/picturebook-workspace.mjs';
+
+  const root = document.querySelector('[data-storyboard]');
+
+  if (root) {
+    const progressText = root.querySelector('[data-storyboard-progress]');
+    const progressBar = root.querySelector('[data-storyboard-bar]');
+    const output = root.querySelector('[data-storyboard-output]');
+    const feedback = root.querySelector('[data-storyboard-feedback]');
+    const copyButton = root.querySelector('[data-copy-storyboard]');
+    const generateButton = root.querySelector('[data-generate-storyboard]');
+
+    const render = () => {
+      const complete = workspace.storyboard.filter((page) =>
+        [page.scene, page.action, page.emotion].every((value) => value.trim()),
+      ).length;
+      if (progressText) progressText.textContent = `已完成 ${complete} / ${PAGE_COUNT} 页`;
+      if (progressBar) progressBar.style.width = `${(complete / PAGE_COUNT) * 100}%`;
+
+      workspace.storyboard.forEach((page) => {
+        const card = root.querySelector(`[data-storyboard-page="${page.page}"]`);
+        if (!card) return;
+        const filled = [page.scene, page.action, page.emotion].filter((value) => value.trim()).length;
+        const status = card.querySelector('[data-page-status]');
+        if (status) {
+          status.textContent = filled === 3 ? '已完成' : filled > 0 ? '写了一半' : '空白';
+          status.dataset.state = filled === 3 ? 'confirmed' : filled > 0 ? 'pending' : 'empty';
+        }
+        card.querySelectorAll('[data-page-field]').forEach((field) => {
+          if (document.activeElement !== field) field.value = page[field.dataset.pageField] || '';
+        });
+      });
+    };
+
+    root.addEventListener('input', (event) => {
+      const field = event.target.closest('[data-page-field]');
+      if (!field) return;
+      setStoryboardPage(field.dataset.page, field.dataset.pageField, field.value);
+      render();
+    });
+
+    document.addEventListener('picturebook:workspace-change', render);
+    document.addEventListener('picturebook:project-imported', render);
+
+    generateButton?.addEventListener('click', () => {
+      const prompt = buildStoryboardPrompt(storyValues());
+      if (output) {
+        output.textContent = prompt;
+        output.hidden = false;
+      }
+      if (copyButton) copyButton.hidden = false;
+      if (feedback) feedback.textContent = '提示词已生成。先看看它有没有替你改故事，再交给智能体。';
+    });
+
+    copyButton?.addEventListener('click', async () => {
+      const copied = await copyTextToClipboard(output?.textContent || '');
+      if (feedback) feedback.textContent = copied ? '已复制分镜提示词。' : '复制没有成功，请选中文字手动复制。';
+    });
+
+    render();
+  }
+</script>

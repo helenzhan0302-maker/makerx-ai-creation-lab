@@ -1,6 +1,6 @@
 # MakerX AI 造物实验室｜内容模型（Phase 0）
 
-> **当前原型说明（2026-10-15）**：完整内容集合与 schema 尚未接入首页。当前首页只读取 `src/content/projects/001-ai-base.md` 中的 `id`、`title`、`status`、`summary` 四个轻量展示字段，用于渲染 `AI星球` 项目卡片；项目页 `/lab/001-ai-planet/` 已接入课堂提示词工具，但这不代表正式课程步骤或物料已经完成。接入正式内容模型前，仍以本文契约和 `docs/decisions.md` 的硬约束为准。
+> **当前原型说明（2026-11-03）**：完整内容集合与 schema 尚未接入。当前首页读取 `src/content/projects/001-ai-base.md` 与 `src/content/projects/002-picturebook.md` 中的 `id`、`title`、`status`、`summary` 四个轻量展示字段，用于渲染两张项目卡片；项目页 `/lab/001-ai-planet/` 与 `/lab/002-picturebook/` 已接入各自课堂工具，但这不代表正式课程步骤或物料已经完成。接入正式内容模型前，仍以本文契约和 `docs/decisions.md` 的硬约束为准。
 
 > 目的：把**课程内容**和**页面组件**彻底分开。新增「实验 002」时，理想改动 = **新增 1 个内容文件 + 最多 1 张图片**，页面代码零改动。
 > 本文档定义字段契约。示例值均来自已核对的真实材料；**未确认的字段一律省略或标记为待确认，不填猜测值。**
@@ -13,7 +13,7 @@
 ```
 src/content/projects/
 ├─ 001-my-ai-base.md          ← 文件 id 即 URL slug
-├─ 002-<kebab-case>.md        ← 未来新增
+├─ 002-picturebook.md         ← 实验 002「故事放映机」
 └─ _template.md               ← 新建项目的拷贝模板（下划线前缀，不参与构建路由）
 ```
 

@@ -616,6 +616,15 @@ a:focus-visible {
   border-top: 1px solid var(--line-strong);
 }
 
+.project-list-cards {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.project-list-cards .project-card {
+  min-height: 11rem;
+}
+
 .project-list-heading h3 {
   margin: 1rem 0 0;
   font-size: clamp(1.2rem, 2vw, 1.75rem);
@@ -625,10 +634,9 @@ a:focus-visible {
 
 .project-card {
   position: relative;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: clamp(1rem, 3vw, 2.5rem);
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
   min-height: 12rem;
   padding: clamp(1.25rem, 3vw, 2.5rem);
   overflow: hidden;
@@ -638,6 +646,14 @@ a:focus-visible {
   box-shadow: 0 1.5rem 3rem rgba(80, 110, 190, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.82);
   color: inherit;
   text-decoration: none;
+  transition: transform 220ms var(--ease-out), box-shadow 220ms var(--ease-out), border-color 220ms var(--ease-out);
+}
+
+.project-card:hover,
+.project-card:focus-visible {
+  transform: translateY(-4px);
+  border-color: rgba(47, 75, 199, 0.56);
+  box-shadow: 0 2rem 4rem rgba(80, 110, 190, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .project-card::after {
@@ -655,8 +671,8 @@ a:focus-visible {
 .project-card-index {
   color: var(--accent-wire);
   font-family: var(--font-mono);
-  font-size: clamp(1.5rem, 4vw, 3rem);
-  letter-spacing: -0.08em;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
 }
 
 .project-card-copy {
@@ -698,6 +714,7 @@ a:focus-visible {
 .project-card-arrow {
   position: relative;
   z-index: 1;
+  align-self: flex-end;
   color: var(--accent-wire);
   font-size: 2rem;
 }
@@ -976,7 +993,7 @@ a:focus-visible {
   }
 
   .project-card {
-    grid-template-columns: auto minmax(0, 1fr);
+    display: flex;
   }
 
   .project-card-arrow {

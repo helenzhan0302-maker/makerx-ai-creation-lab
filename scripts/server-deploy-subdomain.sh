@@ -186,7 +186,7 @@ fi
 
 say "--- HTTP 自检 ---"
 if [ "$DRY" -eq 0 ]; then
-  for p in "/" "/lab/001-ai-planet/" "/lab/001-ai-planet/lesson-1/" "/lab/001-ai-planet/upgrade/"; do
+  for p in "/" "/lab/001-ai-planet/" "/lab/001-ai-planet/lesson-1/" "/lab/001-ai-planet/upgrade/" "/lab/002-picturebook/" "/lab/002-picturebook/lesson-1/" "/lab/002-picturebook/lesson-2/"; do
     code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 -H "Host: ${DOMAIN}" "http://127.0.0.1${p}" || echo ERR)
     say "http ${p} => ${code}"
   done
@@ -215,7 +215,7 @@ fi
 say "--- 最终自检 ---"
 if [ "$DRY" -eq 0 ]; then
   ALL_OK=1
-  for p in "/" "/lab/001-ai-planet/" "/lab/001-ai-planet/lesson-1/" "/lab/001-ai-planet/upgrade/"; do
+  for p in "/" "/lab/001-ai-planet/" "/lab/001-ai-planet/lesson-1/" "/lab/001-ai-planet/upgrade/" "/lab/002-picturebook/" "/lab/002-picturebook/lesson-1/" "/lab/002-picturebook/lesson-2/"; do
     code=$(curl -sk --resolve "${DOMAIN}:443:127.0.0.1" -o /dev/null -w "%{http_code}" --max-time 10 "https://${DOMAIN}${p}" || echo ERR)
     say "https ${p} => ${code}"
     [ "$code" = "200" ] || ALL_OK=0

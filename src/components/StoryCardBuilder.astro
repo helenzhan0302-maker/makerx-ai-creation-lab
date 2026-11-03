@@ -1,0 +1,255 @@
+---
+import { STORY_ELEMENTS, STORY_STARTS, createStoryState } from '../lib/picturebook-story.mjs';
+
+const state = createStoryState();
+---
+
+<section class="pb-section pb-story" data-story-card aria-labelledby="story-card-title">
+  <div class="pb-section-heading">
+    <p class="pb-kicker">step 01 / story card</p>
+    <h2 id="story-card-title">先把故事问清楚，再开始画。</h2>
+    <p>每次只回答一个问题。说“不知道”也可以，我们会换一个小一点的方向，不会替你编故事。</p>
+  </div>
+
+  <fieldset class="pb-start-picker">
+    <legend>从哪一个念头开始？</legend>
+    {STORY_STARTS.map((start, index) => (
+      <label class="pb-start-option">
+        <input type="radio" name="storyStart" value={start.id} checked={index === 0} data-story-start />
+        <span><span aria-hidden="true">✦</span>{start.label}</span>
+      </label>
+    ))}
+  </fieldset>
+
+  <div class="pb-question-stage" data-story-question-stage aria-live="polite">
+    <div class="pb-question-meta">
+      <span>现在只问这一个</span>
+      <span data-story-progress>故事卡 0 / 5</span>
+    </div>
+    <p class="pb-question-text" data-story-question>{STORY_ELEMENTS[0].question}</p>
+    <div class="pb-question-choices" data-story-choices hidden></div>
+    <label class="pb-answer-field">
+      <span>用你自己的话说</span>
+      <textarea rows="3" maxlength="240" data-story-answer placeholder="例如：一只总把袜子藏起来的小猫"></textarea>
+    </label>
+    <div class="pb-inline-actions">
+      <button class="pb-button pb-button--secondary" type="button" data-story-save>记下这个回答</button>
+      <button class="pb-button pb-button--quiet" type="button" data-story-undo>这句不是我想要的，退回去</button>
+    </div>
+    <p class="pb-feedback" data-story-feedback role="status"></p>
+  </div>
+
+  <div class="pb-story-grid">
+    {STORY_ELEMENTS.map((element, index) => {
+      const answer = state.answers[element.id];
+      return (
+        <article class="pb-story-card" data-story-element={element.id}>
+          <div class="pb-card-topline">
+            <span class="pb-card-number">{String(index + 1).padStart(2, '0')}</span>
+            <span class="pb-status" data-story-status>{answer.status === 'confirmed' ? '已确认' : answer.status === 'pending' ? '待补充' : '空白'}</span>
+          </div>
+          <h3>{element.label}</h3>
+          <p class="pb-question-small">{element.question}</p>
+          <label class="pb-answer-field pb-answer-field--compact">
+            <span class="sr-only">{element.label}：孩子原话</span>
+            <textarea rows="3" maxlength="240" data-story-input data-element={element.id} placeholder="把刚才说的话写在这里"></textarea>
+          </label>
+          <button class="pb-button pb-button--quiet pb-card-save" type="button" data-story-card-save data-element={element.id}>记下这个回答</button>
+        </article>
+      );
+    })}
+  </div>
+
+  <div class="pb-story-check">
+    <div>
+      <p class="pb-kicker">story check / 故事自检</p>
+      <h3>这真的是我想讲的故事吗？</h3>
+    </div>
+    <div class="pb-check-fields">
+      <label class="pb-answer-field">
+        <span>这是我想讲的故事吗</span>
+        <textarea rows="2" maxlength="180" data-review="isMyStory" placeholder="说说你最想保留的地方"></textarea>
+      </label>
+      <label class="pb-answer-field">
+        <span>我最满意哪一处</span>
+        <textarea rows="2" maxlength="180" data-review="favorite" placeholder="哪一句最像你自己的想法"></textarea>
+      </label>
+      <label class="pb-answer-field">
+        <span>我改过什么，为什么改</span>
+        <textarea rows="2" maxlength="180" data-review="changes" placeholder="例如：把结局改得更意外"></textarea>
+      </label>
+    </div>
+  </div>
+
+  <div class="pb-copy-panel">
+    <div>
+      <h3>把追问规则交给课堂智能体</h3>
+      <p>复制后粘到课堂上使用的智能体产品里。它每次只会问你一个问题，不替你写完整故事。</p>
+    </div>
+    <div class="pb-inline-actions">
+      <button class="pb-button pb-button--secondary" type="button" data-generate-socratic>生成追问提示词</button>
+      <button class="pb-button pb-button--quiet" type="button" data-copy-socratic hidden>复制追问提示词</button>
+    </div>
+    <pre class="pb-output" data-socratic-output hidden tabindex="0"></pre>
+    <p class="pb-feedback" data-socratic-feedback role="status"></p>
+  </div>
+</section>
+
+<script>
+  // @ts-nocheck
+  import { copyTextToClipboard } from '../lib/ai-planet-builder.mjs';
+  import { buildSocraticPrompt } from '../lib/picturebook-prompts.mjs';
+  import { STORY_ELEMENTS, nextQuestion, storyCompletion } from '../lib/picturebook-story.mjs';
+  import { saveAnswer, setReview, setStart, undoAnswer, workspace } from '../lib/picturebook-workspace.mjs';
+
+  const root = document.querySelector('[data-story-card]');
+
+  if (root) {
+    const questionText = root.querySelector('[data-story-question]');
+    const choicesBox = root.querySelector('[data-story-choices]');
+    const answerField = root.querySelector('[data-story-answer]');
+    const feedback = root.querySelector('[data-story-feedback]');
+    const progress = root.querySelector('[data-story-progress]');
+    const socraticOutput = root.querySelector('[data-socratic-output]');
+    const socraticFeedback = root.querySelector('[data-socratic-feedback]');
+    const copySocratic = root.querySelector('[data-copy-socratic]');
+    let current = nextQuestion(workspace.story);
+
+    const renderQuestion = () => {
+      current = nextQuestion(workspace.story);
+      const element = STORY_ELEMENTS.find((item) => item.id === current.elementId);
+      if (questionText) questionText.textContent = current.text;
+      if (progress) progress.textContent = `故事卡 ${storyCompletion(workspace.story)} / 5`;
+      if (answerField) {
+        answerField.value = element ? workspace.story.answers[element.id].original : '';
+        answerField.disabled = !element;
+        answerField.placeholder = element?.id === 'hero' ? '例如：一只总把袜子藏起来的小猫' : '用你自己的话说';
+      }
+      if (choicesBox) {
+        choicesBox.replaceChildren();
+        choicesBox.hidden = !current.choices.length;
+        current.choices.forEach((choice) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'pb-choice-chip';
+          button.textContent = choice;
+          button.addEventListener('click', () => {
+            if (answerField) answerField.value = choice;
+            answerField?.focus();
+          });
+          choicesBox.appendChild(button);
+        });
+      }
+    };
+
+    const renderCards = () => {
+      STORY_ELEMENTS.forEach((element) => {
+        const card = root.querySelector(`[data-story-element="${element.id}"]`);
+        if (!card) return;
+        const answer = workspace.story.answers[element.id];
+        const input = card.querySelector('[data-story-input]');
+        if (input && document.activeElement !== input) input.value = answer.original;
+        const status = card.querySelector('[data-story-status]');
+        if (status) {
+          status.textContent = answer.status === 'confirmed' ? '已确认' : answer.status === 'pending' ? '待补充' : '空白';
+          status.dataset.state = answer.status;
+        }
+        card.classList.toggle('is-focused', current.elementId === element.id);
+      });
+    };
+
+    const renderAll = () => {
+      renderQuestion();
+      renderCards();
+    };
+
+    const acceptAnswer = (elementId, value) => {
+      const before = workspace.story.answers[elementId]?.status;
+      saveAnswer(elementId, value);
+      const after = workspace.story.answers[elementId]?.status;
+      if (feedback) {
+        feedback.textContent =
+          after === 'confirmed'
+            ? '记下了。先别急着修饰，这个故事已经更像你的了。'
+            : after === 'pending'
+              ? '这一格先留白，之后想起来再补。我们继续下一格。'
+              : '这句话还不够具体。可以再补一个画面或动作。';
+        feedback.dataset.tone = after === 'confirmed' ? 'ok' : after === 'pending' ? 'neutral' : 'error';
+      }
+      renderAll();
+      if (after === 'pending') answerField?.focus();
+      return { before, after };
+    };
+
+    root.querySelectorAll('[data-story-start]').forEach((radio) => {
+      radio.addEventListener('change', () => {
+        if (radio.checked) setStart(radio.value);
+      });
+    });
+
+    root.querySelector('[data-story-save]')?.addEventListener('click', () => {
+      if (!current.elementId) {
+        if (feedback) feedback.textContent = '五个格子都已经有回答了，去检查一下分镜吧。';
+        return;
+      }
+      acceptAnswer(current.elementId, answerField?.value || '');
+    });
+
+    root.querySelectorAll('[data-story-card-save]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const elementId = button.dataset.element;
+        const input = root.querySelector(`[data-story-input][data-element="${elementId}"]`);
+        acceptAnswer(elementId, input?.value || '');
+      });
+    });
+
+    root.querySelector('[data-story-undo]')?.addEventListener('click', () => {
+      const restored = undoAnswer();
+      if (feedback) {
+        feedback.textContent = restored ? '已经退回上一个版本。' : '还没有可以退回的回答。';
+        feedback.dataset.tone = restored ? 'ok' : 'neutral';
+      }
+      renderAll();
+    });
+
+    root.querySelectorAll('[data-review]').forEach((field) => {
+      field.addEventListener('input', () => setReview(field.dataset.review, field.value));
+    });
+
+    root.querySelector('[data-generate-socratic]')?.addEventListener('click', () => {
+      const element = STORY_ELEMENTS.find((item) => item.id === current.elementId) || STORY_ELEMENTS[0];
+      const prompt = buildSocraticPrompt({
+        element: element.label,
+        story: {
+          hero: workspace.story.answers.hero.original,
+          goal: workspace.story.answers.goal.original,
+          obstacle: workspace.story.answers.obstacle.original,
+          action: workspace.story.answers.action.original,
+          result: workspace.story.answers.result.original,
+        },
+        childAnswer: workspace.story.answers[element.id]?.original || '',
+        attempt: Math.max(1, workspace.story.answers[element.id]?.attempts || 1),
+      });
+      if (socraticOutput) {
+        socraticOutput.textContent = prompt;
+        socraticOutput.hidden = false;
+      }
+      if (copySocratic) copySocratic.hidden = false;
+      if (socraticFeedback) socraticFeedback.textContent = '提示词已生成。把它粘到课堂智能体里，一次只回一个问题。';
+    });
+
+    copySocratic?.addEventListener('click', async () => {
+      const copied = await copyTextToClipboard(socraticOutput?.textContent || '');
+      if (socraticFeedback) socraticFeedback.textContent = copied ? '已复制追问提示词。' : '复制没有成功，请手动选中文字。';
+    });
+
+    document.addEventListener('picturebook:workspace-change', renderAll);
+    document.addEventListener('picturebook:project-imported', () => {
+      root.querySelectorAll('[data-review]').forEach((field) => {
+        field.value = workspace.review[field.dataset.review] || '';
+      });
+      renderAll();
+    });
+    renderAll();
+  }
+</script>
