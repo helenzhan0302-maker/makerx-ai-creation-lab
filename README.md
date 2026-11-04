@@ -851,6 +851,27 @@ curl -s https://<子域>/DEPLOY_STATUS.txt   # 应为 status=ok
 - `http://makerx.skftai.top/` → `301` 跳转到 `https://makerx.skftai.top/`；旧入口 `http://124.222.99.128/` 与 `http://124.222.99.128/makerx/` 仍为 `200`。
 - 生产站点浏览器 E2E（`PB_BASE=https://makerx.skftai.top node tests/browser-picturebook.mjs`）：**44/44 通过**。
 
+### A · 编辑台视觉改版上线（2026-11-04）
+
+**本轮改动**：全站字号阶梯统一（`--fs-display` 上限 10rem、正文 17px、标签 13px、中文标题 `letter-spacing: 0`），首页项目档案改为紧凑双栏卡片并给两个项目各自独立动效，002 课次卡改为紧凑头版式并给第 1/2 节不同动效。逐项依据见 `docs/decisions.md` D-18、D-19。
+
+**本机实测**：
+
+| 命令 | 结果 |
+|---|---|
+| `pnpm test` | **75 pass / 0 fail / 0 skipped** |
+| `pnpm exec astro build --config astro.config.subdomain.mjs --outDir dist-subdomain` | 退出码 0，**7 pages built** |
+
+**部署产物**：`deploy-subdomain` 已提交 `8781a12` 并推送。
+
+**服务器发布（2026-11-04，已验证成功）**：复用 TAT 命令 `cmd-fc0x3vye`（`makerx-deploy-002-multisrc-20261104`）对 `lhins-ce4mfndw` 执行，执行 ID `inv-waqrmigdic`。
+
+- 线上回执：`DEPLOY_STAMP.txt` = `deploy=20261104141710`；`DEPLOY_STATUS.txt` = `status=ok` / `https=on`。
+- 线上首页已引用新构建 CSS `/_astro/BaseLayout.DJCIextJ.css`；002 总览引用 `picturebook.C3cyGejK.css`、`planet-upgrade.BqE7t0lg.css`，与本地 `dist-subdomain/_astro` 哈希一致。
+- 线上首页已不再出现旧页脚文案「静态原型 · 持续更新」。
+- 七条路由实测均 `200`：`/`、`/lab/001-ai-planet/`、`/lab/001-ai-planet/lesson-1/`、`/lab/001-ai-planet/upgrade/`、`/lab/002-picturebook/`、`/lab/002-picturebook/lesson-1/`、`/lab/002-picturebook/lesson-2/`。
+- 生产站点浏览器 E2E（`PB_BASE=https://makerx.skftai.top node tests/browser-picturebook.mjs`）：**53/53 通过**，含首页双栏卡片实测 367.7×280px、两套项目动效、两套课次动效、保存/导入/v1→v2、375/768/1440 无横向溢出、reduced motion、无 JS、控制台 0 错误。
+
 **未验证**：真实手机与微信内置浏览器、真实屏幕阅读器；`https://skftai.top/` 主域证书不匹配（`SEC_E_WRONG_PRINCIPAL`，历史遗留，本次未改动）。
 
 **类型检查**：`pnpm check` 未成功完成（`design/` 既有错误导致 heap OOM，退出码 134），不能声称 `src/` 零错误；生产构建与浏览器测试均已通过。
