@@ -110,6 +110,15 @@ const heading = title || (isImport ? '先打开上次的故事工程' : '把这�
       feedback.dataset.tone = tone;
     };
 
+    const storyboardProgress = () => {
+      const pages = Array.isArray(workspace.storyboard) ? workspace.storyboard : [];
+      if (!pages.length) return '';
+      const complete = pages.filter((page) =>
+        [page.scene, page.action, page.emotion].every((value) => typeof value === 'string' && value.trim()),
+      ).length;
+      return `${complete} / ${pages.length}`;
+    };
+
     const exportVersion = () => nextExportVersion(baseVersion);
 
     const blockers = () => {
@@ -124,7 +133,8 @@ const heading = title || (isImport ? '先打开上次的故事工程' : '把这�
       if (exportButton) exportButton.disabled = Boolean(blocker);
       if (copyButton) copyButton.disabled = Boolean(blocker);
       if (blocker) {
-        say(blocker, 'neutral');
+        const progress = requireStoryboard ? storyboardProgress() : '';
+        say(progress ? `${blocker}（已完成 ${progress} 页）` : blocker, 'neutral');
         showingRequirement = true;
       } else if (showingRequirement) {
         say(defaultFeedback, 'neutral');

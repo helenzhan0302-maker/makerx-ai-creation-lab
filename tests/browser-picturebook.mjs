@@ -77,6 +77,13 @@ check('storyboard has six pages', (await page.locator('[data-storyboard-page]').
 check('export controls present', (await page.locator('[data-export-project]').count()) === 1);
 check('export disabled before storyboard is complete', await page.locator('[data-export-project]').isDisabled());
 check('export explains what is missing', (await page.locator('[data-project-file-bar] [data-file-feedback]').innerText()).includes('6 页分镜'));
+check('export feedback shows storyboard progress', (await page.locator('[data-project-file-bar] [data-file-feedback]').innerText()).includes('0 / 6'));
+check('hero question offers character ideas', (await page.locator('[data-story-inspiration] .pb-choice-chip--idea').count()) >= 6);
+check('story check block was removed', (await page.locator('[data-review]').count()) === 0);
+
+await page.locator('[data-story-inspiration] .pb-choice-chip--idea').first().click();
+check('inspiration fills the answer field', (await page.locator('[data-story-answer]').inputValue()).includes('会发光的小恐龙'));
+await page.locator('[data-story-answer]').fill('');
 
 const answers = [
   ['data-story-answer', '一只总把袜子藏起来的小猫'],
@@ -113,9 +120,11 @@ for (let index = 0; index < pages.length; index += 1) {
 check('storyboard progress six of six', (await page.locator('[data-storyboard-progress]').innerText()).includes('6 / 6'));
 check('export enabled after storyboard is complete', await page.locator('[data-export-project]').isEnabled());
 
-await page.locator('[data-review="isMyStory"]').fill('这是我想讲的故事。');
-await page.locator('[data-review="favorite"]').fill('小猫提灯出门这一幕。');
-await page.locator('[data-review="changes"]').fill('原本结局太突然，改成了先帮小兔。');
+await page.locator('[data-generate-socratic]').click();
+const socraticText = await page.locator('[data-socratic-output]').innerText();
+check('socratic prompt has the three phases', socraticText.includes('第一阶段') && socraticText.includes('第二阶段') && socraticText.includes('第三阶段'));
+check('socratic prompt carries the filled story card', socraticText.includes('主角：一只总把袜子藏起来的小猫'));
+check('socratic prompt asks the child to confirm the story', socraticText.includes('这是你想讲的故事吗'));
 
 const downloadV1Promise = page.waitForEvent('download');
 await page.locator('[data-export-project]').click();

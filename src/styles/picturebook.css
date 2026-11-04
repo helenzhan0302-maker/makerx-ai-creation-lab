@@ -322,10 +322,6 @@
   font-size: 0.8125rem;
 }
 
-.pb-save-dock {
-  margin: 0 0 clamp(1.25rem, 2.5vw, 2rem);
-}
-
 .pb-file-bar-heading p code,
 .pb-save-heading p code,
 .pb-end-note code,
@@ -516,6 +512,50 @@
   color: #ffffff;
 }
 
+.pb-inspiration {
+  margin-top: 0.9rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px dashed rgba(47, 75, 199, 0.34);
+  border-radius: 0.8rem;
+  background: rgba(233, 242, 253, 0.45);
+}
+
+.pb-inspiration[hidden] {
+  display: none;
+}
+
+.pb-inspiration-label {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+  font-weight: 650;
+  line-height: 1.55;
+}
+
+.pb-inspiration-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.pb-choice-chip--idea {
+  border-color: rgba(17, 19, 21, 0.22);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--brand-ink);
+}
+
+.pb-save-panel {
+  border-color: rgba(47, 75, 199, 0.4);
+  background:
+    linear-gradient(rgba(233, 242, 253, 0.72), rgba(255, 255, 255, 0.8)),
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(47, 75, 199, 0.045) 31px 32px);
+}
+
+.pb-save-panel .pb-file-bar {
+  margin-bottom: 0;
+}
+
 .pb-story-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -587,7 +627,6 @@
 }
 
 .pb-story-card h3,
-.pb-story-check h3,
 .pb-copy-panel h3 {
   margin: 0.55rem 0 0;
   color: var(--brand-ink);
@@ -616,26 +655,6 @@
 .pb-card-save {
   margin-top: 0.3rem;
   font-size: 0.82rem;
-}
-
-.pb-story-check {
-  display: grid;
-  grid-template-columns: minmax(10rem, 0.6fr) minmax(0, 1.4fr);
-  gap: 1rem 2rem;
-  align-items: start;
-  margin-top: 1.2rem;
-  padding-top: 1.2rem;
-  border-top: 1px solid var(--line-strong);
-}
-
-.pb-check-fields {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0 1rem;
-}
-
-.pb-check-fields .pb-answer-field {
-  margin-top: 0;
 }
 
 .pb-copy-panel {
@@ -1269,13 +1288,11 @@
 
 @media (max-width: 900px) {
   .pb-file-bar,
-  .pb-story-check,
   .pb-roadshow-layout {
     grid-template-columns: 1fr;
   }
 
   .pb-story-grid,
-  .pb-check-fields,
   .pb-style-groups,
   .pb-trait-grid,
   .pb-final-check-list,
@@ -1298,7 +1315,6 @@
 
   .pb-story-grid,
   .pb-storyboard-grid,
-  .pb-check-fields,
   .pb-style-groups,
   .pb-trait-grid,
   .pb-final-check-list,

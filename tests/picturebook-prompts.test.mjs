@@ -57,30 +57,39 @@ test('storyboard prompt lists pending story elements instead of inventing them',
   assert.match(prompt, /不要自己补/);
 });
 
-test('socratic prompt asks exactly one question and forbids ghostwriting', () => {
+test('socratic prompt runs three phases: ask, write, let the child check', () => {
   const prompt = buildSocraticPrompt({
-    element: '困难',
     story: { hero: '一只怕黑的小猫', goal: '', obstacle: '', action: '', result: '' },
-    childAnswer: '',
-    attempt: 1,
   });
-  assert.ok((prompt.match(/？/g) || []).length <= 1);
   assert.match(prompt, /不是代写者/);
-  assert.match(prompt, /不要替我写完整情节/);
-  assert.match(prompt, /只问我一个问题/);
+  assert.match(prompt, /第一阶段：把缺口问清楚/);
+  assert.match(prompt, /第二阶段：写出完整故事/);
+  assert.match(prompt, /第三阶段：请我检查并修改/);
+  assert.match(prompt, /每次只问我一个问题/);
+  assert.match(prompt, /不要一次给我一整套问卷/);
+  assert.match(prompt, /只能使用我说过的内容/);
+  assert.match(prompt, /这是你想讲的故事吗/);
 });
 
-test('socratic prompt carries the full story card on every turn', () => {
+test('socratic prompt carries the filled story card and names the missing slots', () => {
   const prompt = buildSocraticPrompt({
-    element: '行动',
-    story: { hero: '小猫', goal: '找回星星', obstacle: '天黑', action: '', result: '' },
-    childAnswer: '它决定提灯出门',
-    attempt: 2,
+    story: { hero: '小猫', goal: '找回星星', obstacle: '天黑', action: '它决定提灯出门', result: '' },
   });
   assert.match(prompt, /主角：小猫/);
   assert.match(prompt, /目标：找回星星/);
   assert.match(prompt, /困难：天黑/);
-  assert.match(prompt, /它决定提灯出门/);
+  assert.match(prompt, /行动：它决定提灯出门/);
+  assert.match(prompt, /还缺：结果/);
+  assert.match(prompt, /从第一个缺失的格子开始/);
+});
+
+test('socratic prompt switches to confirm-then-write when the card is full', () => {
+  const prompt = buildSocraticPrompt({
+    story: { hero: '小猫', goal: '找星星', obstacle: '天黑', action: '提灯出门', result: '星星回家' },
+  });
+  assert.match(prompt, /故事卡已经填满/);
+  assert.match(prompt, /先复述一遍确认/);
+  assert.doesNotMatch(prompt, /还缺：/);
 });
 
 test('page prompt contains all four character traits and three style settings', () => {
@@ -149,7 +158,15 @@ test('lesson one page includes story card, storyboard and save controls', () => 
   assert.match(storyboard, /data-storyboard/);
   assert.match(storyboard, /PAGE_COUNT/);
   assert.match(storyboard, /data-storyboard-page/);
-  assert.match(page, /compact=\{true\}/, 'lesson 1 keeps a compact save entry at the top');
+  assert.match(page, /pb-save-panel/, 'lesson 1 keeps a save panel');
+  assert.match(page, /pb-save-panel[\s\S]*ProjectFileBar/, 'save panel wraps the file bar');
+  assert.doesNotMatch(page, /pb-save-dock/, 'save entry was moved out of the top of the page');
+  assert.doesNotMatch(page, /pb-story-check|data-review/, 'the story check block was removed');
+  assert.match(storyCard, /data-story-inspiration/, 'hero question offers character ideas');
+  const storyData = fs.readFileSync(path.join(root, 'src/lib/picturebook-story.mjs'), 'utf8');
+  assert.match(storyData, /会发光的小恐龙/);
+  assert.match(storyData, /影子不听话的小猫/);
+  assert.match(storyData, /听见植物说话的女孩/);
   assert.doesNotMatch(page, /pb-boundary|pb-stack-end|保存方式说明/, 'lesson 1 no longer repeats the classroom save speech');
   assert.doesNotMatch(page, /两个周六中的第 1 节|不填写姓名|不上传照片/, 'lesson 1 chips were removed by user request');
   assert.doesNotMatch(storyCard, /生成追问提示词|复制追问提示词/, 'prompt buttons use the shorter labels');

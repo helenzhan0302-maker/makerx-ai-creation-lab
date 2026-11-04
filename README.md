@@ -37,6 +37,8 @@
 | [站点地图](docs/site-map.md) | 路由、页面区块、组件清单 |
 | [内容模型](docs/content-model.md) | 内容字段契约与校验规则 |
 | [AGENTS.md](AGENTS.md) | 给 AI 编码代理的项目约束 |
+| [部署 SOP](docs/deploy/makerx-subdomain-deploy-sop.md) | **发布/验收/回滚 makerx.skftai.top 的标准步骤与判据** |
+| [部署案例与故障台账](docs/deploy/deploy-cases-and-incidents.md) | 已验证的部署案例 + 已发生的故障、根因与防复发规则 |
 | [首屏图实测](references/research/2026-10-15-hero-image-measurement.md) | 用户提供的首屏视觉参考（1774×887）的文件实测与校正记录 |
 | [参考站实测（haoqi / hiesther）](references/research/2026-10-14-reference-measurements.md) | 第一手 DOM / 计算样式 / 动画实测记录 |
 | [参考站实测（20 站）](references/research/2026-10-14-portfolio-sites-20.md) | 参考清单里另外 20 站的逐站实测 + 综合原则 |
@@ -875,6 +877,29 @@ curl -s https://<子域>/DEPLOY_STATUS.txt   # 应为 status=ok
 **未验证**：真实手机与微信内置浏览器、真实屏幕阅读器；`https://skftai.top/` 主域证书不匹配（`SEC_E_WRONG_PRINCIPAL`，历史遗留，本次未改动）。
 
 **类型检查**：`pnpm check` 未成功完成（`design/` 既有错误导致 heap OOM，退出码 134），不能声称 `src/` 零错误；生产构建与浏览器测试均已通过。
+
+### B · lesson-1「故事放映机」故事工具改版上线（2026-11-04）
+
+**本轮改动**：按浏览器批注与课堂反馈调整第 1 节。保存条从页首移到 6 页分镜之后，并明确为真实下载/复制（`ProjectFileBar` 新增 `compact` 模式）；主角问题新增 6 个灵感起点，点选只填入输入框、不自动确认；删除「STORY CHECK / 故事自检」整块；课堂提示词改为三阶段（① 只问缺口、一次一个问题 → ② 用孩子原话写完整故事 → ③ 请孩子确认并按意见修改），并把已填的故事卡一并带入。依据见 `docs/decisions.md` D-20、D-21。
+
+**本机实测**：
+
+| 命令 | 结果 |
+|---|---|
+| `pnpm test` | **76 pass / 0 fail / 0 skipped** |
+| `pnpm exec astro build --config astro.config.subdomain.mjs --outDir dist-subdomain` | 退出码 0，**7 pages built** |
+| 本地生产预览 E2E（`PB_BASE=http://127.0.0.1:4400`） | **60/60 通过** |
+
+**部署产物**：`deploy-subdomain` 已提交 `c72ed50` 并推送，`ls-remote` 确认远端为该提交；工作树 `.superpowers/deploy-subdomain-wt4` 干净。
+
+**服务器发布（2026-11-04，已验证成功）**：复用 TAT 命令 `cmd-fc0x3vye`（`makerx-deploy-002-multisrc-20261104`），只勾选 `lhins-ce4mfndw`。操作方式为 UI Automation：先读标签与复选框状态，勾选后确认「已选择1个实例」且「执行命令」由 disabled 变 enabled，再触发。
+
+- 线上回执：`DEPLOY_STAMP.txt` = `deploy=20261104170025`（不再是 `20261104141710`）；`DEPLOY_STATUS.txt` = `status=ok` / `https=on`。
+- 线上 lesson-1 引用 `/_astro/picturebook.DzhgN6yZ.css`（20608 bytes），与本地 `dist-subdomain/_astro` 哈希一致；同页 JS 引用 `StoryCardBuilder…C4ZUSghi.js`、`StoryboardBuilder…B3lRN511.js`、`ProjectFileBar…CTt8XVqv.js`。
+- 七条路由实测均 `200`：`/`、`/lab/001-ai-planet/`、`/lab/001-ai-planet/lesson-1/`、`/lab/001-ai-planet/upgrade/`、`/lab/002-picturebook/`、`/lab/002-picturebook/lesson-1/`、`/lab/002-picturebook/lesson-2/`。
+- 生产站点浏览器 E2E（`PB_BASE=https://makerx.skftai.top node tests/browser-picturebook.mjs`）：**60/60 通过**，含三阶段提示词、灵感选项填入、故事自检块已移除、保存条在分镜后、v1→v2、导入继续、375/768/1440 无横向溢出、reduced motion、无 JS、控制台 0 错误。
+
+**未验证**：真实手机与微信内置浏览器、真实屏幕阅读器；**类型检查 `pnpm check` 未通过**（`design/` 既有错误导致 heap OOM，退出码 134），不能声称类型检查通过。
 
 ### 尚未核对 / 未验证
 

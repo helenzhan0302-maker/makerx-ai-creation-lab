@@ -28,6 +28,10 @@ const state = createStoryState();
     </div>
     <p class="pb-question-text" data-story-question>{STORY_ELEMENTS[0].question}</p>
     <div class="pb-question-choices" data-story-choices hidden></div>
+    <div class="pb-inspiration" data-story-inspiration hidden>
+      <p class="pb-inspiration-label">没有头绪？点一个当起点，再改成你自己的版本。</p>
+      <div class="pb-inspiration-list" data-story-inspiration-list></div>
+    </div>
     <label class="pb-answer-field">
       <span>用你自己的话说</span>
       <textarea rows="3" maxlength="240" data-story-answer placeholder="例如：一只总把袜子藏起来的小猫"></textarea>
@@ -60,31 +64,10 @@ const state = createStoryState();
     })}
   </div>
 
-  <div class="pb-story-check">
-    <div>
-      <p class="pb-kicker">story check / 故事自检</p>
-      <h3>这真的是我想讲的故事吗？</h3>
-    </div>
-    <div class="pb-check-fields">
-      <label class="pb-answer-field">
-        <span>这是我想讲的故事吗</span>
-        <textarea rows="2" maxlength="180" data-review="isMyStory" placeholder="说说你最想保留的地方"></textarea>
-      </label>
-      <label class="pb-answer-field">
-        <span>我最满意哪一处</span>
-        <textarea rows="2" maxlength="180" data-review="favorite" placeholder="哪一句最像你自己的想法"></textarea>
-      </label>
-      <label class="pb-answer-field">
-        <span>我改过什么，为什么改</span>
-        <textarea rows="2" maxlength="180" data-review="changes" placeholder="例如：把结局改得更意外"></textarea>
-      </label>
-    </div>
-  </div>
-
   <div class="pb-copy-panel">
     <div>
       <h3>把提示词交给课堂智能体</h3>
-      <p>复制后粘到课堂上使用的智能体产品里。它会一次问你一个问题，不替你写完整故事。</p>
+      <p>复制后粘到课堂智能体里。它先一次问一个问题补全故事，再写出完整故事，最后请你检查；不满意就当场改。</p>
     </div>
     <div class="pb-inline-actions">
       <button class="pb-button pb-button--secondary" type="button" data-generate-socratic>生成提示词</button>
@@ -100,13 +83,15 @@ const state = createStoryState();
   import { copyTextToClipboard } from '../lib/ai-planet-builder.mjs';
   import { buildSocraticPrompt } from '../lib/picturebook-prompts.mjs';
   import { STORY_ELEMENTS, nextQuestion, storyCompletion } from '../lib/picturebook-story.mjs';
-  import { saveAnswer, setReview, setStart, undoAnswer, workspace } from '../lib/picturebook-workspace.mjs';
+  import { saveAnswer, setStart, undoAnswer, workspace } from '../lib/picturebook-workspace.mjs';
 
   const root = document.querySelector('[data-story-card]');
 
   if (root) {
     const questionText = root.querySelector('[data-story-question]');
     const choicesBox = root.querySelector('[data-story-choices]');
+    const inspirationBox = root.querySelector('[data-story-inspiration]');
+    const inspirationList = root.querySelector('[data-story-inspiration-list]');
     const answerField = root.querySelector('[data-story-answer]');
     const feedback = root.querySelector('[data-story-feedback]');
     const progress = root.querySelector('[data-story-progress]');
@@ -138,6 +123,22 @@ const state = createStoryState();
             answerField?.focus();
           });
           choicesBox.appendChild(button);
+        });
+      }
+      if (inspirationBox && inspirationList) {
+        const inspirations = element && !current.choices.length ? element.inspirations || [] : [];
+        inspirationList.replaceChildren();
+        inspirationBox.hidden = !inspirations.length;
+        inspirations.forEach((idea) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'pb-choice-chip pb-choice-chip--idea';
+          button.textContent = idea;
+          button.addEventListener('click', () => {
+            if (answerField) answerField.value = idea;
+            answerField?.focus();
+          });
+          inspirationList.appendChild(button);
         });
       }
     };
@@ -212,14 +213,8 @@ const state = createStoryState();
       renderAll();
     });
 
-    root.querySelectorAll('[data-review]').forEach((field) => {
-      field.addEventListener('input', () => setReview(field.dataset.review, field.value));
-    });
-
     root.querySelector('[data-generate-socratic]')?.addEventListener('click', () => {
-      const element = STORY_ELEMENTS.find((item) => item.id === current.elementId) || STORY_ELEMENTS[0];
       const prompt = buildSocraticPrompt({
-        element: element.label,
         story: {
           hero: workspace.story.answers.hero.original,
           goal: workspace.story.answers.goal.original,
@@ -227,15 +222,13 @@ const state = createStoryState();
           action: workspace.story.answers.action.original,
           result: workspace.story.answers.result.original,
         },
-        childAnswer: workspace.story.answers[element.id]?.original || '',
-        attempt: Math.max(1, workspace.story.answers[element.id]?.attempts || 1),
       });
       if (socraticOutput) {
         socraticOutput.textContent = prompt;
         socraticOutput.hidden = false;
       }
       if (copySocratic) copySocratic.hidden = false;
-      if (socraticFeedback) socraticFeedback.textContent = '提示词已生成。把它粘到课堂智能体里，一次只回一个问题。';
+      if (socraticFeedback) socraticFeedback.textContent = '提示词已生成。粘到课堂智能体里：先追问、再写故事、最后请你检查。';
     });
 
     copySocratic?.addEventListener('click', async () => {
@@ -244,12 +237,7 @@ const state = createStoryState();
     });
 
     document.addEventListener('picturebook:workspace-change', renderAll);
-    document.addEventListener('picturebook:project-imported', () => {
-      root.querySelectorAll('[data-review]').forEach((field) => {
-        field.value = workspace.review[field.dataset.review] || '';
-      });
-      renderAll();
-    });
+    document.addEventListener('picturebook:project-imported', renderAll);
     renderAll();
   }
 </script>

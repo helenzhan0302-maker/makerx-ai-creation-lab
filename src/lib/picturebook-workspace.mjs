@@ -36,7 +36,6 @@ export function createWorkspace() {
       characterConsistent: false,
     },
     roadshow: { story: '', favoritePage: null, reason: '', improvement: '' },
-    review: { isMyStory: '', favorite: '', changes: '' },
     importedVersion: null,
     imported: false,
     lastExportedVersion: null,
@@ -144,12 +143,6 @@ export function setRoadshow(key, value) {
   } else if (key === 'story' || key === 'reason' || key === 'improvement') {
     workspace.roadshow[key] = typeof value === 'string' ? value : '';
   }
-  notifyWorkspace();
-}
-
-export function setReview(key, value) {
-  if (!['isMyStory', 'favorite', 'changes'].includes(key)) return;
-  workspace.review[key] = typeof value === 'string' ? value : '';
   notifyWorkspace();
 }
 

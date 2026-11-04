@@ -27,18 +27,22 @@ const baseUrl = import.meta.env.BASE_URL;
         </p>
       </section>
 
-      <div class="pb-save-dock">
+      <StoryCardBuilder />
+      <StoryboardBuilder />
+
+      <section class="pb-section pb-save-panel" aria-labelledby="lesson-one-save">
+        <div class="pb-section-heading">
+          <p class="pb-kicker">save project / 带走第一版</p>
+          <h2 id="lesson-one-save">分镜写完了，就把工程带走。</h2>
+          <p>保存下来的文件就是下周六的入口。第 1 节结束时带走 <code>story-project-v1.json</code>。</p>
+        </div>
         <ProjectFileBar
           mode="export"
           baseVersion={1}
           title="保存工程文件"
           requireStoryboard={true}
-          compact={true}
         />
-      </div>
-
-      <StoryCardBuilder />
-      <StoryboardBuilder />
+      </section>
     </main>
 
     <footer class="project-page-footer">
