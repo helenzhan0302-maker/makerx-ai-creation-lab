@@ -842,7 +842,16 @@ curl -s https://<子域>/DEPLOY_STATUS.txt   # 应为 status=ok
 
 **部署产物**：已镜像到 `deploy-subdomain` 工作树并提交 `df816ca`，推送到 `origin/deploy-subdomain` 成功（`1c52058..df816ca`）。
 
-**未完成 / 阻塞**：服务器端尚未发布。本机没有腾讯云 API 凭据、`tccli` 或自动化助手通道；SSH 22 端口开放，但 `ubuntu` / `root` / `lighthouse` 与两把本机密钥全部返回 `Permission denied (publickey,password)`。因此不能执行服务器脚本、不能生成新的 `DEPLOY_STAMP.txt`，也不能声称 `https://makerx.skftai.top/` 已上线 002。公网实测仍为旧回执 `deploy=20261103163649`，`/lab/002-picturebook/` 返回 404。
+**服务器发布（2026-11-04，已验证成功）**：改走腾讯云自动化助手（TAT，上海地域）执行：
+
+- 首个命令 `cmd-a61syn0i` 失败：外层只从 `codeload.github.com` 下载，且 `deploy-subdomain` 分支只有构建产物、没有脚本，导致 `find scripts/...` 为空，90 秒超时，ExitCode 1。**该次未改动线上任何文件**。
+- 修正命令 `cmd-fc0x3vye`（`makerx-deploy-002-multisrc-20261104`）：改从 `main` 分支多源下载脚本（jsDelivr → ghfast → ghproxy），下载后校验包含 `/lab/002-picturebook/` 再执行。执行 ID `inv-0aqj660dbh`，**ExitCode 0，耗时 93 秒**。
+- 线上回执：`DEPLOY_STAMP.txt` = `deploy=20261104103557`；`DEPLOY_STATUS.txt` = `status=ok` / `https=on`。
+- 七条路由实测均 `200`：`/`、`/lab/001-ai-planet/`、`/lab/001-ai-planet/lesson-1/`、`/lab/001-ai-planet/upgrade/`、`/lab/002-picturebook/`、`/lab/002-picturebook/lesson-1/`、`/lab/002-picturebook/lesson-2/`。
+- `http://makerx.skftai.top/` → `301` 跳转到 `https://makerx.skftai.top/`；旧入口 `http://124.222.99.128/` 与 `http://124.222.99.128/makerx/` 仍为 `200`。
+- 生产站点浏览器 E2E（`PB_BASE=https://makerx.skftai.top node tests/browser-picturebook.mjs`）：**44/44 通过**。
+
+**未验证**：真实手机与微信内置浏览器、真实屏幕阅读器；`https://skftai.top/` 主域证书不匹配（`SEC_E_WRONG_PRINCIPAL`，历史遗留，本次未改动）。
 
 **类型检查**：`pnpm check` 未成功完成（`design/` 既有错误导致 heap OOM，退出码 134），不能声称 `src/` 零错误；生产构建与浏览器测试均已通过。
 

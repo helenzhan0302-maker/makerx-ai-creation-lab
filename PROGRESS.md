@@ -51,3 +51,15 @@ Playwright + Chromium 实测（详见 README「第 2 节课升级工坊」）：
 - 浏览器端到端：44/44 通过（含导出前置条件、重复保存升版、导入后导出、三档响应式、reduced motion、无 JS）。
 - 部署产物已推送 `origin/deploy-subdomain`，提交 `df816ca`。
 - **服务器端未发布**：SSH 全部被拒绝，缺少腾讯云 TAT/API 凭据；公网 002 路由仍 404，旧回执未更新。
+
+## 实验 002 服务器发布（2026-11-04，已验证成功）
+
+- 通过腾讯云自动化助手（TAT，上海地域）执行部署，未使用 SSH。
+- 失败尝试：`cmd-a61syn0i` / `inv-0aqin3084u`，ExitCode 1。原因：外层命令只从 `codeload.github.com` 下载，而 `deploy-subdomain` 分支只有构建产物、无 `scripts/`，`find` 为空；90 秒超时。线上文件未变动。
+- 成功命令：`cmd-fc0x3vye`（`makerx-deploy-002-multisrc-20261104`），从 `main` 多源下载部署脚本（jsDelivr → ghfast → ghproxy），执行 `inv-0aqj660dbh`，**ExitCode 0，耗时 93 秒**。
+- 线上回执：`DEPLOY_STAMP.txt = deploy=20261104103557`，`DEPLOY_STATUS.txt = status=ok / https=on`。
+- 七条路由均 `200`（含 002 三条）；`http://makerx.skftai.top/` 301 → HTTPS。
+- 生产 E2E：`PB_BASE=https://makerx.skftai.top node tests/browser-picturebook.mjs` → **44/44 通过**。
+- 旧入口 `http://124.222.99.128/` 与 `/makerx/` 仍 `200`。
+- 未验证：真实手机 / 微信内置浏览器、真实屏幕阅读器；`https://skftai.top/` 主域证书不匹配为历史遗留，未改动。
+
