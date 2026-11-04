@@ -22,33 +22,23 @@ const baseUrl = import.meta.env.BASE_URL;
         <p class="eyebrow">project 002 / lesson 01</p>
         <h1 id="project-title">故事放映机</h1>
         <p class="project-intro-lead">从一个小小的念头开始，把故事问到清楚，再拆成 6 页分镜。今天带走的是故事卡和第一版工程文件。</p>
-        <div class="project-intro-notes">
-          <p>两个周六中的第 1 节</p>
-          <p>不填写姓名</p>
-          <p>不上传照片</p>
-          <p>内容只保存在你的电脑上</p>
-        </div>
         <p class="project-intro-notes">
           <a class="lesson-next-link" href={`${baseUrl}lab/002-picturebook/lesson-2/`}>下周六带着工程文件回来：进入第 2 节课 ↗</a>
         </p>
       </section>
 
-      <aside class="pb-boundary" aria-label="保存方式说明">
-        <p><strong>网站不会替你保存。</strong>这里没有账号，也没有浏览器里的“草稿箱”。下课之前，把工程文件下载到自己的电脑或 U 盘里；共用电脑时尤其要记得带走。</p>
-      </aside>
-
-      <StoryCardBuilder />
-      <StoryboardBuilder />
-
-      <section class="pb-section pb-stack-end" aria-labelledby="lesson-one-save">
+      <div class="pb-save-dock">
         <ProjectFileBar
           mode="export"
           baseVersion={1}
-          title="保存第一版：故事卡 + 6 页分镜"
+          title="保存工程文件"
           requireStoryboard={true}
+          compact={true}
         />
-        <p class="pb-end-note">下节课先在页面顶部导入这个文件，再继续画。文件里的 <code>v1</code> 请保留，不要用新文件覆盖它。</p>
-      </section>
+      </div>
+
+      <StoryCardBuilder />
+      <StoryboardBuilder />
     </main>
 
     <footer class="project-page-footer">

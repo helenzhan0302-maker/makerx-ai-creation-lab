@@ -12,6 +12,7 @@ const lessons = [
     title: '把故事问清楚',
     description: '从愿望、怪事或角色出发，用一次一个问题的追问写下故事卡，再拆成 6 页分镜，保存 v1 工程文件。',
     meta: '故事 + 分镜',
+    variant: 'story',
     href: `${baseUrl}lab/002-picturebook/lesson-1/`,
     action: '进入第 1 节课',
   },
@@ -21,6 +22,7 @@ const lessons = [
     title: '让故事上映',
     description: '导入 v1，统一画风与主角长相，逐页生成并检查插画，最后完成首映礼路演卡，保存 v2 工程文件。',
     meta: '插画 + 首映',
+    variant: 'picture',
     href: `${baseUrl}lab/002-picturebook/lesson-2/`,
     action: '进入第 2 节课',
   },
@@ -39,29 +41,38 @@ const lessons = [
         <p class="eyebrow">project 002 / story cinema</p>
         <h1 id="project-title">故事放映机</h1>
         <p class="project-intro-lead">两节课，把一个小念头做成一本 6 页绘本：先问清楚故事，再一页一页画出来，最后放映给同伴看。</p>
-        <div class="project-intro-notes">
-          <p>两个周六</p>
-          <p>6 页绘本</p>
-          <p>工程文件跨周继续</p>
-          <p>不填写姓名</p>
-        </div>
       </section>
-
-      <aside class="pb-boundary" aria-label="跨周保存方式">
-        <p><strong>两节课之间，网站不保存你的内容。</strong>第 1 节结束把工程文件下载到自己的电脑；第 2 节上课时再导入。站点没有账号，也不存在浏览器里的用户隔离；文件在谁手里，内容就属于谁。</p>
-      </aside>
 
       <section class="lesson-hub pb-lesson-hub" aria-label="选择课次">
         {lessons.map((lesson) => (
-          <a class="lesson-card" href={lesson.href}>
-            <div class="lesson-card-top">
+          <a class={`lesson-card pb-lesson-card pb-lesson-card--${lesson.variant}`} href={lesson.href}>
+            <div class="lesson-card-top pb-lesson-meta">
               <span class="lesson-card-index" aria-hidden="true">{lesson.id}</span>
               <span class="lesson-card-label">{lesson.label}</span>
               <span class="lesson-card-meta">{lesson.meta}</span>
             </div>
-            <h2 class="lesson-card-title">{lesson.title}</h2>
-            <p class="lesson-card-description">{lesson.description}</p>
-            <span class="lesson-card-action">{lesson.action} <span aria-hidden="true">↗</span></span>
+            <div class="pb-lesson-copy">
+              <h2 class="lesson-card-title">{lesson.title}</h2>
+              <p class="lesson-card-description">{lesson.description}</p>
+              <span class="lesson-card-action">{lesson.action} <span aria-hidden="true">↗</span></span>
+            </div>
+            <div class="pb-lesson-art" aria-hidden="true">
+              {lesson.variant === 'story' ? (
+                <svg viewBox="0 0 160 160" focusable="false">
+                  <path class="pb-story-path" d="M12 118c22-55 45 22 66-38s43 22 70-38" />
+                  <circle class="pb-story-dot" cx="12" cy="118" r="4" />
+                  <circle class="pb-story-dot" cx="78" cy="80" r="4" />
+                  <circle class="pb-story-dot" cx="148" cy="42" r="4" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 160 160" focusable="false">
+                  <rect class="pb-paint-frame" x="18" y="28" width="124" height="92" rx="4" />
+                  <rect class="pb-paint-fill pb-paint-fill--1" x="26" y="36" width="54" height="34" rx="2" />
+                  <rect class="pb-paint-fill pb-paint-fill--2" x="86" y="36" width="48" height="34" rx="2" />
+                  <rect class="pb-paint-fill pb-paint-fill--3" x="26" y="76" width="108" height="36" rx="2" />
+                </svg>
+              )}
+            </div>
           </a>
         ))}
       </section>

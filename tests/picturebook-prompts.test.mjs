@@ -149,6 +149,19 @@ test('lesson one page includes story card, storyboard and save controls', () => 
   assert.match(storyboard, /data-storyboard/);
   assert.match(storyboard, /PAGE_COUNT/);
   assert.match(storyboard, /data-storyboard-page/);
+  assert.match(page, /compact=\{true\}/, 'lesson 1 keeps a compact save entry at the top');
+  assert.doesNotMatch(page, /pb-boundary|pb-stack-end|保存方式说明/, 'lesson 1 no longer repeats the classroom save speech');
+  assert.doesNotMatch(page, /两个周六中的第 1 节|不填写姓名|不上传照片/, 'lesson 1 chips were removed by user request');
+  assert.doesNotMatch(storyCard, /生成追问提示词|复制追问提示词/, 'prompt buttons use the shorter labels');
+  assert.match(storyCard, /生成提示词/);
+  assert.match(storyCard, /复制提示词/);
+});
+
+test('course hub omits the chip strip and the long save notice', () => {
+  const page = fs.readFileSync(path.join(root, 'src/pages/lab/002-picturebook/index.astro'), 'utf8');
+  const home = fs.readFileSync(path.join(root, 'src/pages/index.astro'), 'utf8');
+  assert.doesNotMatch(page, /project-intro-notes|pb-boundary|两节课之间，网站不保存你的内容/);
+  assert.doesNotMatch(home, /静态原型 · 持续更新/);
 });
 
 test('lesson two imports a project file before showing the studio', () => {

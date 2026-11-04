@@ -63,9 +63,10 @@
 .pb-import-gate h2 {
   margin: 0.4rem 0 0;
   color: var(--brand-ink);
-  font-size: clamp(1.35rem, 2.5vw, 1.85rem);
-  letter-spacing: -0.025em;
-  line-height: 1.28;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+  letter-spacing: 0;
+  line-height: 1.24;
 }
 
 .pb-section-heading > p:last-child,
@@ -74,16 +75,16 @@
 .pb-import-gate > p:last-child {
   margin: 0.7rem 0 0;
   color: var(--ink-muted);
-  font-size: 0.92rem;
-  line-height: 1.7;
+  font-size: 1rem;
+  line-height: 1.75;
 }
 
 .pb-kicker {
   margin: 0;
   color: var(--accent-wire);
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
   line-height: 1.5;
   text-transform: uppercase;
 }
@@ -97,7 +98,7 @@
   border: 1px solid transparent;
   border-radius: 999px;
   font: inherit;
-  font-size: 0.88rem;
+  font-size: 0.95rem;
   font-weight: 750;
   line-height: 1.35;
   text-align: center;
@@ -175,7 +176,7 @@
   min-height: 1.35rem;
   margin: 0.7rem 0 0;
   color: var(--ink-soft);
-  font-size: 0.84rem;
+  font-size: 0.9rem;
   line-height: 1.6;
 }
 
@@ -196,7 +197,7 @@
   gap: 0.4rem;
   margin-top: 0.9rem;
   color: var(--brand-ink);
-  font-size: 0.86rem;
+  font-size: 0.95rem;
   font-weight: 700;
 }
 
@@ -224,7 +225,7 @@
   background: rgba(255, 255, 255, 0.88);
   color: var(--brand-ink);
   font: inherit;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 400;
   line-height: 1.55;
   resize: vertical;
@@ -258,7 +259,7 @@
   background: #f8fbff;
   color: #1e2738;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   line-height: 1.65;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -266,7 +267,7 @@
 
 .pb-output--small {
   max-height: 14rem;
-  font-size: 0.74rem;
+  font-size: 0.8125rem;
 }
 
 /* ---------- 保存 / 导入 ---------- */
@@ -286,6 +287,43 @@
 .pb-file-bar--import {
   border-style: solid;
   background: linear-gradient(135deg, rgba(255, 250, 232, 0.88), rgba(255, 255, 255, 0.72));
+}
+
+.pb-file-bar--compact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+  align-items: center;
+  padding: 0.7rem 0.85rem;
+  border-style: solid;
+  border-color: rgba(47, 75, 199, 0.26);
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.66);
+  box-shadow: none;
+}
+
+.pb-file-bar--compact .pb-export-controls,
+.pb-file-bar--compact .pb-import-controls {
+  flex: 1 1 auto;
+  gap: 0.55rem;
+}
+
+.pb-file-bar--compact .pb-button {
+  min-height: 2.5rem;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.9rem;
+}
+
+.pb-file-bar--compact .pb-export-controls .pb-file-feedback,
+.pb-file-bar--compact .pb-import-controls .pb-file-feedback {
+  flex-basis: 100%;
+  min-height: 1.1rem;
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+.pb-save-dock {
+  margin: 0 0 clamp(1.25rem, 2.5vw, 2rem);
 }
 
 .pb-file-bar-heading p code,
@@ -348,8 +386,8 @@
 
 .pb-version-note p {
   margin: 0;
-  font-size: 0.8rem;
-  line-height: 1.6;
+  font-size: 0.9rem;
+  line-height: 1.65;
 }
 
 /* ---------- 故事卡 ---------- */
@@ -367,7 +405,7 @@
   width: 100%;
   margin-bottom: 0.15rem;
   color: var(--ink-soft);
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   font-weight: 700;
 }
 
@@ -393,7 +431,7 @@
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.78);
   color: var(--ink-muted);
-  font-size: 0.86rem;
+  font-size: 0.92rem;
   font-weight: 650;
   transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
 }
@@ -437,7 +475,7 @@
   justify-content: space-between;
   color: var(--ink-soft);
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   letter-spacing: 0.04em;
 }
 
@@ -445,10 +483,11 @@
   max-width: 44rem;
   margin: 0.7rem 0 0;
   color: var(--brand-ink);
-  font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.2vw, 1.6rem);
   font-weight: 720;
-  letter-spacing: -0.015em;
-  line-height: 1.4;
+  letter-spacing: 0;
+  line-height: 1.42;
 }
 
 .pb-question-choices {
@@ -466,7 +505,7 @@
   background: rgba(233, 242, 253, 0.8);
   color: var(--accent-wire);
   font: inherit;
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   font-weight: 650;
   cursor: pointer;
 }
@@ -518,7 +557,7 @@
 .pb-card-number {
   color: var(--ink-soft);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.8125rem;
   letter-spacing: 0.06em;
 }
 
@@ -528,7 +567,7 @@
   border-radius: 999px;
   background: rgba(233, 242, 253, 0.72);
   color: var(--ink-soft);
-  font-size: 0.68rem;
+  font-size: 0.8125rem;
   font-weight: 650;
   white-space: nowrap;
 }
@@ -552,16 +591,16 @@
 .pb-copy-panel h3 {
   margin: 0.55rem 0 0;
   color: var(--brand-ink);
-  font-size: 1rem;
-  letter-spacing: -0.01em;
-  line-height: 1.35;
+  font-size: 1.05rem;
+  letter-spacing: 0;
+  line-height: 1.4;
 }
 
 .pb-question-small {
   margin: 0.35rem 0 0;
   color: var(--ink-soft);
-  font-size: 0.74rem;
-  line-height: 1.5;
+  font-size: 0.82rem;
+  line-height: 1.6;
 }
 
 .pb-story-card .pb-answer-field {
@@ -571,12 +610,12 @@
 
 .pb-story-card textarea {
   min-height: 5.6rem;
-  font-size: 0.82rem;
+  font-size: 0.92rem;
 }
 
 .pb-card-save {
   margin-top: 0.3rem;
-  font-size: 0.76rem;
+  font-size: 0.82rem;
 }
 
 .pb-story-check {
@@ -611,8 +650,8 @@
   max-width: 48rem;
   margin: 0.45rem 0 0;
   color: var(--ink-muted);
-  font-size: 0.84rem;
-  line-height: 1.65;
+  font-size: 1rem;
+  line-height: 1.75;
 }
 
 .pb-copy-panel .pb-inline-actions {
@@ -629,7 +668,7 @@
   margin: 1rem 0 0;
   color: var(--ink-soft);
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.8125rem;
 }
 
 .pb-progress-track {
@@ -662,7 +701,7 @@
 
 .pb-storyboard-card textarea {
   min-height: 4rem;
-  font-size: 0.82rem;
+  font-size: 0.92rem;
 }
 
 /* ---------- 第 2 节 ---------- */
@@ -726,7 +765,7 @@
   margin-left: auto;
   color: var(--ink-soft);
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   font-weight: 400;
 }
 
@@ -764,8 +803,8 @@
 .pb-group-hint {
   margin: 0 0 0.5rem;
   color: var(--ink-soft);
-  font-size: 0.72rem;
-  line-height: 1.5;
+  font-size: 0.82rem;
+  line-height: 1.6;
 }
 
 .pb-style-options {
@@ -848,8 +887,8 @@
   grid-template-columns: 2.7rem minmax(0, 1fr);
   gap: 0.5rem;
   margin: 0;
-  font-size: 0.78rem;
-  line-height: 1.5;
+  font-size: 0.82rem;
+  line-height: 1.6;
 }
 
 .pb-mini-storyboard span {
@@ -887,7 +926,7 @@
 .pb-page-checks legend {
   margin-bottom: 0.35rem;
   color: var(--ink-soft);
-  font-size: 0.74rem;
+  font-size: 0.8125rem;
   font-weight: 700;
 }
 
@@ -910,7 +949,7 @@
   gap: 0.35rem;
   align-items: center;
   color: var(--ink-muted);
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   cursor: pointer;
 }
 
@@ -946,7 +985,7 @@
 
 .pb-final-check-list small {
   color: var(--ink-soft);
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   font-weight: 400;
   line-height: 1.5;
 }
@@ -993,7 +1032,7 @@
 .pb-peer-note {
   margin: 1rem 0 0;
   color: var(--ink-soft);
-  font-size: 0.74rem;
+  font-size: 0.82rem;
   line-height: 1.6;
 }
 
@@ -1025,6 +1064,150 @@
   margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
 }
 
+.pb-lesson-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 7.5rem;
+  grid-template-rows: auto 1fr;
+  gap: 0.8rem;
+  min-height: 14rem;
+  padding: 1.15rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.pb-lesson-card--story {
+  background: linear-gradient(135deg, #ffffff, #eef9ff);
+}
+
+.pb-lesson-card--picture {
+  background: linear-gradient(135deg, #ffffff, #f1f0ff);
+}
+
+.pb-lesson-meta {
+  grid-column: 1 / -1;
+  margin-bottom: 0;
+}
+
+.pb-lesson-card .lesson-card-index {
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: none;
+  color: var(--accent-wire);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.pb-lesson-card .lesson-card-label {
+  color: var(--ink-muted);
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+}
+
+.pb-lesson-card .lesson-card-meta {
+  padding: 0.24rem 0.6rem;
+  font-size: 0.8125rem;
+}
+
+.pb-lesson-copy {
+  align-self: end;
+  grid-column: 1;
+}
+
+.pb-lesson-card .lesson-card-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 2vw, 2rem);
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.18;
+}
+
+.pb-lesson-card .lesson-card-description {
+  max-width: 21rem;
+  margin: 0.6rem 0 0.9rem;
+  font-size: 0.95rem;
+  line-height: 1.72;
+}
+
+.pb-lesson-card .lesson-card-action {
+  font-size: 0.9rem;
+}
+
+.pb-lesson-art {
+  display: grid;
+  grid-column: 2;
+  grid-row: 2;
+  align-self: center;
+  width: 7.5rem;
+  height: 7.5rem;
+  place-items: center;
+}
+
+.pb-lesson-art svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.pb-story-path {
+  fill: none;
+  stroke: var(--accent-wire);
+  stroke-dasharray: 3 7;
+  stroke-linecap: round;
+  stroke-width: 1.6;
+  animation: pb-story-dash 8s linear infinite;
+}
+
+.pb-story-dot {
+  fill: var(--accent-wire);
+}
+
+.pb-lesson-card--story:hover .pb-story-path,
+.pb-lesson-card--story:focus-visible .pb-story-path {
+  animation-duration: 2.6s;
+}
+
+.pb-paint-frame {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.2;
+}
+
+.pb-paint-fill {
+  fill: #dff4ff;
+  opacity: 0.85;
+  animation: pb-paint 4.5s ease-in-out infinite alternate;
+}
+
+.pb-paint-fill--2 {
+  animation-delay: 0.7s;
+}
+
+.pb-paint-fill--3 {
+  animation-delay: 1.4s;
+}
+
+.pb-lesson-card--picture:hover .pb-paint-fill,
+.pb-lesson-card--picture:focus-visible .pb-paint-fill {
+  animation-duration: 1.5s;
+}
+
+@keyframes pb-story-dash {
+  to {
+    stroke-dashoffset: -80;
+  }
+}
+
+@keyframes pb-paint {
+  from {
+    opacity: 0.2;
+  }
+
+  to {
+    opacity: 0.95;
+  }
+}
+
 .pb-how-it-works {
   margin-bottom: clamp(3rem, 7vw, 5rem);
   padding-top: 1.2rem;
@@ -1048,7 +1231,7 @@
 .pb-how-grid article > span {
   color: var(--accent-wire);
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
 }
 
 .pb-how-grid h3 {
@@ -1061,11 +1244,20 @@
 .pb-how-grid p {
   margin: 0.45rem 0 0;
   color: var(--ink-muted);
-  font-size: 0.82rem;
+  font-size: 0.92rem;
   line-height: 1.65;
 }
 
+.pb-how-grid h3 {
+  font-family: var(--font-display);
+  letter-spacing: 0;
+}
+
 @media (max-width: 1100px) {
+  .pb-lesson-hub {
+    grid-template-columns: 1fr;
+  }
+
   .pb-story-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -1135,11 +1327,46 @@
   }
 
   .pb-question-meta {
-    font-size: 0.66rem;
+    font-size: 0.75rem;
   }
 
   .pb-studio-status span:last-child {
     margin-left: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .pb-lesson-card {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    min-height: 0;
+    padding: 1rem;
+  }
+
+  .pb-lesson-copy {
+    grid-column: 1;
+  }
+
+  .pb-lesson-art {
+    position: absolute;
+    top: 2.7rem;
+    right: -0.4rem;
+    z-index: 0;
+    grid-column: 1;
+    grid-row: 1 / -1;
+    width: 5.5rem;
+    height: 5.5rem;
+    opacity: 0.24;
+    pointer-events: none;
+  }
+
+  .pb-lesson-copy {
+    position: relative;
+    z-index: 1;
+  }
+
+  .pb-lesson-card .lesson-card-description {
+    max-width: none;
   }
 }
 

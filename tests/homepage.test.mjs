@@ -48,3 +48,22 @@ test('homepage lists project 002 with a real detail route', () => {
   assert.match(content, /title: 故事放映机/);
   assert.match(content, /id: '002'/);
 });
+
+test('homepage uses compact editorial cards with one motion per project', () => {
+  const page = read('src/pages/index.astro');
+  const styles = read('src/styles/global.css');
+
+  assert.match(page, /class="archive-layout"/);
+  assert.match(page, /class="project-list"/);
+  assert.match(page, /project-card--001/);
+  assert.match(page, /project-card--002/);
+  assert.match(page, /class="orbit-system"/);
+  assert.match(page, /class="storyboard-frame/);
+  assert.match(styles, /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
+  assert.match(styles, /@media \(max-width: 1040px\)/);
+  assert.match(styles, /project-orbit/);
+  assert.match(styles, /frame-fill/);
+  const archiveStyles = styles.slice(styles.indexOf('.archive-layout'), styles.indexOf('.primary-link'));
+  assert.doesNotMatch(archiveStyles, /white-space:\s*nowrap/);
+  assert.doesNotMatch(archiveStyles, /letter-spacing:\s*-/);
+});

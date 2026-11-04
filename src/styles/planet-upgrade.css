@@ -54,7 +54,7 @@
 .lesson-card-label {
   color: var(--accent-wire);
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   letter-spacing: 0.08em;
 }
 
@@ -64,23 +64,24 @@
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--ink-soft);
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   white-space: nowrap;
 }
 
 .lesson-card-title {
   margin: 0;
   color: var(--brand-ink);
-  font-size: clamp(1.25rem, 2vw, 1.55rem);
-  letter-spacing: -0.015em;
-  line-height: 1.3;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2vw, 1.7rem);
+  letter-spacing: 0;
+  line-height: 1.26;
 }
 
 .lesson-card-description {
   margin: 0.7rem 0 1.4rem;
   color: var(--ink-muted);
-  font-size: 0.92rem;
-  line-height: 1.7;
+  font-size: 0.95rem;
+  line-height: 1.72;
 }
 
 .lesson-card-action {
@@ -244,7 +245,7 @@
 .avatar-preview-hint {
   margin: 0.4rem 0 0;
   color: var(--ink-soft);
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   line-height: 1.55;
   text-align: center;
 }
@@ -358,7 +359,7 @@
 
 .avatar-bubble {
   color: var(--brand-ink);
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   font-weight: 700;
 }
 
@@ -441,7 +442,7 @@
   border: 1px solid rgba(47, 75, 199, 0.4);
   border-radius: 50%;
   color: var(--accent-wire);
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   line-height: 1;
 }
 
@@ -465,8 +466,8 @@
 
 .effect-chip-description {
   color: var(--ink-soft);
-  font-size: 0.74rem;
-  line-height: 1.5;
+  font-size: 0.82rem;
+  line-height: 1.55;
 }
 
 .effect-chip--1 { grid-area: top-left; }
@@ -509,7 +510,7 @@
   inset: auto 0 0.6rem;
   margin: 0;
   color: var(--ink-soft);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   text-align: center;
   pointer-events: none;
 }

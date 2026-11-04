@@ -112,40 +112,57 @@ const baseUrl = import.meta.env.BASE_URL;
       </section>
 
       <section class="archive-section" id="projects" aria-labelledby="projects-title">
-        <div class="archive-panel" data-reveal style="--reveal-delay: 80ms">
-          <div>
+        <div class="archive-layout">
+          <div class="archive-panel" data-reveal style="--reveal-delay: 80ms">
             <p class="section-label">project archive / in progress</p>
             <h2 id="projects-title">项目会一直长出来。</h2>
-          </div>
-          <div>
             <p class="archive-copy">
               MakerX 不是一门固定不变的课程。我们会在每一次制作、测试和分享之后，把新的项目继续放进这个档案里。
             </p>
             <p class="archive-status">课程与项目持续研发中</p>
-            <a class="primary-link" href="#project-list">探索造物项目 <span aria-hidden="true">↘</span></a>
+            <a class="archive-link" href="#project-list">查看项目档案 <span aria-hidden="true">↘</span></a>
           </div>
-        </div>
 
-        <div class="project-list" id="project-list" aria-labelledby="project-list-title">
-          <div class="project-list-heading">
-            <p class="section-label">project archive / two entries</p>
-            <h3 id="project-list-title">正在生长的造物项目</h3>
-          </div>
-          <div class="project-list-cards">
-            <a class="project-card" href={`${baseUrl}lab/001-ai-planet/`} data-reveal style="--reveal-delay: 160ms">
-              <div class="project-card-index" aria-hidden="true">{aiBaseProject.id}</div>
+          <div class="project-list" id="project-list" aria-label="正在生长的造物项目">
+            <a class="project-card project-card--001" href={`${baseUrl}lab/001-ai-planet/`} data-reveal style="--reveal-delay: 160ms">
+              <div class="project-card-meta">
+                <span class="project-card-index" aria-hidden="true">{aiBaseProject.id}</span>
+                <span class="project-card-status"><span aria-hidden="true"></span>{aiBaseProject.status}</span>
+              </div>
+              <div class="project-card-art" aria-hidden="true">
+                <svg viewBox="0 0 160 160" focusable="false">
+                  <g class="orbit-system">
+                    <ellipse class="orbit-ring" cx="80" cy="80" rx="64" ry="25" transform="rotate(-18 80 80)" />
+                    <ellipse class="orbit-ring orbit-ring--accent" cx="80" cy="80" rx="46" ry="17" transform="rotate(36 80 80)" />
+                    <circle class="orbit-planet" cx="80" cy="80" r="17" />
+                    <circle class="orbit-satellite" cx="80" cy="15" r="5" />
+                  </g>
+                </svg>
+              </div>
               <div class="project-card-copy">
-                <p class="project-card-status"><span aria-hidden="true"></span>{aiBaseProject.status}</p>
-                <h4>{aiBaseProject.title}</h4>
+                <h3>{aiBaseProject.title}</h3>
                 <p>{aiBaseProject.summary}</p>
               </div>
               <span class="project-card-arrow" aria-hidden="true">↗</span>
             </a>
-            <a class="project-card" href={`${baseUrl}lab/002-picturebook/`} data-reveal style="--reveal-delay: 240ms">
-              <div class="project-card-index" aria-hidden="true">{picturebookProject.id}</div>
+            <a class="project-card project-card--002" href={`${baseUrl}lab/002-picturebook/`} data-reveal style="--reveal-delay: 240ms">
+              <div class="project-card-meta">
+                <span class="project-card-index" aria-hidden="true">{picturebookProject.id}</span>
+                <span class="project-card-status"><span aria-hidden="true"></span>{picturebookProject.status}</span>
+              </div>
+              <div class="project-card-art" aria-hidden="true">
+                <svg viewBox="0 0 160 160" focusable="false">
+                  <rect class="storyboard-frame storyboard-frame--1" x="8" y="30" width="42" height="42" rx="3" />
+                  <rect class="storyboard-frame storyboard-frame--2" x="59" y="30" width="42" height="42" rx="3" />
+                  <rect class="storyboard-frame storyboard-frame--3" x="110" y="30" width="42" height="42" rx="3" />
+                  <rect class="storyboard-frame storyboard-frame--4" x="8" y="88" width="42" height="42" rx="3" />
+                  <rect class="storyboard-frame storyboard-frame--5" x="59" y="88" width="42" height="42" rx="3" />
+                  <rect class="storyboard-frame storyboard-frame--6" x="110" y="88" width="42" height="42" rx="3" />
+                  <path class="storyboard-scene" d="M16 63c8-15 25-15 32 0M66 63c8-15 25-15 32 0M117 63c8-15 25-15 32 0M16 121c8-15 25-15 32 0M66 121c8-15 25-15 32 0M117 121c8-15 25-15 32 0" />
+                </svg>
+              </div>
               <div class="project-card-copy">
-                <p class="project-card-status"><span aria-hidden="true"></span>{picturebookProject.status}</p>
-                <h4>{picturebookProject.title}</h4>
+                <h3>{picturebookProject.title}</h3>
                 <p>{picturebookProject.summary}</p>
               </div>
               <span class="project-card-arrow" aria-hidden="true">↗</span>
@@ -157,7 +174,7 @@ const baseUrl = import.meta.env.BASE_URL;
 
     <footer class="site-footer">
       <p class="footer-brand">MakerX AI 造物实验室</p>
-      <p class="footer-meta">把脑海里的想法，动手造出来。<br />静态原型 · 持续更新</p>
+      <p class="footer-meta">把脑海里的想法，动手造出来。</p>
     </footer>
   </div>
 </BaseLayout>

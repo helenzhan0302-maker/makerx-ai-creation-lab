@@ -83,12 +83,12 @@ const state = createStoryState();
 
   <div class="pb-copy-panel">
     <div>
-      <h3>把追问规则交给课堂智能体</h3>
-      <p>复制后粘到课堂上使用的智能体产品里。它每次只会问你一个问题，不替你写完整故事。</p>
+      <h3>把提示词交给课堂智能体</h3>
+      <p>复制后粘到课堂上使用的智能体产品里。它会一次问你一个问题，不替你写完整故事。</p>
     </div>
     <div class="pb-inline-actions">
-      <button class="pb-button pb-button--secondary" type="button" data-generate-socratic>生成追问提示词</button>
-      <button class="pb-button pb-button--quiet" type="button" data-copy-socratic hidden>复制追问提示词</button>
+      <button class="pb-button pb-button--secondary" type="button" data-generate-socratic>生成提示词</button>
+      <button class="pb-button pb-button--quiet" type="button" data-copy-socratic hidden>复制提示词</button>
     </div>
     <pre class="pb-output" data-socratic-output hidden tabindex="0"></pre>
     <p class="pb-feedback" data-socratic-feedback role="status"></p>
@@ -240,7 +240,7 @@ const state = createStoryState();
 
     copySocratic?.addEventListener('click', async () => {
       const copied = await copyTextToClipboard(socraticOutput?.textContent || '');
-      if (socraticFeedback) socraticFeedback.textContent = copied ? '已复制追问提示词。' : '复制没有成功，请手动选中文字。';
+      if (socraticFeedback) socraticFeedback.textContent = copied ? '已复制提示词。' : '复制没有成功，请手动选中文字。';
     });
 
     document.addEventListener('picturebook:workspace-change', renderAll);

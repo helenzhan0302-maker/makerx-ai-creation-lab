@@ -5,6 +5,7 @@ interface Props {
   title?: string;
   requireImport?: boolean;
   requireStoryboard?: boolean;
+  compact?: boolean;
 }
 
 const {
@@ -13,29 +14,33 @@ const {
   title,
   requireImport = false,
   requireStoryboard = false,
+  compact = false,
 } = Astro.props;
 const isImport = mode === 'import';
 const heading = title || (isImport ? '先打开上次的故事工程' : '把这次的故事带回自己的电脑');
 ---
 
 <section
-  class:list={['pb-file-bar', { 'pb-file-bar--import': isImport }]}
+  class:list={['pb-file-bar', { 'pb-file-bar--import': isImport, 'pb-file-bar--compact': compact }]}
   data-project-file-bar
   data-mode={mode}
   data-base-version={baseVersion}
   data-require-import={requireImport}
   data-require-storyboard={requireStoryboard}
-  aria-labelledby={`file-bar-title-${mode}`}
+  aria-labelledby={compact ? undefined : `file-bar-title-${mode}`}
+  aria-label={compact ? heading : undefined}
 >
-  <div class="pb-file-bar-heading">
-    <p class="pb-kicker">{isImport ? 'open project / 继续上次' : 'save project / 版本管理'}</p>
-    <h2 id={`file-bar-title-${mode}`}>{heading}</h2>
-    {isImport ? (
-      <p>选择上节课保存的 <code>story-project-v1.json</code>。网站不会自动保存，也不会把文件上传到任何地方。</p>
-    ) : (
-      <p>保存一份，旧版就不会被覆盖。文件名里的 <code>v1</code>、<code>v2</code> 就是你的时间线。</p>
-    )}
-  </div>
+  {!compact && (
+    <div class="pb-file-bar-heading">
+      <p class="pb-kicker">{isImport ? 'open project / 继续上次' : 'save project / 版本管理'}</p>
+      <h2 id={`file-bar-title-${mode}`}>{heading}</h2>
+      {isImport ? (
+        <p>选择上节课保存的 <code>story-project-v1.json</code>。网站不会自动保存，也不会把文件上传到任何地方。</p>
+      ) : (
+        <p>保存一份，旧版就不会被覆盖。文件名里的 <code>v1</code>、<code>v2</code> 就是你的时间线。</p>
+      )}
+    </div>
+  )}
 
   {isImport ? (
     <div class="pb-import-controls">
@@ -63,14 +68,16 @@ const heading = title || (isImport ? '先打开上次的故事工程' : '把这�
     </div>
   )}
 
-  <div class="pb-version-note">
-    <span aria-hidden="true">◉</span>
-    <p>
-      {isImport
-        ? '换电脑也能继续：工程文件里只有故事、分镜和检查状态，不含姓名、学校、电话或照片。'
-        : '共用电脑时，下课前一定把文件带走。浏览器关掉后，这一页不会替你保留内容。'}
-    </p>
-  </div>
+  {!compact && (
+    <div class="pb-version-note">
+      <span aria-hidden="true">◉</span>
+      <p>
+        {isImport
+          ? '换电脑也能继续：工程文件里只有故事、分镜和检查状态，不含姓名、学校、电话或照片。'
+          : '共用电脑时，下课前一定把文件带走。浏览器关掉后，这一页不会替你保留内容。'}
+      </p>
+    </div>
+  )}
 </section>
 
 <script>

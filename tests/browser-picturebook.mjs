@@ -28,11 +28,55 @@ page.on('pageerror', (error) => consoleErrors.push(String(error)));
 
 await page.goto(`${base}/lab/002-picturebook/lesson-1/`, { waitUntil: 'networkidle' });
 check('lesson 1 loads', (await page.locator('h1').innerText()).includes('故事放映机'));
+
+await page.goto(`${base}/`, { waitUntil: 'networkidle' });
+await page.locator('#projects').scrollIntoViewIfNeeded();
+await page.waitForTimeout(800);
+const homeLayout = await page.evaluate(() => {
+  const cards = [...document.querySelectorAll('.project-card')].map((card) => {
+    const rect = card.getBoundingClientRect();
+    return { width: rect.width, height: rect.height };
+  });
+  const title = document.querySelector('.archive-panel h2');
+  const body = document.querySelector('.project-card-copy > p:last-child');
+  return {
+    cards,
+    overflow: document.documentElement.scrollWidth > innerWidth,
+    titleLetter: title ? getComputedStyle(title).letterSpacing : '',
+    bodySize: body ? parseFloat(getComputedStyle(body).fontSize) : 0,
+    orbit: getComputedStyle(document.querySelector('.orbit-system')).animationName,
+    frames: getComputedStyle(document.querySelector('.storyboard-frame')).animationName,
+  };
+});
+check('home shows two compact cards side by side', homeLayout.cards.length === 2 && homeLayout.cards.every((card) => card.width > 300 && card.width < 420 && card.height < 320), JSON.stringify(homeLayout.cards));
+check('home archive title has no negative tracking', homeLayout.titleLetter === 'normal');
+check('home card body is at least 15px', homeLayout.bodySize >= 15, String(homeLayout.bodySize));
+check('home project cards run separate motion', homeLayout.orbit === 'project-orbit' && homeLayout.frames === 'frame-fill');
+check('home has no horizontal overflow', homeLayout.overflow === false);
+
+await page.goto(`${base}/lab/002-picturebook/`, { waitUntil: 'networkidle' });
+const hubLayout = await page.evaluate(() => {
+  const title = document.querySelector('.pb-lesson-card .lesson-card-title');
+  return {
+    overflow: document.documentElement.scrollWidth > innerWidth,
+    titleLetter: title ? getComputedStyle(title).letterSpacing : '',
+    story: getComputedStyle(document.querySelector('.pb-story-path')).animationName,
+    paint: getComputedStyle(document.querySelector('.pb-paint-fill')).animationName,
+    hasBoundary: Boolean(document.querySelector('.pb-boundary')),
+    chipStrip: Boolean(document.querySelector('.pb-chip-strip')),
+  };
+});
+check('lesson hub title has no negative tracking', hubLayout.titleLetter === 'normal');
+check('lesson hub runs separate motion per lesson', hubLayout.story === 'pb-story-dash' && hubLayout.paint === 'pb-paint');
+check('lesson hub omits the removed notice', hubLayout.hasBoundary === false && hubLayout.chipStrip === false);
+check('lesson hub has no horizontal overflow', hubLayout.overflow === false);
+
+await page.goto(`${base}/lab/002-picturebook/lesson-1/`, { waitUntil: 'networkidle' });
 check('story card present', (await page.locator('[data-story-card]').count()) === 1);
 check('storyboard has six pages', (await page.locator('[data-storyboard-page]').count()) === 6);
 check('export controls present', (await page.locator('[data-export-project]').count()) === 1);
 check('export disabled before storyboard is complete', await page.locator('[data-export-project]').isDisabled());
-check('export explains what is missing', (await page.locator('.pb-stack-end [data-file-feedback]').innerText()).includes('6 页分镜'));
+check('export explains what is missing', (await page.locator('[data-project-file-bar] [data-file-feedback]').innerText()).includes('6 页分镜'));
 
 const answers = [
   ['data-story-answer', '一只总把袜子藏起来的小猫'],

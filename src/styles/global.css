@@ -273,8 +273,8 @@ a:focus-visible {
   color: var(--brand-ink);
   font-size: var(--fs-display);
   font-weight: 780;
-  letter-spacing: -0.1em;
-  line-height: 0.78;
+  letter-spacing: -0.055em;
+  line-height: 0.84;
   text-wrap: balance;
 }
 
@@ -382,9 +382,9 @@ a:focus-visible {
   justify-content: center;
   gap: 1.1rem;
   margin: clamp(1.75rem, 4vh, 3rem) 0 0;
-  font-size: clamp(1.25rem, 2.4vw, 2rem);
+  font-size: clamp(1.2rem, 2.1vw, 1.75rem);
   font-weight: 650;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.12em;
 }
 
 .hero-subtitle span {
@@ -396,7 +396,8 @@ a:focus-visible {
   max-width: 38rem;
   margin: 1.5rem auto 0;
   color: var(--ink-muted);
-  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  font-size: clamp(1.0625rem, 1.5vw, 1.2rem);
+  line-height: 1.8;
   text-wrap: pretty;
 }
 
@@ -562,39 +563,47 @@ a:focus-visible {
   background: var(--lab-sky);
 }
 
-.archive-panel {
+.archive-layout {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-  gap: clamp(2rem, 7vw, 8rem);
-  align-items: end;
-  padding: clamp(1.5rem, 4vw, 3.5rem) 0;
+  grid-template-columns: minmax(17rem, 0.78fr) minmax(0, 1.22fr);
+  gap: clamp(2.5rem, 6vw, 7rem);
+  align-items: start;
+  padding-top: clamp(1.5rem, 3vw, 2.5rem);
   border-top: 1px solid var(--brand-ink);
 }
 
+.archive-panel {
+  max-width: 30rem;
+}
+
 .archive-panel h2 {
-  max-width: none;
-  margin: 1rem 0 0;
-  font-size: clamp(1.55rem, 5vw, 4.5rem);
-  font-weight: 650;
-  letter-spacing: -0.07em;
-  line-height: 0.98;
-  white-space: nowrap;
+  max-width: 7em;
+  margin: 1.1rem 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.7rem, 5.4vw, 5rem);
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.04;
+  text-wrap: balance;
 }
 
 .archive-copy {
-  max-width: 32rem;
-  margin: 0;
+  max-width: 27rem;
+  margin: 1.5rem 0 0;
   color: var(--ink-muted);
-  font-size: clamp(1.1rem, 2vw, 1.45rem);
+  font-size: 1.0625rem;
+  line-height: 1.8;
   text-wrap: pretty;
 }
 
 .archive-status {
-  display: inline-flex;
+  display: flex;
+  width: fit-content;
   align-items: center;
   gap: 0.5rem;
-  margin: 1.5rem 0 0;
+  margin: 1.4rem 0 0;
   color: var(--ink-soft);
+  font-size: var(--fs-label);
 }
 
 .archive-status::before {
@@ -606,44 +615,44 @@ a:focus-visible {
   content: "";
 }
 
+.archive-link {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  margin-top: 0.7rem;
+  border-bottom: 1px solid var(--line-strong);
+  color: var(--accent-wire);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.archive-link:hover,
+.archive-link:focus-visible {
+  border-color: currentColor;
+}
+
 .project-list {
   display: grid;
-  grid-template-columns: minmax(10rem, 0.65fr) minmax(0, 1.35fr);
-  gap: clamp(1.5rem, 6vw, 7rem);
-  align-items: start;
-  margin-top: clamp(4rem, 9vw, 8rem);
-  padding-top: 1rem;
-  border-top: 1px solid var(--line-strong);
-}
-
-.project-list-cards {
-  display: grid;
-  gap: clamp(1rem, 2vw, 1.5rem);
-}
-
-.project-list-cards .project-card {
-  min-height: 11rem;
-}
-
-.project-list-heading h3 {
-  margin: 1rem 0 0;
-  font-size: clamp(1.2rem, 2vw, 1.75rem);
-  font-weight: 650;
-  letter-spacing: -0.05em;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.85rem, 1.4vw, 1.25rem);
 }
 
 .project-card {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
-  min-height: 12rem;
-  padding: clamp(1.25rem, 3vw, 2.5rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 7.4rem;
+  grid-template-rows: auto 1fr auto;
+  gap: 0.75rem;
+  min-height: 17.5rem;
+  padding: 1.15rem;
   overflow: hidden;
-  border: 1px solid rgba(47, 75, 199, 0.3);
-  border-radius: 1.5rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.74), rgba(220, 235, 255, 0.58));
-  box-shadow: 0 1.5rem 3rem rgba(80, 110, 190, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--lab-surface);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
   color: inherit;
   text-decoration: none;
   transition: transform 220ms var(--ease-out), box-shadow 220ms var(--ease-out), border-color 220ms var(--ease-out);
@@ -652,71 +661,212 @@ a:focus-visible {
 .project-card:hover,
 .project-card:focus-visible {
   transform: translateY(-4px);
-  border-color: rgba(47, 75, 199, 0.56);
-  box-shadow: 0 2rem 4rem rgba(80, 110, 190, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border-color: var(--accent-wire);
+  box-shadow: 0 1.2rem 2.5rem rgba(47, 75, 199, 0.1);
 }
 
-.project-card::after {
-  position: absolute;
-  top: -40%;
-  right: -12%;
-  width: 14rem;
-  height: 14rem;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(119, 218, 248, 0.46), rgba(123, 114, 239, 0));
-  content: "";
-  pointer-events: none;
+.project-card--002 {
+  background: #f8fbff;
+}
+
+.project-card-meta {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
 .project-card-index {
   color: var(--accent-wire);
   font-family: var(--font-mono);
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
 }
 
 .project-card-copy {
   position: relative;
   z-index: 1;
+  align-self: end;
+  grid-column: 1;
+  grid-row: 3;
 }
 
 .project-card-status {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   margin: 0;
   color: var(--ink-soft);
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
 }
 
 .project-card-status span {
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 0.44rem;
+  height: 0.44rem;
   border-radius: 50%;
   background: var(--brand-cyan);
-  box-shadow: 0 0 0 5px rgba(119, 218, 248, 0.18);
+  box-shadow: 0 0 0 4px rgba(119, 218, 248, 0.2);
 }
 
-.project-card h4 {
-  margin: 0.5rem 0 0;
+.project-card h3 {
+  margin: 0;
   color: var(--brand-ink);
-  font-size: clamp(1.5rem, 3vw, 2.6rem);
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 2vw, 2rem);
   font-weight: 720;
-  letter-spacing: -0.06em;
+  letter-spacing: 0;
+  line-height: 1.18;
 }
 
 .project-card-copy > p:last-child {
-  max-width: 28rem;
+  max-width: 17rem;
   margin: 0.65rem 0 0;
   color: var(--ink-muted);
+  font-size: 0.95rem;
+  line-height: 1.68;
+}
+
+.project-card-art {
+  display: grid;
+  grid-column: 2;
+  grid-row: 2 / 4;
+  align-self: center;
+  width: 7.4rem;
+  height: 7.4rem;
+  place-items: center;
+}
+
+.project-card-art svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
 .project-card-arrow {
-  position: relative;
-  z-index: 1;
-  align-self: flex-end;
+  position: absolute;
+  right: 1.15rem;
+  bottom: 1rem;
   color: var(--accent-wire);
-  font-size: 2rem;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.orbit-system {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: project-orbit 14s linear infinite;
+}
+
+.orbit-ring {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+
+.orbit-ring--accent {
+  stroke: var(--accent-wire);
+  stroke-dasharray: 4 6;
+  opacity: 0.5;
+}
+
+.orbit-planet {
+  fill: var(--deep-soft, #dff4ff);
+  stroke: var(--accent-wire);
+  stroke-width: 1.5;
+}
+
+.orbit-satellite {
+  fill: var(--accent-wire);
+}
+
+.project-card--001:hover .orbit-system,
+.project-card--001:focus-visible .orbit-system {
+  animation-duration: 3.4s;
+}
+
+.storyboard-frame {
+  fill: transparent;
+  stroke: var(--line-strong);
+  stroke-width: 1.2;
+}
+
+.storyboard-frame--1,
+.storyboard-frame--2,
+.storyboard-frame--3,
+.storyboard-frame--4,
+.storyboard-frame--5,
+.storyboard-frame--6 {
+  animation: frame-fill 3.9s steps(1) infinite;
+}
+
+.storyboard-frame--2 {
+  animation-delay: 0.65s;
+}
+
+.storyboard-frame--3 {
+  animation-delay: 1.3s;
+}
+
+.storyboard-frame--4 {
+  animation-delay: 1.95s;
+}
+
+.storyboard-frame--5 {
+  animation-delay: 2.6s;
+}
+
+.storyboard-frame--6 {
+  animation-delay: 3.25s;
+}
+
+.storyboard-scene {
+  fill: none;
+  stroke: var(--ink-soft);
+  stroke-width: 1;
+  opacity: 0.65;
+}
+
+.project-card--002:hover .storyboard-frame,
+.project-card--002:focus-visible .storyboard-frame {
+  animation-duration: 1.8s;
+}
+
+@keyframes project-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes frame-fill {
+  0%,
+  16% {
+    fill: #dff4ff;
+    stroke: var(--accent-wire);
+  }
+
+  17%,
+  100% {
+    fill: transparent;
+    stroke: var(--line);
+  }
+}
+
+@media (max-width: 1040px) {
+  .archive-layout {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .archive-panel h2 {
+    max-width: none;
+  }
+
+  .project-list {
+    max-width: 48rem;
+  }
 }
 
 .primary-link {
@@ -895,14 +1045,14 @@ a:focus-visible {
     top: 6rem;
     left: 1.25rem;
     gap: 0.6rem;
-    font-size: 0.6rem;
+    font-size: 0.75rem;
   }
 
   .stage-corner--top-right {
     top: 6rem;
     right: 1.25rem;
-    max-width: 9rem;
-    font-size: 0.6rem;
+    max-width: 11rem;
+    font-size: 0.75rem;
     text-align: right;
   }
 
@@ -916,24 +1066,24 @@ a:focus-visible {
 
   .hero-kicker {
     margin-bottom: 1.1rem;
-    font-size: 0.65rem;
+    font-size: 0.8125rem;
   }
 
   .wordmark {
-    font-size: clamp(4.2rem, 22vw, 7.5rem);
-    letter-spacing: -0.12em;
+    font-size: clamp(4rem, 20vw, 7rem);
+    letter-spacing: -0.06em;
   }
 
   .hero-subtitle {
     gap: 0.6rem;
     margin-top: 1.6rem;
-    font-size: clamp(1rem, 5vw, 1.45rem);
-    letter-spacing: 0.08em;
+    font-size: clamp(1rem, 4.4vw, 1.3rem);
+    letter-spacing: 0.06em;
   }
 
   .hero-claim {
     margin-top: 1.1rem;
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
 
   .stage-art {
@@ -948,7 +1098,7 @@ a:focus-visible {
     left: 1.25rem;
     display: block;
     padding-top: 0.75rem;
-    font-size: 0.6rem;
+    font-size: 0.75rem;
   }
 
   .stage-status {
@@ -960,7 +1110,7 @@ a:focus-visible {
     bottom: 5.7rem;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 0.6rem;
+    font-size: 0.75rem;
   }
 
   .js .scroll-cue[data-reveal] {
@@ -977,29 +1127,52 @@ a:focus-visible {
     padding-left: 1.25rem;
   }
 
-  .archive-panel {
+  .archive-layout {
     grid-template-columns: 1fr;
-    gap: 2.5rem;
-    align-items: start;
+    gap: 2.25rem;
   }
 
   .archive-panel h2 {
-    font-size: clamp(1.55rem, 8vw, 2.35rem);
+    font-size: clamp(2.5rem, 11vw, 3.4rem);
   }
 
   .project-list {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
   }
 
   .project-card {
-    display: flex;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    min-height: 11rem;
+    padding-bottom: 2.6rem;
+  }
+
+  .project-card-art {
+    position: absolute;
+    top: 2.35rem;
+    right: -0.7rem;
+    z-index: 0;
+    width: 7rem;
+    height: 7rem;
+    opacity: 0.22;
+    pointer-events: none;
+  }
+
+  .project-card-copy {
+    position: relative;
+    z-index: 1;
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .project-card-copy > p:last-child {
+    max-width: none;
   }
 
   .project-card-arrow {
-    position: absolute;
-    top: 1.25rem;
-    right: 1.25rem;
+    top: auto;
+    right: 1.15rem;
+    bottom: 1rem;
   }
 
   .site-footer {
