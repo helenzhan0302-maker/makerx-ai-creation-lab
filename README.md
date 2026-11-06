@@ -901,7 +901,7 @@ curl -s https://<子域>/DEPLOY_STATUS.txt   # 应为 status=ok
 
 **未验证**：真实手机与微信内置浏览器、真实屏幕阅读器；**类型检查 `pnpm check` 未通过**（`design/` 既有错误导致 heap OOM，退出码 134），不能声称类型检查通过。
 
-### C · 课程目标复核与提示词重构（2026-11-06，代码与产物已验证；生产未发布）
+### C · 课程目标复核与提示词重构（2026-11-06，已部署并验收）
 
 **依据**：用 huashu-design 重读 `AI_绘本造物指南` 15 页 PPT。课程产出被重新确认为「孩子自己的故事 + 6 页分镜 + 6 张插图 + 一版首映」，不是「AI 代写的作文」。决策见 `docs/decisions.md` D-23–D-25。
 
@@ -924,17 +924,18 @@ curl -s https://<子域>/DEPLOY_STATUS.txt   # 应为 status=ok
 | 本地七路由检查 | 全部 `200` |
 | `dist-subdomain` 与 `deploy-subdomain` 产物树逐文件 SHA-256 | 20/20 文件列表与哈希一致 |
 
-**部署状态**：代码已提交 `main`（`7172f69`）并推送；产物已提交 `deploy-subdomain`（`77c0c3b`）并推送。**生产站点仍未发布**，线上回执仍是 `deploy=20261104170025`，lesson-1 仍引用旧版 `picturebook.DzhgN6yZ.css`；本轮产物对应的新 CSS 是 `picturebook.65mMGA-u.css`。
+**部署状态**：已部署并验收（2026-11-06）。
 
-**发布卡点（2026-11-06 实测）**：
+- 代码 `main` 提交 `7172f69`；部署产物 `deploy-subdomain` 提交 `77c0c3b`。
+- 发布通道：腾讯云 TAT 命令 `cmd-fc0x3vye`（`makerx-deploy-002-multisrc-20261104`），执行记录 `inv-2ataj8g7ia`。
+- 线上回执：`DEPLOY_STAMP.txt` = `deploy=20261106121930`（发布前为 `20261104170025`）；`DEPLOY_STATUS.txt` = `status=ok` / `https=on`。
+- 七条路由均 `200`。
+- lesson-1 已引用 `/_astro/picturebook.65mMGA-u.css`；线上与本地文件均为 21,718 bytes，SHA-256 同为 `2D383541F11613A38F5579423AC20861655CBCA07A8CEF49871935E2C8533044`。
+- 生产 E2E（`PB_BASE=https://makerx.skftai.top node tests/browser-picturebook.mjs`）：**66/66 通过**。
+- 发布过程由用户在已登录的腾讯云控制台完成一次 TAT 执行；本环境的内置浏览器控制与 Computer Use 均被工作区安全策略拦截，未绕过。
 
-- 本机无 `tccli`、无腾讯云 API 凭证，无法用云 API 触发 TAT。
-- `~/.ssh/id_ed25519_makerx` 与 `id_ed25519_makerx2` 均被服务器拒绝：`Permission denied (publickey,password)`。
-- Computer Use 在本轮被其 URL 安全校验终止，未执行发布。
-- Chrome 插件通道返回 `Local browser use is disabled in Work settings`；未绕过该策略。
-- 因此服务器发布仍需人工在腾讯云控制台执行已保存命令 `cmd-fc0x3vye`，只勾选 `lhins-ce4mfndw`。
+**未验证**：真实手机与微信内置浏览器、真实屏幕阅读器。`pnpm check` 仍未通过（既有 `design/` 问题导致 heap OOM，退出码 134），不能声称类型检查通过。
 
-**未验证**：真实手机与微信内置浏览器、真实屏幕阅读器；**生产 E2E 未运行**（线上尚未更新）。`pnpm check` 仍未通过（既有 `design/` 问题）。
 
 ### 尚未核对 / 未验证
 

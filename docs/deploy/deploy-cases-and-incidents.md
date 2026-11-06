@@ -52,14 +52,14 @@
 - 验证：七条路由 200；lesson-1 HTML 引用 `picturebook.DzhgN6yZ.css`，与本地 `dist-subdomain/_astro` 一致；生产 E2E 60/60。
 - 沉淀：**先证明「勾选状态 + 按钮已启用」，再执行**。产物就绪不等于线上已更新；只有回执变化才算发布。
 
-### 案例 7：002 lesson-1 起点／种子链路（2026-11-06，产物就绪、未发布）
+### 案例 7：002 lesson-1 起点／种子链路（2026-11-06，已部署并验收）
 
 - 产物：`deploy-subdomain` 提交 `77c0c3b`，已推送 `origin`；`main` 提交 `7172f69`，已推送。
 - 本地验证：单元测试 79/79；子域构建 7 pages / 20 文件；静态预览 E2E 66/66；七路由全 200；本地产物与 `deploy-subdomain` 逐文件 SHA-256 一致。
-- 发布未执行：本机无腾讯云 API 凭证，两把 SSH 密钥均被拒；Computer Use 因无法确认浏览器当前 URL 被安全策略终止；Chrome 插件返回 `Local browser use is disabled in Work settings`。
-- 线上仍为：`deploy=20261104170025`、`picturebook.DzhgN6yZ.css`。
-- 待人工执行：TAT `cmd-fc0x3vye`，只勾 `lhins-ce4mfndw`；执行后必须核对新回执、七路由、`picturebook.65mMGA-u.css` 与生产 E2E 66/66。
-- 沉淀：**产物就绪 ≠ 已部署**。无法安全操作控制台时，应如实停在人工接管点，不能把本地验证写成线上成功。
+- 发布执行：TAT `cmd-fc0x3vye`（`makerx-deploy-002-multisrc-20261104`），执行记录 `inv-2ataj8g7ia`；只勾选 `lhins-ce4mfndw`，由用户在已登录控制台完成一次执行。
+- 线上回执：`deploy=20261106121930`（发布前 `20261104170025`），`status=ok`，`https=on`。
+- 验证：七条路由 200；lesson-1 引用 `picturebook.65mMGA-u.css`；线上与本地 CSS 均 21,718 bytes，SHA-256 同为 `2D383541F11613A38F5579423AC20861655CBCA07A8CEF49871935E2C8533044`；生产 E2E 66/66。
+- 沉淀：**产物就绪 ≠ 已部署**。本环境的浏览器与桌面自动化被安全策略拦截时，应由用户在已登录控制台完成一次性执行；只有回执、路由、哈希和 E2E 全部通过，才写「已部署」。
 
 ---
 
