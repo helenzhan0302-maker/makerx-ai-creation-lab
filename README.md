@@ -959,7 +959,15 @@ curl -s https://<子域>/DEPLOY_STATUS.txt   # 应为 status=ok
 | 375 / 768 / 1440px 横向溢出 | 三档均无溢出 |
 | `prefers-reduced-motion` / 无 JS / 控制台错误 | 动画关闭内容完整 / 内容可读 / 0 错误 |
 
-**未验证**：生产部署与线上验收（待本节后续回填）；真实手机与微信内置浏览器、真实屏幕阅读器未测；`pnpm check` 未重跑，不能声称通过。视觉观感未经视觉模型确认，只验证了 DOM、CSS 与运行时几何。
+**部署状态（2026-11-06，未完成）**：
+
+- 源码 `main` 提交 `4dfecab` 已推送；部署产物 `deploy-subdomain` 提交 `c1389d6` 已推送，远端 SHA 一致。
+- **线上尚未更新**。发布前线上回执为 `deploy=20261106121930`、`status=ok`、`https=on`；本次检查时回执未变化。
+- 线上 lesson-1 仍引用旧 `/_astro/picturebook.65mMGA-u.css`；本地 `dist-subdomain` 已生成 `picturebook.C2gXDEQ2.css`（23,377 bytes）。这证明新产物没有上线。
+- 阻塞原因：服务器 SSH 两把既有密钥均为 `Permission denied (publickey,password)`；腾讯云控制台 TAT 页面跳转到登录页，当前会话未登录。按 SOP 停止，未自动化登录，也未伪造发布成功。
+- 待用户完成：在已登录的腾讯云控制台打开 `https://console.cloud.tencent.com/lighthouse/command/invoke?rid=4&id=cmd-fc0x3vye`，只勾选 `lhins-ce4mfndw`，确认「已选择1个实例」且「执行命令」可用后执行。完成后可继续验收回执、七条路由、CSS 哈希与生产 E2E。
+
+**未验证**：生产部署与线上验收（被登录态阻塞，尚未执行）；真实手机与微信内置浏览器、真实屏幕阅读器未测；`pnpm check` 未重跑，不能声称通过。视觉观感未经视觉模型确认，只验证了 DOM、CSS 与运行时几何。
 
 
 ### 尚未核对 / 未验证
