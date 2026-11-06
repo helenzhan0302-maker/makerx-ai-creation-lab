@@ -76,30 +76,41 @@ check('story card present', (await page.locator('[data-story-card]').count()) ==
 check('storyboard has six pages', (await page.locator('[data-storyboard-page]').count()) === 6);
 check('export controls present', (await page.locator('[data-export-project]').count()) === 1);
 check('export disabled before storyboard is complete', await page.locator('[data-export-project]').isDisabled());
-check('export explains what is missing', (await page.locator('[data-project-file-bar] [data-file-feedback]').innerText()).includes('6 页分镜'));
-check('export feedback shows storyboard progress', (await page.locator('[data-project-file-bar] [data-file-feedback]').innerText()).includes('0 / 6'));
-check('hero question offers character ideas', (await page.locator('[data-story-inspiration] .pb-choice-chip--idea').count()) >= 6);
+check('export explains the story card is missing first', (await page.locator('[data-project-file-bar] [data-file-feedback]').innerText()).includes('故事卡'));
+check('seed panel offers character ideas', (await page.locator('[data-story-inspiration] .pb-choice-chip--idea').count()) >= 6);
 check('story check block was removed', (await page.locator('[data-review]').count()) === 0);
+const lessonOneSteps = await page.locator('.pb-kicker').allInnerTexts();
+check(
+  'lesson 1 steps are numbered continuously',
+  ['step 01', 'step 02', 'step 03', 'step 04'].every((step) =>
+    lessonOneSteps.some((text) => text.toLowerCase().startsWith(step)),
+  ),
+  lessonOneSteps.join(' | '),
+);
 
 await page.locator('[data-story-inspiration] .pb-choice-chip--idea').first().click();
-check('inspiration fills the answer field', (await page.locator('[data-story-answer]').inputValue()).includes('会发光的小恐龙'));
-await page.locator('[data-story-answer]').fill('');
+check('inspiration fills the seed field', (await page.locator('[data-story-seed]').inputValue()).includes('会发光的小恐龙'));
 
 const answers = [
-  ['data-story-answer', '一只总把袜子藏起来的小猫'],
-  ['data-story-answer', '想把丢失的星星挂回天上'],
-  ['data-story-answer', '夜里太黑，它又怕黑'],
-  ['data-story-answer', '提着萤火虫灯笼出门'],
-  ['data-story-answer', '星星回到天上，它也敢关灯睡觉了'],
+  ['hero', '一只总把袜子藏起来的小猫'],
+  ['goal', '想把丢失的星星挂回天上'],
+  ['obstacle', '夜里太黑，它又怕黑'],
+  ['action', '提着萤火虫灯笼出门'],
+  ['result', '星星回到天上，它也敢关灯睡觉了'],
 ];
 
-for (const [selector, value] of answers) {
-  await page.locator(`[${selector}]`).fill(value);
-  await page.locator('[data-story-save]').click();
+for (const [element, value] of answers) {
+  await page.locator(`[data-story-input][data-element="${element}"]`).fill(value);
 }
+
+await page.locator('[data-story-input][data-element="result"]').fill('');
+check('export stays blocked when a story line is missing', await page.locator('[data-export-project]').isDisabled());
+check('blocked save names the story card first', (await page.locator('[data-project-file-bar] [data-file-feedback]').innerText()).includes('故事卡'));
+await page.locator('[data-story-input][data-element="result"]').fill('星星回到天上，它也敢关灯睡觉了');
 
 const confirmed = await page.locator('[data-story-status][data-state="confirmed"]').count();
 check('all five story elements confirmed', confirmed === 5, String(confirmed));
+check('storyboard cards show the six story beats', (await page.locator('.pb-page-beat').count()) === 6 && (await page.locator('.pb-page-beat').first().innerText()).includes('认识主角'));
 
 const pages = [
   ['小猫发现星星不见了', '抬起头看天空', '着急'],
@@ -125,6 +136,7 @@ const socraticText = await page.locator('[data-socratic-output]').innerText();
 check('socratic prompt has the three phases', socraticText.includes('第一阶段') && socraticText.includes('第二阶段') && socraticText.includes('第三阶段'));
 check('socratic prompt carries the filled story card', socraticText.includes('主角：一只总把袜子藏起来的小猫'));
 check('socratic prompt asks the child to confirm the story', socraticText.includes('这是你想讲的故事吗'));
+check('socratic prompt carries the seed and the six-question cap', socraticText.includes('会发光的小恐龙') && socraticText.includes('最多问 6 个问题'));
 
 const downloadV1Promise = page.waitForEvent('download');
 await page.locator('[data-export-project]').click();
@@ -169,6 +181,10 @@ await page.locator('[data-trait="color"]').fill('深蓝色');
 await page.locator('[data-trait="shape"]').fill('圆耳朵、短尾巴');
 await page.locator('[data-trait="clothes"]').fill('黄色雨衣');
 await page.locator('[data-trait="mark"]').fill('背上的小铃铛');
+await page.locator('[data-generate-traits]').click();
+const traitsPrompt = await page.locator('[data-traits-output]').innerText();
+check('trait extraction carries the seed', traitsPrompt.includes('故事种子：会发光的小恐龙'));
+check('trait extraction carries the start kind', traitsPrompt.includes('起点类型：一个角色'));
 await page.locator('[data-generate-reference]').click();
 const reference = await page.locator('[data-reference-output]').innerText();
 check('reference prompt has all traits', ['深蓝色', '圆耳朵', '黄色雨衣', '小铃铛'].every((text) => reference.includes(text)));

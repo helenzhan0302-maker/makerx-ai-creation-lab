@@ -2,54 +2,48 @@ export const STORY_ELEMENTS = [
   {
     id: 'hero',
     label: '主角',
-    question: '你的故事里，主角是谁？',
-    choices: ['一个小动物', '一个普通孩子', '一个会说话的物件'],
-    inspirations: [
-      '会发光的小恐龙',
-      '不会飞的鸟',
-      '变不准颜色的变色龙',
-      '影子不听话的小猫',
-      '一朵走到哪下到哪的小云',
-      '听见植物说话的女孩',
-    ],
+    hint: '谁的故事？',
+    question: '故事里的主角是谁？',
+    placeholder: '例如：一只总把袜子藏起来的小猫',
   },
   {
     id: 'goal',
     label: '目标',
+    hint: '他/她想要什么？',
     question: '主角最想完成的一件事是什么？',
-    choices: ['找到一样东西', '去一个地方', '帮一个人'],
+    placeholder: '例如：想把丢失的星星挂回天上',
   },
   {
     id: 'obstacle',
     label: '困难',
+    hint: '为什么没那么容易？',
     question: '是什么让这件事没那么容易？',
-    choices: ['有人阻止', '环境太难', '主角自己害怕'],
+    placeholder: '例如：夜里太黑，它又怕黑',
   },
   {
     id: 'action',
     label: '行动',
+    hint: '他/她做了什么？',
     question: '主角具体做了什么？',
-    choices: ['想了一个办法', '找人帮忙', '勇敢试了一次'],
+    placeholder: '例如：提着萤火虫灯笼出门',
   },
   {
     id: 'result',
     label: '结果',
+    hint: '最后发生了什么变化？',
     question: '最后发生了什么变化？',
-    choices: ['目标实现了', '得到意外的结果', '主角变了'],
+    placeholder: '例如：星星回到天上，它也敢关灯睡觉了',
   },
 ];
 
-export const STORY_STARTS = [
-  { id: 'wish', label: '一个愿望' },
-  { id: 'strange', label: '一件奇怪的事' },
-  { id: 'character', label: '一个角色' },
-];
+export const STORY_START_KINDS = ['character', 'wish', 'strange'];
 
 export function createStoryState() {
   return {
-    start: '',
+    startKind: '',
+    seed: '',
     answers: Object.fromEntries(
-      STORY_ELEMENTS.map((element) => [element.id, { original: '', status: 'empty', attempts: 0 }]),
+      STORY_ELEMENTS.map((element) => [element.id, { original: '', status: 'empty' }]),
     ),
   };
 }
@@ -58,43 +52,17 @@ function clean(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
-function isUnknown(value) {
-  if (value === '') return true;
-  return ['不知道', '不清楚', '没想好', '想不出来', '不会'].some((phrase) => value.includes(phrase));
-}
-
-export function answerElement(state, elementId, answer) {
+export function saveStoryField(state, elementId, value) {
   const element = STORY_ELEMENTS.find((item) => item.id === elementId);
   if (!element) return state;
 
-  const value = clean(answer);
-  const previous = state.answers[elementId];
-  const unknown = isUnknown(value);
-  const attempts = unknown ? previous.attempts + 1 : previous.attempts;
-
+  const original = clean(value);
   return {
     ...state,
     answers: {
       ...state.answers,
-      [elementId]: {
-        original: unknown ? previous.original : value,
-        status: unknown ? (attempts >= 3 ? 'pending' : 'empty') : 'confirmed',
-        attempts,
-      },
+      [elementId]: { original, status: original ? 'confirmed' : 'empty' },
     },
-  };
-}
-
-export function nextQuestion(state) {
-  const element = STORY_ELEMENTS.find((item) => state.answers[item.id].status === 'empty');
-  if (!element) return { elementId: null, text: '故事卡已经准备好了。', attempt: 0, choices: [] };
-
-  const attempt = state.answers[element.id].attempts + 1;
-  return {
-    elementId: element.id,
-    text: attempt >= 2 ? `换个小一点的问题：${element.question}` : element.question,
-    attempt,
-    choices: attempt >= 2 ? element.choices : [],
   };
 }
 
@@ -129,7 +97,7 @@ export function applyStoryValues(values = {}) {
     answers: Object.fromEntries(
       STORY_ELEMENTS.map((element) => {
         const original = clean(values[element.id]);
-        return [element.id, { original, status: original ? 'confirmed' : 'empty', attempts: 0 }];
+        return [element.id, { original, status: original ? 'confirmed' : 'empty' }];
       }),
     ),
   };

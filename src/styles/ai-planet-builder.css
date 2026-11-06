@@ -565,7 +565,12 @@
     font-size: 0.75rem;
   }
 
+  .project-page-header a {
+    white-space: nowrap;
+  }
+
   .project-page-status {
+    flex: none;
     text-align: right;
   }
 

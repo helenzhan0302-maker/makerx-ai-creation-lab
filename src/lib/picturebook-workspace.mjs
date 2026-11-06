@@ -1,11 +1,10 @@
 import {
   STORY_ELEMENTS,
-  answerElement,
   applyStoryValues,
   buildStoryValues,
   createStoryState,
   isStoryReady,
-  nextQuestion,
+  saveStoryField as applyStoryField,
   storyCompletion,
 } from './picturebook-story.mjs';
 import { createStoryboard } from './picturebook-prompts.mjs';
@@ -15,7 +14,8 @@ export const WORKSPACE_EVENT = 'picturebook:workspace-change';
 
 export function createWorkspace() {
   return {
-    start: '',
+    start: 'character',
+    seed: '',
     story: createStoryState(),
     storyboard: createStoryboard(),
     visual: {
@@ -55,24 +55,20 @@ export function setStart(start) {
   notifyWorkspace();
 }
 
-export function saveAnswer(elementId, answer) {
+export function setSeed(seed) {
+  workspace.seed = typeof seed === 'string' ? seed : '';
+  notifyWorkspace();
+}
+
+export function saveStoryField(elementId, value) {
   const before = workspace.story;
-  const next = answerElement(workspace.story, elementId, answer);
+  const next = applyStoryField(workspace.story, elementId, value);
   if (next !== before) {
     workspace.history.push(before);
     if (workspace.history.length > 20) workspace.history.shift();
   }
   workspace.story = next;
   notifyWorkspace();
-  return nextQuestion(workspace.story);
-}
-
-export function undoAnswer() {
-  const previous = workspace.history.pop();
-  if (!previous) return false;
-  workspace.story = previous;
-  notifyWorkspace();
-  return true;
 }
 
 export function storyValues() {
@@ -147,7 +143,8 @@ export function setRoadshow(key, value) {
 }
 
 export function applyImportedProject(data) {
-  workspace.start = data.story?.start || '';
+  workspace.start = data.story?.start || 'character';
+  workspace.seed = data.story?.seed || '';
   workspace.story = applyStoryValues(data.story);
   workspace.storyboard = data.storyboard.map((page) => ({ ...page }));
   workspace.visual = {
@@ -177,7 +174,7 @@ export function applyImportedProject(data) {
 
 export function createWorkspaceFile(version) {
   return createProjectFile({
-    story: { start: workspace.start, ...storyValues() },
+    story: { start: workspace.start, seed: workspace.seed, ...storyValues() },
     storyboard: workspace.storyboard,
     images: workspace.images,
     visual: workspace.visual,

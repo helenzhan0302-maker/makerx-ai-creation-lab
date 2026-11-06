@@ -15,6 +15,8 @@ Thumbs.db
 design/
 .agent-teams/
 /*.png
+/.tmp-*/
+/.tmp-*.mjs
 
 # 域名 / 子域名构建产物（deploy-domain、deploy-subdomain 分支单独发布）
 dist-domain/

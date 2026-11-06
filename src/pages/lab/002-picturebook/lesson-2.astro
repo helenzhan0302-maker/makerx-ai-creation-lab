@@ -39,13 +39,13 @@ const baseUrl = import.meta.env.BASE_URL;
       <section class="pb-section pb-stack-end" aria-labelledby="lesson-two-save">
         <div class="pb-save-heading">
           <p class="pb-kicker">save v2 / 保存第二版</p>
-          <h2 id="lesson-two-save">把绘本、检查单和路演卡一起带走。</h2>
-          <p>这次的版本号会自动变成 v2。v1 仍然留在你的电脑里，想回去看看原来的想法随时可以打开。</p>
+          <h2 id="lesson-two-save">把故事、分镜、插图状态、检查单和路演卡一起带走。</h2>
+          <p>这次的版本号会自动变成 v2。工程文件记录的是文字、每页插图的状态和检查结果，不包含图片本身；6 张插图和绘本文件请另外保存到自己的文件夹里。v1 仍然留在你的电脑里，想回去看看原来的想法随时可以打开。</p>
         </div>
         <ProjectFileBar
           mode="export"
           baseVersion={2}
-          title="保存第二版：绘本 + 检查单 + 路演卡"
+          title="保存第二版：故事 + 分镜 + 插图状态 + 检查单 + 路演卡"
           requireImport={true}
           requireStoryboard={true}
         />

@@ -21,7 +21,7 @@ const baseUrl = import.meta.env.BASE_URL;
       <section class="project-intro pb-intro" aria-labelledby="project-title">
         <p class="eyebrow">project 002 / lesson 01</p>
         <h1 id="project-title">故事放映机</h1>
-        <p class="project-intro-lead">从一个小小的念头开始，把故事问到清楚，再拆成 6 页分镜。今天带走的是故事卡和第一版工程文件。</p>
+        <p class="project-intro-lead">从一个念头开始，让课堂智能体一次问一个问题，把故事问清楚；你确认之后，再拆成 6 页分镜。今天带走的是故事卡和第一版工程文件。</p>
         <p class="project-intro-notes">
           <a class="lesson-next-link" href={`${baseUrl}lab/002-picturebook/lesson-2/`}>下周六带着工程文件回来：进入第 2 节课 ↗</a>
         </p>
@@ -40,6 +40,7 @@ const baseUrl = import.meta.env.BASE_URL;
           mode="export"
           baseVersion={1}
           title="保存工程文件"
+          requireStory={true}
           requireStoryboard={true}
         />
       </section>

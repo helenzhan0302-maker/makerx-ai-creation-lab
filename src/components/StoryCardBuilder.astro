@@ -1,73 +1,45 @@
 ---
-import { STORY_ELEMENTS, STORY_STARTS, createStoryState } from '../lib/picturebook-story.mjs';
+import { STORY_ELEMENTS, createStoryState } from '../lib/picturebook-story.mjs';
+import { STORY_STARTS, STORY_START_ORDER } from '../lib/picturebook-prompts.mjs';
 
 const state = createStoryState();
+const starts = STORY_START_ORDER.map((id) => STORY_STARTS[id]);
 ---
 
 <section class="pb-section pb-story" data-story-card aria-labelledby="story-card-title">
   <div class="pb-section-heading">
-    <p class="pb-kicker">step 01 / story card</p>
-    <h2 id="story-card-title">先把故事问清楚，再开始画。</h2>
-    <p>每次只回答一个问题。说“不知道”也可以，我们会换一个小一点的方向，不会替你编故事。</p>
+    <p class="pb-kicker">step 01 / story seed</p>
+    <h2 id="story-card-title">先给故事一个起点。</h2>
+    <p>从一个角色、一个愿望或一件奇怪的事开始。写一句就够了，剩下的交给智能体一次问一个问题，帮你问清楚。</p>
   </div>
 
   <fieldset class="pb-start-picker">
-    <legend>从哪一个念头开始？</legend>
-    {STORY_STARTS.map((start, index) => (
+    <legend>你的故事，想从哪里开始？</legend>
+    {starts.map((start, index) => (
       <label class="pb-start-option">
         <input type="radio" name="storyStart" value={start.id} checked={index === 0} data-story-start />
-        <span><span aria-hidden="true">✦</span>{start.label}</span>
+        <span>{start.label}</span>
       </label>
     ))}
   </fieldset>
 
-  <div class="pb-question-stage" data-story-question-stage aria-live="polite">
-    <div class="pb-question-meta">
-      <span>现在只问这一个</span>
-      <span data-story-progress>故事卡 0 / 5</span>
-    </div>
-    <p class="pb-question-text" data-story-question>{STORY_ELEMENTS[0].question}</p>
-    <div class="pb-question-choices" data-story-choices hidden></div>
-    <div class="pb-inspiration" data-story-inspiration hidden>
+  <div class="pb-seed-panel">
+    <label class="pb-answer-field">
+      <span data-seed-label>{starts[0].label}：用一句话说说你的想法</span>
+      <textarea rows="3" maxlength="240" data-story-seed placeholder={starts[0].placeholder}></textarea>
+    </label>
+    <div class="pb-inspiration" data-story-inspiration>
       <p class="pb-inspiration-label">没有头绪？点一个当起点，再改成你自己的版本。</p>
       <div class="pb-inspiration-list" data-story-inspiration-list></div>
     </div>
-    <label class="pb-answer-field">
-      <span>用你自己的话说</span>
-      <textarea rows="3" maxlength="240" data-story-answer placeholder="例如：一只总把袜子藏起来的小猫"></textarea>
-    </label>
-    <div class="pb-inline-actions">
-      <button class="pb-button pb-button--secondary" type="button" data-story-save>记下这个回答</button>
-      <button class="pb-button pb-button--quiet" type="button" data-story-undo>这句不是我想要的，退回去</button>
-    </div>
-    <p class="pb-feedback" data-story-feedback role="status"></p>
+    <p class="pb-feedback" data-seed-feedback role="status"></p>
   </div>
 
-  <div class="pb-story-grid">
-    {STORY_ELEMENTS.map((element, index) => {
-      const answer = state.answers[element.id];
-      return (
-        <article class="pb-story-card" data-story-element={element.id}>
-          <div class="pb-card-topline">
-            <span class="pb-card-number">{String(index + 1).padStart(2, '0')}</span>
-            <span class="pb-status" data-story-status>{answer.status === 'confirmed' ? '已确认' : answer.status === 'pending' ? '待补充' : '空白'}</span>
-          </div>
-          <h3>{element.label}</h3>
-          <p class="pb-question-small">{element.question}</p>
-          <label class="pb-answer-field pb-answer-field--compact">
-            <span class="sr-only">{element.label}：孩子原话</span>
-            <textarea rows="3" maxlength="240" data-story-input data-element={element.id} placeholder="把刚才说的话写在这里"></textarea>
-          </label>
-          <button class="pb-button pb-button--quiet pb-card-save" type="button" data-story-card-save data-element={element.id}>记下这个回答</button>
-        </article>
-      );
-    })}
-  </div>
-
-  <div class="pb-copy-panel">
+  <div class="pb-copy-panel pb-copy-panel--prompt">
     <div>
-      <h3>把提示词交给课堂智能体</h3>
-      <p>复制后粘到课堂智能体里。它先一次问一个问题补全故事，再写出完整故事，最后请你检查；不满意就当场改。</p>
+      <p class="pb-kicker">step 02 / ask with the agent</p>
+      <h3>把追问规则交给课堂智能体</h3>
+      <p>复制后粘到课堂智能体里。它一次只问一个问题，帮你想清楚；信息够了就写出完整故事，再请你检查。不满意就当场改。</p>
     </div>
     <div class="pb-inline-actions">
       <button class="pb-button pb-button--secondary" type="button" data-generate-socratic>生成提示词</button>
@@ -76,67 +48,83 @@ const state = createStoryState();
     <pre class="pb-output" data-socratic-output hidden tabindex="0"></pre>
     <p class="pb-feedback" data-socratic-feedback role="status"></p>
   </div>
+
+  <div class="pb-story-return">
+    <div class="pb-section-heading">
+      <p class="pb-kicker">step 03 / story card</p>
+      <h2>智能体问完，把确认过的故事带回来。</h2>
+      <p>只抄你和智能体都确认过的那一版。五个格子都填完，才有力气拆分镜。</p>
+    </div>
+
+    <div class="pb-story-progress">
+      <span data-story-progress>故事卡 0 / 5</span>
+      <div class="pb-progress-track" aria-hidden="true"><span data-story-bar></span></div>
+    </div>
+
+    <div class="pb-story-grid">
+      {STORY_ELEMENTS.map((element, index) => (
+        <article class="pb-story-card" data-story-element={element.id}>
+          <div class="pb-card-topline">
+            <span class="pb-card-number">{String(index + 1).padStart(2, '0')}</span>
+            <span class="pb-status" data-story-status>空白</span>
+          </div>
+          <h3>{element.label}</h3>
+          <p class="pb-question-small">{element.hint}</p>
+          <label class="pb-answer-field pb-answer-field--compact">
+            <span class="sr-only">{element.label}：确认过的故事</span>
+            <textarea rows="3" maxlength="240" data-story-input data-element={element.id} placeholder={element.placeholder}></textarea>
+          </label>
+        </article>
+      ))}
+    </div>
+
+    <p class="pb-story-note">如果智能体写出来的故事和你想的不一样，先回去让它改，再回来填。这里不替你做决定。</p>
+  </div>
 </section>
 
 <script>
   // @ts-nocheck
   import { copyTextToClipboard } from '../lib/ai-planet-builder.mjs';
+  import { STORY_STARTS } from '../lib/picturebook-prompts.mjs';
   import { buildSocraticPrompt } from '../lib/picturebook-prompts.mjs';
-  import { STORY_ELEMENTS, nextQuestion, storyCompletion } from '../lib/picturebook-story.mjs';
-  import { saveAnswer, setStart, undoAnswer, workspace } from '../lib/picturebook-workspace.mjs';
+  import { STORY_ELEMENTS, storyCompletion } from '../lib/picturebook-story.mjs';
+  import { saveStoryField, setSeed, setStart, workspace } from '../lib/picturebook-workspace.mjs';
 
   const root = document.querySelector('[data-story-card]');
 
   if (root) {
-    const questionText = root.querySelector('[data-story-question]');
-    const choicesBox = root.querySelector('[data-story-choices]');
+    const seedField = root.querySelector('[data-story-seed]');
+    const seedLabel = root.querySelector('[data-seed-label]');
+    const seedFeedback = root.querySelector('[data-seed-feedback]');
     const inspirationBox = root.querySelector('[data-story-inspiration]');
     const inspirationList = root.querySelector('[data-story-inspiration-list]');
-    const answerField = root.querySelector('[data-story-answer]');
-    const feedback = root.querySelector('[data-story-feedback]');
-    const progress = root.querySelector('[data-story-progress]');
+    const progressText = root.querySelector('[data-story-progress]');
+    const progressBar = root.querySelector('[data-story-bar]');
     const socraticOutput = root.querySelector('[data-socratic-output]');
     const socraticFeedback = root.querySelector('[data-socratic-feedback]');
     const copySocratic = root.querySelector('[data-copy-socratic]');
-    let current = nextQuestion(workspace.story);
 
-    const renderQuestion = () => {
-      current = nextQuestion(workspace.story);
-      const element = STORY_ELEMENTS.find((item) => item.id === current.elementId);
-      if (questionText) questionText.textContent = current.text;
-      if (progress) progress.textContent = `故事卡 ${storyCompletion(workspace.story)} / 5`;
-      if (answerField) {
-        answerField.value = element ? workspace.story.answers[element.id].original : '';
-        answerField.disabled = !element;
-        answerField.placeholder = element?.id === 'hero' ? '例如：一只总把袜子藏起来的小猫' : '用你自己的话说';
+    const renderSeed = () => {
+      const start = STORY_STARTS[workspace.start] || STORY_STARTS.character;
+      if (seedLabel) seedLabel.textContent = `${start.label}：用一句话说说你的想法`;
+      if (seedField && document.activeElement !== seedField) {
+        seedField.value = workspace.seed;
+        seedField.placeholder = start.placeholder;
       }
-      if (choicesBox) {
-        choicesBox.replaceChildren();
-        choicesBox.hidden = !current.choices.length;
-        current.choices.forEach((choice) => {
-          const button = document.createElement('button');
-          button.type = 'button';
-          button.className = 'pb-choice-chip';
-          button.textContent = choice;
-          button.addEventListener('click', () => {
-            if (answerField) answerField.value = choice;
-            answerField?.focus();
-          });
-          choicesBox.appendChild(button);
-        });
-      }
-      if (inspirationBox && inspirationList) {
-        const inspirations = element && !current.choices.length ? element.inspirations || [] : [];
+      if (inspirationList && inspirationBox) {
         inspirationList.replaceChildren();
-        inspirationBox.hidden = !inspirations.length;
-        inspirations.forEach((idea) => {
+        inspirationBox.hidden = false;
+        start.ideas.forEach((idea) => {
           const button = document.createElement('button');
           button.type = 'button';
           button.className = 'pb-choice-chip pb-choice-chip--idea';
           button.textContent = idea;
           button.addEventListener('click', () => {
-            if (answerField) answerField.value = idea;
-            answerField?.focus();
+            if (seedField) {
+              seedField.value = idea;
+              seedField.dispatchEvent(new Event('input', { bubbles: true }));
+              seedField.focus();
+            }
           });
           inspirationList.appendChild(button);
         });
@@ -144,78 +132,60 @@ const state = createStoryState();
     };
 
     const renderCards = () => {
+      let complete = 0;
       STORY_ELEMENTS.forEach((element) => {
         const card = root.querySelector(`[data-story-element="${element.id}"]`);
         if (!card) return;
         const answer = workspace.story.answers[element.id];
+        if (answer.status === 'confirmed') complete += 1;
         const input = card.querySelector('[data-story-input]');
         if (input && document.activeElement !== input) input.value = answer.original;
         const status = card.querySelector('[data-story-status]');
         if (status) {
-          status.textContent = answer.status === 'confirmed' ? '已确认' : answer.status === 'pending' ? '待补充' : '空白';
+          status.textContent = answer.status === 'confirmed' ? '已确认' : '空白';
           status.dataset.state = answer.status;
         }
-        card.classList.toggle('is-focused', current.elementId === element.id);
       });
+      if (progressText) progressText.textContent = `故事卡 ${complete} / 5`;
+      if (progressBar) progressBar.style.width = `${(complete / STORY_ELEMENTS.length) * 100}%`;
     };
 
     const renderAll = () => {
-      renderQuestion();
+      renderSeed();
       renderCards();
-    };
-
-    const acceptAnswer = (elementId, value) => {
-      const before = workspace.story.answers[elementId]?.status;
-      saveAnswer(elementId, value);
-      const after = workspace.story.answers[elementId]?.status;
-      if (feedback) {
-        feedback.textContent =
-          after === 'confirmed'
-            ? '记下了。先别急着修饰，这个故事已经更像你的了。'
-            : after === 'pending'
-              ? '这一格先留白，之后想起来再补。我们继续下一格。'
-              : '这句话还不够具体。可以再补一个画面或动作。';
-        feedback.dataset.tone = after === 'confirmed' ? 'ok' : after === 'pending' ? 'neutral' : 'error';
-      }
-      renderAll();
-      if (after === 'pending') answerField?.focus();
-      return { before, after };
     };
 
     root.querySelectorAll('[data-story-start]').forEach((radio) => {
       radio.addEventListener('change', () => {
-        if (radio.checked) setStart(radio.value);
+        if (radio.checked) {
+          setStart(radio.value);
+          renderSeed();
+        }
       });
     });
 
-    root.querySelector('[data-story-save]')?.addEventListener('click', () => {
-      if (!current.elementId) {
-        if (feedback) feedback.textContent = '五个格子都已经有回答了，去检查一下分镜吧。';
-        return;
+    seedField?.addEventListener('input', () => {
+      setSeed(seedField.value);
+      if (seedFeedback) {
+        seedFeedback.textContent = seedField.value.trim()
+          ? '记住了。现在生成提示词，把这句话交给课堂智能体。'
+          : '';
+        seedFeedback.dataset.tone = seedField.value.trim() ? 'ok' : 'neutral';
       }
-      acceptAnswer(current.elementId, answerField?.value || '');
     });
 
-    root.querySelectorAll('[data-story-card-save]').forEach((button) => {
-      button.addEventListener('click', () => {
-        const elementId = button.dataset.element;
-        const input = root.querySelector(`[data-story-input][data-element="${elementId}"]`);
-        acceptAnswer(elementId, input?.value || '');
+    root.querySelectorAll('[data-story-input]').forEach((input) => {
+      input.addEventListener('input', () => {
+        saveStoryField(input.dataset.element, input.value);
+        renderCards();
       });
-    });
-
-    root.querySelector('[data-story-undo]')?.addEventListener('click', () => {
-      const restored = undoAnswer();
-      if (feedback) {
-        feedback.textContent = restored ? '已经退回上一个版本。' : '还没有可以退回的回答。';
-        feedback.dataset.tone = restored ? 'ok' : 'neutral';
-      }
-      renderAll();
     });
 
     root.querySelector('[data-generate-socratic]')?.addEventListener('click', () => {
       const prompt = buildSocraticPrompt({
         story: {
+          startKind: STORY_STARTS[workspace.start]?.label || '',
+          seed: workspace.seed,
           hero: workspace.story.answers.hero.original,
           goal: workspace.story.answers.goal.original,
           obstacle: workspace.story.answers.obstacle.original,
@@ -228,7 +198,9 @@ const state = createStoryState();
         socraticOutput.hidden = false;
       }
       if (copySocratic) copySocratic.hidden = false;
-      if (socraticFeedback) socraticFeedback.textContent = '提示词已生成。粘到课堂智能体里：先追问、再写故事、最后请你检查。';
+      if (socraticFeedback) {
+        socraticFeedback.textContent = '提示词已生成。粘到课堂智能体里：先一次一问，再写故事，最后请你检查。';
+      }
     });
 
     copySocratic?.addEventListener('click', async () => {

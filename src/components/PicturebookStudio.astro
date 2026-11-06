@@ -35,7 +35,7 @@ const styleGroups = [
 
     <section class="pb-section pb-style" aria-labelledby="style-title">
       <div class="pb-section-heading">
-        <p class="pb-kicker">step 03 / visual rules</p>
+        <p class="pb-kicker">step 01 / visual rules</p>
         <h2 id="style-title">先定下整本绘本的样子。</h2>
         <p>比例、画风、色调每组只选一个。它们会被写进每一页提示词，避免画到后面越来越不像同一本书。</p>
       </div>
@@ -60,7 +60,7 @@ const styleGroups = [
 
     <section class="pb-section pb-character" aria-labelledby="character-title">
       <div class="pb-section-heading">
-        <p class="pb-kicker">step 04 / character sheet</p>
+        <p class="pb-kicker">step 02 / character sheet</p>
         <h2 id="character-title">把主角固定成四件事。</h2>
         <p>颜色、发型或外形、衣服、标志物。每一页都带着这四项，AI 才有机会画出同一个角色。</p>
       </div>
@@ -72,6 +72,19 @@ const styleGroups = [
             <input type="text" maxlength="80" data-trait={trait.id} placeholder={trait.placeholder} autocomplete="off" />
           </label>
         ))}
+      </div>
+
+      <div class="pb-copy-panel">
+        <div>
+          <h3>不知道怎么写这四项？先让 AI 从故事里提取</h3>
+          <p>它只会用第 1 节故事里出现的信息；没提到的会标“待补充”，再问你一个小问题。提取完，再把确认过的四项填到上面。</p>
+        </div>
+        <div class="pb-inline-actions">
+          <button class="pb-button pb-button--secondary" type="button" data-generate-traits>生成外观提取提示词</button>
+          <button class="pb-button pb-button--quiet" type="button" data-copy-traits hidden>复制外观提取提示词</button>
+        </div>
+        <pre class="pb-output" data-traits-output hidden tabindex="0"></pre>
+        <p class="pb-feedback" data-traits-feedback role="status"></p>
       </div>
 
       <div class="pb-copy-panel">
@@ -90,7 +103,7 @@ const styleGroups = [
 
     <section class="pb-section pb-pages" aria-labelledby="pages-title">
       <div class="pb-section-heading">
-        <p class="pb-kicker">step 05 / page by page</p>
+        <p class="pb-kicker">step 03 / page by page</p>
         <h2 id="pages-title">一页一页画，一页一页检查。</h2>
         <p>每次只生成一页。选到满意的图就标成“已选用”；不满意就写清楚要改什么，不要整本重做。</p>
       </div>
@@ -154,7 +167,7 @@ const styleGroups = [
 
     <section class="pb-section pb-final-checks" aria-labelledby="final-title">
       <div class="pb-section-heading">
-        <p class="pb-kicker">step 06 / release check</p>
+        <p class="pb-kicker">step 04 / release check</p>
         <h2 id="final-title">绘本出厂前，再看四件事。</h2>
         <p>四项都确认后再去首映。任何一项没把握，都可以回到对应页修改。</p>
       </div>
@@ -169,7 +182,7 @@ const styleGroups = [
 
     <section class="pb-section pb-roadshow" aria-labelledby="roadshow-title">
       <div class="pb-section-heading">
-        <p class="pb-kicker">step 07 / premiere</p>
+        <p class="pb-kicker">step 05 / premiere</p>
         <h2 id="roadshow-title">首映礼：讲给同伴听。</h2>
         <p>不用背台词，回答三个问题就好。同伴的反馈不是打分，是帮你看到自己没注意的地方。</p>
       </div>
@@ -216,9 +229,11 @@ const styleGroups = [
   import { copyTextToClipboard } from '../lib/ai-planet-builder.mjs';
   import {
     PAGE_COUNT,
+    STORY_STARTS,
     buildPagePrompt,
     buildReferencePrompt,
     buildRevisionPrompt,
+    buildTraitExtractionPrompt,
   } from '../lib/picturebook-prompts.mjs';
   import {
     setFinalCheck,
@@ -352,6 +367,31 @@ const styleGroups = [
       if (copy) copy.hidden = false;
       if (feedback) feedback.textContent = '先生成一张主角参考图，确认长相后再逐页画。';
     });
+
+    root.querySelector('[data-generate-traits]')?.addEventListener('click', () => {
+      const output = root.querySelector('[data-traits-output]');
+      const feedback = root.querySelector('[data-traits-feedback]');
+      const copy = root.querySelector('[data-copy-traits]');
+      if (output) {
+        output.textContent = buildTraitExtractionPrompt({
+          story: {
+            startKind: STORY_STARTS[workspace.start]?.label || '',
+            seed: workspace.seed,
+            hero: workspace.story.answers.hero.original,
+            goal: workspace.story.answers.goal.original,
+            obstacle: workspace.story.answers.obstacle.original,
+            action: workspace.story.answers.action.original,
+            result: workspace.story.answers.result.original,
+          },
+        });
+        output.hidden = false;
+      }
+      if (copy) copy.hidden = false;
+      if (feedback) feedback.textContent = '把这段粘进智能体；它没找到的项会标“待补充”，再问你。';
+    });
+    root.querySelector('[data-copy-traits]')?.addEventListener('click', () =>
+      copyOutput('[data-traits-output]', '[data-traits-feedback]', '已复制外观提取提示词。'),
+    );
     root.querySelector('[data-copy-reference]')?.addEventListener('click', () =>
       copyOutput('[data-reference-output]', '[data-reference-feedback]', '已复制参考图提示词。'),
     );

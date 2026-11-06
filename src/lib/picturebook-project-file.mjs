@@ -12,6 +12,7 @@ function clean(value) {
 function cleanStory(story = {}) {
   return {
     start: clean(story.start),
+    seed: clean(story.seed),
     hero: clean(story.hero),
     goal: clean(story.goal),
     obstacle: clean(story.obstacle),
