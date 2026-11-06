@@ -128,7 +128,7 @@ const heading = title || (isImport ? '先打开上次的故事工程' : '把这�
 
     const blockers = () => {
       if (requireImport && !workspace.imported) return '先导入上节课的工程文件，才能保存这一版。';
-      if (requireStory && !storyIsComplete()) return '先把故事卡的 5 行都填完，再保存。';
+      if (requireStory && !storyIsComplete()) return '先把故事创意卡和完整故事都填完，再保存。';
       if (requireStoryboard && !storyboardIsComplete()) return '先把 6 页分镜的画面、动作和情绪都填完，再保存。';
       return '';
     };

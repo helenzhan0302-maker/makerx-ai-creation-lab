@@ -1,4 +1,5 @@
 import { PAGE_COUNT } from './picturebook-prompts.mjs';
+import { buildLegacyCard } from './picturebook-story.mjs';
 
 export const SCHEMA_VERSION = 1;
 export const PROJECT_CODE = '002-picturebook';
@@ -13,11 +14,10 @@ function cleanStory(story = {}) {
   return {
     start: clean(story.start),
     seed: clean(story.seed),
-    hero: clean(story.hero),
-    goal: clean(story.goal),
-    obstacle: clean(story.obstacle),
-    action: clean(story.action),
-    result: clean(story.result),
+    card: clean(story.card) || buildLegacyCard(story),
+    storyTitle: clean(story.storyTitle) || clean(story.title),
+    storyBody: clean(story.storyBody) || clean(story.story),
+    decisions: clean(story.decisions),
   };
 }
 
@@ -126,7 +126,7 @@ export function parseProjectFile(text) {
   }
 
   if (!data || typeof data !== 'object' || data.projectCode !== PROJECT_CODE) {
-    return { ok: false, message: '这不是工程文件：找不到「故事放映机」的项目标记。' };
+    return { ok: false, message: '这不是工程文件：找不到「故事造物机」的项目标记。' };
   }
 
   if (!Number.isInteger(data.schemaVersion) || data.schemaVersion < 1 || data.schemaVersion > SCHEMA_VERSION) {

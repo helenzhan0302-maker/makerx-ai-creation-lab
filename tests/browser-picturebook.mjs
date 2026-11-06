@@ -27,7 +27,7 @@ page.on('console', (message) => {
 page.on('pageerror', (error) => consoleErrors.push(String(error)));
 
 await page.goto(`${base}/lab/002-picturebook/lesson-1/`, { waitUntil: 'networkidle' });
-check('lesson 1 loads', (await page.locator('h1').innerText()).includes('故事放映机'));
+check('lesson 1 loads', (await page.locator('h1').innerText()).includes('故事造物机'));
 
 await page.goto(`${base}/`, { waitUntil: 'networkidle' });
 await page.locator('#projects').scrollIntoViewIfNeeded();
@@ -72,11 +72,12 @@ check('lesson hub omits the removed notice', hubLayout.hasBoundary === false && 
 check('lesson hub has no horizontal overflow', hubLayout.overflow === false);
 
 await page.goto(`${base}/lab/002-picturebook/lesson-1/`, { waitUntil: 'networkidle' });
+check('lesson 1 labels itself as the first lesson', (await page.locator('.project-page-status').innerText()).includes('第 1 节课'));
 check('story card present', (await page.locator('[data-story-card]').count()) === 1);
-check('storyboard has six pages', (await page.locator('[data-storyboard-page]').count()) === 6);
+check('storyboard is not on lesson 1', (await page.locator('[data-storyboard-page]').count()) === 0);
 check('export controls present', (await page.locator('[data-export-project]').count()) === 1);
-check('export disabled before storyboard is complete', await page.locator('[data-export-project]').isDisabled());
-check('export explains the story card is missing first', (await page.locator('[data-project-file-bar] [data-file-feedback]').innerText()).includes('故事卡'));
+check('export disabled before story archive is complete', await page.locator('[data-export-project]').isDisabled());
+check('export explains the story archive is missing', (await page.locator('[data-project-file-bar] [data-file-feedback]').innerText()).includes('故事创意卡'));
 check('seed panel offers character ideas', (await page.locator('[data-story-inspiration] .pb-choice-chip--idea').count()) >= 6);
 check('story check block was removed', (await page.locator('[data-review]').count()) === 0);
 const lessonOneSteps = await page.locator('.pb-kicker').allInnerTexts();
@@ -89,28 +90,84 @@ check(
 );
 
 await page.locator('[data-story-inspiration] .pb-choice-chip--idea').first().click();
-check('inspiration fills the seed field', (await page.locator('[data-story-seed]').inputValue()).includes('会发光的小恐龙'));
+check('inspiration fills the seed field', (await page.locator('[data-story-seed]').inputValue()).includes('会飞的小猫'));
 
-const answers = [
-  ['hero', '一只总把袜子藏起来的小猫'],
-  ['goal', '想把丢失的星星挂回天上'],
-  ['obstacle', '夜里太黑，它又怕黑'],
-  ['action', '提着萤火虫灯笼出门'],
-  ['result', '星星回到天上，它也敢关灯睡觉了'],
-];
+const storyCardText = [
+  '【我的故事创意卡】',
+  '故事名称：小猫的萤火虫灯笼',
+  '故事主角：一只怕黑的小猫',
+  '主角有什么特别之处：它怕黑，却总想照顾别人',
+  '孩子最想讲的事情：想帮丢失的星星回家',
+  '已经确定的重要情节：它提着灯笼走进树林，还遇到了迷路的小兔',
+  '故事结尾：星星回到天上，它也敢关灯睡觉了',
+  '希望读者感受到什么：害怕的时候也可以帮助别人',
+].join('\n');
+const storyBodyText =
+  '小猫发现星星不见了，虽然怕黑，还是提起萤火虫灯笼走进树林。它遇到迷路的小兔，把灯举高照路。最后它们一起找到星星，小猫也敢自己关灯睡觉了。';
 
-for (const [element, value] of answers) {
-  await page.locator(`[data-story-input][data-element="${element}"]`).fill(value);
-}
+await page.locator('[data-story-text="card"]').fill(storyCardText);
+check('creative card alone does not unlock saving', await page.locator('[data-export-project]').isDisabled());
+check('story archive progress one of two', (await page.locator('[data-story-progress]').innerText()).includes('1 / 2'));
+await page.locator('[data-story-text="storyBody"]').fill(storyBodyText);
+await page.locator('[data-story-text="storyTitle"]').fill('小猫的萤火虫灯笼');
+await page.locator('[data-story-text="decisions"]').fill('我决定让小猫怕黑，但还是自己关灯睡觉。');
+check('story archive progress two of two', (await page.locator('[data-story-progress]').innerText()).includes('2 / 2'));
+check('export enabled after story archive is complete', await page.locator('[data-export-project]').isEnabled());
 
-await page.locator('[data-story-input][data-element="result"]').fill('');
-check('export stays blocked when a story line is missing', await page.locator('[data-export-project]').isDisabled());
-check('blocked save names the story card first', (await page.locator('[data-project-file-bar] [data-file-feedback]').innerText()).includes('故事卡'));
-await page.locator('[data-story-input][data-element="result"]').fill('星星回到天上，它也敢关灯睡觉了');
+await page.locator('[data-story-text="storyBody"]').fill('');
+check('export stays blocked when the full story is missing', await page.locator('[data-export-project]').isDisabled());
+await page.locator('[data-story-text="storyBody"]').fill(storyBodyText);
 
-const confirmed = await page.locator('[data-story-status][data-state="confirmed"]').count();
-check('all five story elements confirmed', confirmed === 5, String(confirmed));
-check('storyboard cards show the six story beats', (await page.locator('.pb-page-beat').count()) === 6 && (await page.locator('.pb-page-beat').first().innerText()).includes('认识主角'));
+await page.locator('[data-generate-socratic]').click();
+const socraticText = await page.locator('[data-socratic-output]').innerText();
+check(
+  'socratic prompt has the four phases',
+  ['第一阶段', '第二阶段', '第三阶段', '第四阶段'].every((phase) => socraticText.includes(phase)),
+);
+check('socratic prompt asks the child to confirm the creative card', socraticText.includes('这是不是自己想讲的故事'));
+check('socratic prompt carries the seed and the six-question cap', socraticText.includes('会飞的小猫') && socraticText.includes('最多提问 6 个问题'));
+check('socratic prompt emits the copy-back template', socraticText.includes('【我的完整故事】') && socraticText.includes('【这是我自己做出的创意决定】'));
+
+const downloadV1Promise = page.waitForEvent('download');
+await page.locator('[data-export-project]').click();
+const downloadV1 = await downloadV1Promise;
+const v1Path = path.join(os.tmpdir(), 'story-project-v1-browser.json');
+await downloadV1.saveAs(v1Path);
+const v1 = JSON.parse(fs.readFileSync(v1Path, 'utf8'));
+check('v1 filename', downloadV1.suggestedFilename() === 'story-project-v1.json', downloadV1.suggestedFilename());
+check('v1 has six empty storyboard pages', v1.storyboard.length === 6);
+check('v1 keeps the creative card', v1.story.card.includes('故事主角：一只怕黑的小猫'));
+check('v1 keeps the full story', v1.story.storyBody.includes('小猫发现星星不见了'));
+check('v1 keeps the child decisions', v1.story.decisions.includes('我决定让小猫怕黑'));
+check('v1 carries image records', v1.images.length === 6);
+
+const downloadV1AgainPromise = page.waitForEvent('download');
+await page.locator('[data-export-project]').click();
+const downloadV1Again = await downloadV1AgainPromise;
+check(
+  'second save on the same page increments the version',
+  downloadV1Again.suggestedFilename() === 'story-project-v2.json',
+  downloadV1Again.suggestedFilename(),
+);
+const repeatedPath = path.join(os.tmpdir(), 'story-project-v2-repeat-browser.json');
+await downloadV1Again.saveAs(repeatedPath);
+
+await page.reload({ waitUntil: 'networkidle' });
+check('refresh clears in-memory story archive', (await page.locator('[data-story-progress]').innerText()).includes('0 / 2'));
+
+await page.goto(`${base}/lab/002-picturebook/lesson-2/`, { waitUntil: 'networkidle' });
+check('studio is gated before import', await page.locator('[data-import-gate]').isVisible());
+check('studio body hidden before import', await page.locator('[data-studio-body]').isHidden());
+check('lesson 2 export disabled before import', await page.locator('.pb-stack-end [data-export-project]').isDisabled());
+check('lesson 2 export asks for import first', (await page.locator('.pb-stack-end [data-file-feedback]').innerText()).includes('先导入'));
+
+await page.locator('[data-project-file-input]').setInputFiles(v1Path);
+await page.waitForFunction(() => !document.querySelector('[data-studio-body]').hidden);
+check('studio visible after import', await page.locator('[data-studio-body]').isVisible());
+check('import status shows v1', (await page.locator('[data-import-status]').innerText()).includes('第 1 版'));
+check('six page cards after import', (await page.locator('[data-studio-page]').count()) === 6);
+check('storyboard is available after import', (await page.locator('[data-storyboard-page]').count()) === 6);
+check('lesson 2 export blocked until storyboard is complete', await page.locator('.pb-stack-end [data-export-project]').isDisabled());
 
 const pages = [
   ['小猫发现星星不见了', '抬起头看天空', '着急'],
@@ -129,53 +186,12 @@ for (let index = 0; index < pages.length; index += 1) {
   }
 }
 check('storyboard progress six of six', (await page.locator('[data-storyboard-progress]').innerText()).includes('6 / 6'));
-check('export enabled after storyboard is complete', await page.locator('[data-export-project]').isEnabled());
+check('lesson 2 export enabled after storyboard is complete', await page.locator('.pb-stack-end [data-export-project]').isEnabled());
 
-await page.locator('[data-generate-socratic]').click();
-const socraticText = await page.locator('[data-socratic-output]').innerText();
-check('socratic prompt has the three phases', socraticText.includes('第一阶段') && socraticText.includes('第二阶段') && socraticText.includes('第三阶段'));
-check('socratic prompt carries the filled story card', socraticText.includes('主角：一只总把袜子藏起来的小猫'));
-check('socratic prompt asks the child to confirm the story', socraticText.includes('这是你想讲的故事吗'));
-check('socratic prompt carries the seed and the six-question cap', socraticText.includes('会发光的小恐龙') && socraticText.includes('最多问 6 个问题'));
-
-const downloadV1Promise = page.waitForEvent('download');
-await page.locator('[data-export-project]').click();
-const downloadV1 = await downloadV1Promise;
-const v1Path = path.join(os.tmpdir(), 'story-project-v1-browser.json');
-await downloadV1.saveAs(v1Path);
-const v1 = JSON.parse(fs.readFileSync(v1Path, 'utf8'));
-check('v1 filename', downloadV1.suggestedFilename() === 'story-project-v1.json', downloadV1.suggestedFilename());
-check('v1 has six storyboard pages', v1.storyboard.length === 6);
-check('v1 keeps original story text', v1.story.hero === '一只总把袜子藏起来的小猫');
-check('v1 carries image records', v1.images.length === 6);
-
-const downloadV1AgainPromise = page.waitForEvent('download');
-await page.locator('[data-export-project]').click();
-const downloadV1Again = await downloadV1AgainPromise;
-check(
-  'second save on the same page increments the version',
-  downloadV1Again.suggestedFilename() === 'story-project-v2.json',
-  downloadV1Again.suggestedFilename(),
-);
-const repeatedPath = path.join(os.tmpdir(), 'story-project-v2-repeat-browser.json');
-await downloadV1Again.saveAs(repeatedPath);
-
-await page.reload({ waitUntil: 'networkidle' });
-check('refresh clears in-memory storyboard', (await page.locator('[data-storyboard-progress]').innerText()).includes('0 / 6'));
-
-await page.goto(`${base}/lab/002-picturebook/lesson-2/`, { waitUntil: 'networkidle' });
-check('studio is gated before import', await page.locator('[data-import-gate]').isVisible());
-check('studio body hidden before import', await page.locator('[data-studio-body]').isHidden());
-check('lesson 2 export disabled before import', await page.locator('.pb-stack-end [data-export-project]').isDisabled());
-check('lesson 2 export asks for import first', (await page.locator('.pb-stack-end [data-file-feedback]').innerText()).includes('先导入'));
-
-await page.locator('[data-project-file-input]').setInputFiles(v1Path);
-await page.waitForFunction(() => !document.querySelector('[data-studio-body]').hidden);
-check('studio visible after import', await page.locator('[data-studio-body]').isVisible());
-check('import status shows v1', (await page.locator('[data-import-status]').innerText()).includes('第 1 版'));
-check('six page cards after import', (await page.locator('[data-studio-page]').count()) === 6);
-check('imported scene shown', (await page.locator('[data-mini-scene]').first().innerText()).includes('小猫发现星星不见了'));
-check('lesson 2 export enabled after import', await page.locator('.pb-stack-end [data-export-project]').isEnabled());
+await page.locator('[data-generate-storyboard]').click();
+const storyboardPrompt = await page.locator('[data-storyboard-output]').innerText();
+check('storyboard prompt carries the full story', storyboardPrompt.includes('小猫发现星星不见了'));
+check('storyboard prompt carries the six beats', storyboardPrompt.includes('第 1 页 · 认识主角') && storyboardPrompt.includes('第 6 页 · 结果与结尾'));
 
 await page.locator('[data-trait="color"]').fill('深蓝色');
 await page.locator('[data-trait="shape"]').fill('圆耳朵、短尾巴');
@@ -183,8 +199,9 @@ await page.locator('[data-trait="clothes"]').fill('黄色雨衣');
 await page.locator('[data-trait="mark"]').fill('背上的小铃铛');
 await page.locator('[data-generate-traits]').click();
 const traitsPrompt = await page.locator('[data-traits-output]').innerText();
-check('trait extraction carries the seed', traitsPrompt.includes('故事种子：会发光的小恐龙'));
+check('trait extraction carries the seed', traitsPrompt.includes('故事种子：会飞的小猫'));
 check('trait extraction carries the start kind', traitsPrompt.includes('起点类型：一个角色'));
+check('trait extraction carries the full story', traitsPrompt.includes('小猫发现星星不见了'));
 await page.locator('[data-generate-reference]').click();
 const reference = await page.locator('[data-reference-output]').innerText();
 check('reference prompt has all traits', ['深蓝色', '圆耳朵', '黄色雨衣', '小铃铛'].every((text) => reference.includes(text)));
@@ -224,6 +241,7 @@ await downloadV2.saveAs(v2Path);
 const v2 = JSON.parse(fs.readFileSync(v2Path, 'utf8'));
 check('v2 filename', downloadV2.suggestedFilename() === 'story-project-v2.json', downloadV2.suggestedFilename());
 check('v2 keeps six pages', v2.storyboard.length === 6);
+check('v2 keeps the creative card and full story', v2.story.card.includes('一只怕黑的小猫') && v2.story.storyBody.includes('小猫发现星星不见了'));
 check('v2 keeps selected image and checks', v2.images[1].status === 'selected' && v2.images[1].checks.color === true);
 check('v2 keeps four final checks', Object.values(v2.checks).every(Boolean));
 check('v2 carries roadshow card', v2.roadshow.favoritePage === 2 && v2.roadshow.reason.includes('温暖'));

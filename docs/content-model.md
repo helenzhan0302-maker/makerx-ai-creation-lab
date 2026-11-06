@@ -13,7 +13,7 @@
 ```
 src/content/projects/
 ├─ 001-my-ai-base.md          ← 文件 id 即 URL slug
-├─ 002-picturebook.md         ← 实验 002「故事放映机」
+├─ 002-picturebook.md         ← 实验 002「故事造物机」
 └─ _template.md               ← 新建项目的拷贝模板（下划线前缀，不参与构建路由）
 ```
 

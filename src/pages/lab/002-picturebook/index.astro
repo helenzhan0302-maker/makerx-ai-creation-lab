@@ -9,38 +9,38 @@ const lessons = [
   {
     id: '01',
     label: '第 1 节课',
-    title: '把故事问清楚',
-    description: '从愿望、怪事或角色出发，把一句话交给课堂智能体一次一问，确认故事后回填故事卡，再拆成 6 页分镜，保存 v1 工程文件。',
-    meta: '故事 + 分镜',
+    title: '故事导演营',
+    description: '从一个小小的想法，创造一个真正属于自己的故事。AI 一次问一个问题，你确认创意卡和完整故事后，保存 v1 故事档案。',
+    meta: '完整故事',
     variant: 'story',
     href: `${baseUrl}lab/002-picturebook/lesson-1/`,
-    action: '进入第 1 节课',
+    action: '进入故事导演营',
   },
   {
     id: '02',
     label: '第 2 节课',
-    title: '让故事上映',
-    description: '导入 v1，统一画风与主角长相，逐页生成并检查插画，最后完成首映礼路演卡，保存 v2 工程文件。',
-    meta: '插画 + 首映',
+    title: '绘本造物营',
+    description: '导入 v1，把完整故事拆成 6 页分镜，统一画风与主角长相，逐页生成并检查插画，最后完成首映礼。',
+    meta: '分镜 + 绘本',
     variant: 'picture',
     href: `${baseUrl}lab/002-picturebook/lesson-2/`,
-    action: '进入第 2 节课',
+    action: '进入绘本造物营',
   },
 ];
 ---
 
-<BaseLayout title="故事放映机｜MakerX AI 造物实验室" description="故事放映机：两节课把一个小念头做成 6 页绘本，并参加一场作品首映礼。">
+<BaseLayout title="故事造物机｜MakerX AI 造物实验室" description="故事造物机：第一周把一个小念头变成完整故事，第二周把故事做成 6 页绘本并参加首映礼。">
   <div class="project-page-shell pb-page-shell">
     <header class="project-page-header">
       <a class="project-back-link" href={baseUrl}>← MakerX AI 造物实验室</a>
-      <span class="project-page-status">实验编号 002 / 两节课</span>
+      <span class="project-page-status">实验编号 002 / 故事造物机</span>
     </header>
 
     <main id="main-content">
       <section class="project-intro pb-intro" aria-labelledby="project-title">
-        <p class="eyebrow">project 002 / story cinema</p>
-        <h1 id="project-title">故事放映机</h1>
-        <p class="project-intro-lead">两节课，把一个小念头做成一本 6 页绘本：先问清楚故事，再一页一页画出来，最后放映给同伴看。</p>
+        <p class="eyebrow">project 002 / story maker</p>
+        <h1 id="project-title">故事造物机</h1>
+        <p class="project-intro-lead">第一周，把一个小小的想法变成完整故事；第二周，把故事做成一本 6 页绘本，最后放映给同伴看。</p>
       </section>
 
       <section class="lesson-hub pb-lesson-hub" aria-label="选择课次">
@@ -84,7 +84,7 @@ const lessons = [
           <article>
             <span>01</span>
             <h3>你决定故事</h3>
-            <p>主角是谁、想要什么、遇到什么困难、最后怎么变化，都由你说。网站帮你准备好追问规则和故事卡；真正一次一个问题的追问，由课堂智能体完成。</p>
+            <p>主角是谁、最想讲什么、故事怎么发展、最后怎么结束，都由你说。网站帮你准备采访提示词和故事创意卡模板；真正一次一个问题的采访，由课堂智能体完成。</p>
           </article>
           <article>
             <span>02</span>

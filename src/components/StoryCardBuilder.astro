@@ -1,16 +1,15 @@
 ---
-import { STORY_ELEMENTS, createStoryState } from '../lib/picturebook-story.mjs';
+import { STORY_TEXT_FIELDS } from '../lib/picturebook-story.mjs';
 import { STORY_STARTS, STORY_START_ORDER } from '../lib/picturebook-prompts.mjs';
 
-const state = createStoryState();
 const starts = STORY_START_ORDER.map((id) => STORY_STARTS[id]);
 ---
 
 <section class="pb-section pb-story" data-story-card aria-labelledby="story-card-title">
   <div class="pb-section-heading">
-    <p class="pb-kicker">step 01 / story seed</p>
-    <h2 id="story-card-title">先给故事一个起点。</h2>
-    <p>从一个角色、一个愿望或一件奇怪的事开始。写一句就够了，剩下的交给智能体一次问一个问题，帮你问清楚。</p>
+    <p class="pb-kicker">step 01 / find your idea</p>
+    <h2 id="story-card-title">你想创造一个什么样的故事？</h2>
+    <p>不用想得太复杂。选一个喜欢的起点，也可以完全自己创造。你负责想象和决定，AI 是你的创作搭档。</p>
   </div>
 
   <fieldset class="pb-start-picker">
@@ -19,13 +18,14 @@ const starts = STORY_START_ORDER.map((id) => STORY_STARTS[id]);
       <label class="pb-start-option">
         <input type="radio" name="storyStart" value={start.id} checked={index === 0} data-story-start />
         <span>{start.label}</span>
+        <small>{start.prompt}</small>
       </label>
     ))}
   </fieldset>
 
   <div class="pb-seed-panel">
     <label class="pb-answer-field">
-      <span data-seed-label>{starts[0].label}：用一句话说说你的想法</span>
+      <span data-seed-label>{starts[0].label}：挑一个灵感，或者写你自己的</span>
       <textarea rows="3" maxlength="240" data-story-seed placeholder={starts[0].placeholder}></textarea>
     </label>
     <div class="pb-inspiration" data-story-inspiration>
@@ -37,9 +37,9 @@ const starts = STORY_START_ORDER.map((id) => STORY_STARTS[id]);
 
   <div class="pb-copy-panel pb-copy-panel--prompt">
     <div>
-      <p class="pb-kicker">step 02 / ask with the agent</p>
-      <h3>把追问规则交给课堂智能体</h3>
-      <p>复制后粘到课堂智能体里。它一次只问一个问题，帮你想清楚；信息够了就写出完整故事，再请你检查。不满意就当场改。</p>
+      <p class="pb-kicker">step 02 / create your prompt</p>
+      <h3>为你的故事生成采访提示词</h3>
+      <p>复制后粘到老师指定的课堂智能体里。它会一次只问一个问题，帮你想清楚；信息够了就写完整故事，再请你检查。</p>
     </div>
     <div class="pb-inline-actions">
       <button class="pb-button pb-button--secondary" type="button" data-generate-socratic>生成提示词</button>
@@ -51,44 +51,50 @@ const starts = STORY_START_ORDER.map((id) => STORY_STARTS[id]);
 
   <div class="pb-story-return">
     <div class="pb-section-heading">
-      <p class="pb-kicker">step 03 / story card</p>
-      <h2>智能体问完，把确认过的故事带回来。</h2>
-      <p>只抄你和智能体都确认过的那一版。五个格子都填完，才有力气拆分镜。</p>
+      <p class="pb-kicker">step 03 / story interview</p>
+      <h2>去和 AI 故事导演聊一聊。</h2>
+      <p>你是故事导演，AI 是你的采访搭档。一次回答一个问题，想到什么就大胆说；不满意就继续讨论，直到你认可创意和故事。</p>
+    </div>
+    <ol class="pb-agent-steps">
+      <li><strong>复制提示词</strong><span>把刚才生成的专属提示词复制下来。</span></li>
+      <li><strong>打开课堂 Agent</strong><span>进入老师指定的 AI 智能体。</span></li>
+      <li><strong>开始故事采访</strong><span>一次回答一个问题，想到什么就大胆说。</span></li>
+      <li><strong>确认你的故事</strong><span>创意卡和完整故事都认可后，再带回网站。</span></li>
+    </ol>
+  </div>
+
+  <div class="pb-story-return">
+    <div class="pb-section-heading">
+      <p class="pb-kicker">step 04 / save your story</p>
+      <h2>把你的故事带回家。</h2>
+      <p>把智能体整理好的故事创意卡和完整故事粘贴到下面。检查后就能保存你的原创作品。</p>
     </div>
 
     <div class="pb-story-progress">
-      <span data-story-progress>故事卡 0 / 5</span>
+      <span data-story-progress>故事档案 0 / 2</span>
       <div class="pb-progress-track" aria-hidden="true"><span data-story-bar></span></div>
     </div>
 
-    <div class="pb-story-grid">
-      {STORY_ELEMENTS.map((element, index) => (
-        <article class="pb-story-card" data-story-element={element.id}>
-          <div class="pb-card-topline">
-            <span class="pb-card-number">{String(index + 1).padStart(2, '0')}</span>
-            <span class="pb-status" data-story-status>空白</span>
-          </div>
-          <h3>{element.label}</h3>
-          <p class="pb-question-small">{element.hint}</p>
-          <label class="pb-answer-field pb-answer-field--compact">
-            <span class="sr-only">{element.label}：确认过的故事</span>
-            <textarea rows="3" maxlength="240" data-story-input data-element={element.id} placeholder={element.placeholder}></textarea>
-          </label>
-        </article>
+    <div class="pb-story-text-fields">
+      {STORY_TEXT_FIELDS.map((field) => (
+        <label class:list={['pb-answer-field', { 'pb-answer-field--wide': field.rows > 6 }]}>
+          <span>{field.label}{field.required ? <em class="pb-required">必填</em> : <em class="pb-optional">选填</em>}</span>
+          <small class="pb-field-hint">{field.hint}</small>
+          <textarea rows={field.rows} maxlength={field.id === 'storyBody' ? 4000 : 1200} data-story-text={field.id} placeholder={field.placeholder}></textarea>
+        </label>
       ))}
     </div>
 
-    <p class="pb-story-note">如果智能体写出来的故事和你想的不一样，先回去让它改，再回来填。这里不替你做决定。</p>
+    <p class="pb-story-note">先在智能体里把创意卡和最终故事都确认好，再复制回来。故事必须经过你的检查和认可。</p>
   </div>
 </section>
 
 <script>
   // @ts-nocheck
   import { copyTextToClipboard } from '../lib/ai-planet-builder.mjs';
-  import { STORY_STARTS } from '../lib/picturebook-prompts.mjs';
-  import { buildSocraticPrompt } from '../lib/picturebook-prompts.mjs';
-  import { STORY_ELEMENTS, storyCompletion } from '../lib/picturebook-story.mjs';
-  import { saveStoryField, setSeed, setStart, workspace } from '../lib/picturebook-workspace.mjs';
+  import { STORY_STARTS, buildSocraticPrompt } from '../lib/picturebook-prompts.mjs';
+  import { STORY_REQUIRED_TEXT_FIELDS, STORY_TEXT_FIELDS, storyCompletion } from '../lib/picturebook-story.mjs';
+  import { saveStoryText, setSeed, setStart, workspace } from '../lib/picturebook-workspace.mjs';
 
   const root = document.querySelector('[data-story-card]');
 
@@ -106,7 +112,7 @@ const starts = STORY_START_ORDER.map((id) => STORY_STARTS[id]);
 
     const renderSeed = () => {
       const start = STORY_STARTS[workspace.start] || STORY_STARTS.character;
-      if (seedLabel) seedLabel.textContent = `${start.label}：用一句话说说你的想法`;
+      if (seedLabel) seedLabel.textContent = `${start.label}：挑一个灵感，或者写你自己的`;
       if (seedField && document.activeElement !== seedField) {
         seedField.value = workspace.seed;
         seedField.placeholder = start.placeholder;
@@ -131,28 +137,19 @@ const starts = STORY_START_ORDER.map((id) => STORY_STARTS[id]);
       }
     };
 
-    const renderCards = () => {
-      let complete = 0;
-      STORY_ELEMENTS.forEach((element) => {
-        const card = root.querySelector(`[data-story-element="${element.id}"]`);
-        if (!card) return;
-        const answer = workspace.story.answers[element.id];
-        if (answer.status === 'confirmed') complete += 1;
-        const input = card.querySelector('[data-story-input]');
-        if (input && document.activeElement !== input) input.value = answer.original;
-        const status = card.querySelector('[data-story-status]');
-        if (status) {
-          status.textContent = answer.status === 'confirmed' ? '已确认' : '空白';
-          status.dataset.state = answer.status;
-        }
+    const renderTextFields = () => {
+      const complete = storyCompletion(workspace.story);
+      STORY_TEXT_FIELDS.forEach((field) => {
+        const input = root.querySelector(`[data-story-text="${field.id}"]`);
+        if (input && document.activeElement !== input) input.value = workspace.story.text[field.id] || '';
       });
-      if (progressText) progressText.textContent = `故事卡 ${complete} / 5`;
-      if (progressBar) progressBar.style.width = `${(complete / STORY_ELEMENTS.length) * 100}%`;
+      if (progressText) progressText.textContent = `故事档案 ${complete} / ${STORY_REQUIRED_TEXT_FIELDS.length}`;
+      if (progressBar) progressBar.style.width = `${(complete / STORY_REQUIRED_TEXT_FIELDS.length) * 100}%`;
     };
 
     const renderAll = () => {
       renderSeed();
-      renderCards();
+      renderTextFields();
     };
 
     root.querySelectorAll('[data-story-start]').forEach((radio) => {
@@ -174,23 +171,15 @@ const starts = STORY_START_ORDER.map((id) => STORY_STARTS[id]);
       }
     });
 
-    root.querySelectorAll('[data-story-input]').forEach((input) => {
-      input.addEventListener('input', () => {
-        saveStoryField(input.dataset.element, input.value);
-        renderCards();
-      });
+    root.querySelectorAll('[data-story-text]').forEach((input) => {
+      input.addEventListener('input', () => saveStoryText(input.dataset.storyText, input.value));
     });
 
     root.querySelector('[data-generate-socratic]')?.addEventListener('click', () => {
       const prompt = buildSocraticPrompt({
         story: {
-          startKind: STORY_STARTS[workspace.start]?.label || '',
+          startKind: workspace.start,
           seed: workspace.seed,
-          hero: workspace.story.answers.hero.original,
-          goal: workspace.story.answers.goal.original,
-          obstacle: workspace.story.answers.obstacle.original,
-          action: workspace.story.answers.action.original,
-          result: workspace.story.answers.result.original,
         },
       });
       if (socraticOutput) {
@@ -199,7 +188,7 @@ const starts = STORY_START_ORDER.map((id) => STORY_STARTS[id]);
       }
       if (copySocratic) copySocratic.hidden = false;
       if (socraticFeedback) {
-        socraticFeedback.textContent = '提示词已生成。粘到课堂智能体里：先一次一问，再写故事，最后请你检查。';
+        socraticFeedback.textContent = '提示词已生成。粘到课堂智能体里：先一次一问，确认创意卡，再写故事。';
       }
     });
 

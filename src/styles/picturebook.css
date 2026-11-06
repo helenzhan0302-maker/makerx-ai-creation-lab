@@ -1,7 +1,14 @@
-/* 实验 002「故事放映机」：纸张工作台 + 放映机取景框。只使用 CSS 形状，不引用外部资产。 */
+/* 实验 002「故事造物机」：纸张工作台 + 放映机取景框。只使用 CSS 形状，不引用外部资产。 */
 
 .pb-page-shell {
   width: min(100%, 1240px);
+}
+
+.pb-page-shell .project-page-status {
+  max-width: 46vw;
+  white-space: normal;
+  text-align: right;
+  line-height: 1.35;
 }
 
 .pb-intro {
@@ -441,6 +448,10 @@
   transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
 }
 
+.pb-start-option small {
+  display: none;
+}
+
 .pb-start-option input:checked + span {
   border-color: var(--accent-wire);
   background: var(--accent-wire);
@@ -491,6 +502,105 @@
   color: var(--ink-muted);
   font-size: 0.9rem;
   line-height: 1.7;
+}
+
+.pb-agent-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin: 1.1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pb-agent-steps li {
+  display: grid;
+  gap: 0.3rem;
+  align-content: start;
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.78);
+  counter-increment: agent-step;
+}
+
+.pb-agent-steps li::before {
+  color: var(--accent-wire);
+  content: counter(agent-step, decimal-leading-zero);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.pb-agent-steps {
+  counter-reset: agent-step;
+}
+
+.pb-agent-steps strong {
+  color: var(--brand-ink);
+  font-size: 0.95rem;
+}
+
+.pb-agent-steps span {
+  color: var(--ink-muted);
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.pb-story-text-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 1.1rem;
+}
+
+.pb-story-text-fields .pb-answer-field {
+  margin-top: 0;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.pb-story-text-fields .pb-answer-field--wide {
+  grid-column: 1 / -1;
+}
+
+.pb-story-text-fields textarea {
+  min-height: 5rem;
+  font-weight: 450;
+}
+
+.pb-story-text-fields textarea[rows="10"],
+.pb-story-text-fields textarea[rows="12"] {
+  min-height: 14rem;
+}
+
+.pb-field-hint {
+  color: var(--ink-muted);
+  font-size: 0.82rem;
+  font-weight: 450;
+  line-height: 1.55;
+}
+
+.pb-required,
+.pb-optional {
+  margin-left: 0.45rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 650;
+  vertical-align: 0.08em;
+}
+
+.pb-required {
+  background: rgba(47, 75, 199, 0.1);
+  color: var(--accent-wire);
+}
+
+.pb-optional {
+  background: rgba(233, 242, 253, 0.8);
+  color: var(--ink-soft);
 }
 
 .pb-question-stage {
@@ -1361,6 +1471,10 @@
     grid-template-columns: 1fr;
   }
 
+  .pb-agent-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .pb-story-grid,
   .pb-style-groups,
   .pb-trait-grid,
@@ -1387,7 +1501,9 @@
   .pb-style-groups,
   .pb-trait-grid,
   .pb-final-check-list,
-  .pb-how-grid {
+  .pb-how-grid,
+  .pb-story-text-fields,
+  .pb-agent-steps {
     grid-template-columns: 1fr;
   }
 

@@ -1,11 +1,12 @@
 import {
-  STORY_ELEMENTS,
+  STORY_TEXT_FIELDS,
   applyStoryValues,
   buildStoryValues,
   createStoryState,
   isStoryReady,
-  saveStoryField as applyStoryField,
+  saveStoryText as applyStoryText,
   storyCompletion,
+  normalizeStartKind,
 } from './picturebook-story.mjs';
 import { createStoryboard } from './picturebook-prompts.mjs';
 import { createProjectFile, resolveExportVersion } from './picturebook-project-file.mjs';
@@ -51,7 +52,7 @@ export function notifyWorkspace() {
 }
 
 export function setStart(start) {
-  workspace.start = typeof start === 'string' ? start : '';
+  workspace.start = normalizeStartKind(start);
   notifyWorkspace();
 }
 
@@ -60,15 +61,20 @@ export function setSeed(seed) {
   notifyWorkspace();
 }
 
-export function saveStoryField(elementId, value) {
-  const before = workspace.story;
-  const next = applyStoryField(workspace.story, elementId, value);
-  if (next !== before) {
-    workspace.history.push(before);
-    if (workspace.history.length > 20) workspace.history.shift();
-  }
+function rememberStory(next) {
+  if (next === workspace.story) return;
+  workspace.history.push(workspace.story);
+  if (workspace.history.length > 20) workspace.history.shift();
   workspace.story = next;
   notifyWorkspace();
+}
+
+export function saveStoryField(elementId, value) {
+  saveStoryText(elementId, value);
+}
+
+export function saveStoryText(fieldId, value) {
+  rememberStory(applyStoryText(workspace.story, fieldId, value));
 }
 
 export function storyValues() {
@@ -79,12 +85,12 @@ export function storyIsComplete() {
   return isStoryReady(workspace.story);
 }
 
-export function storyHasNoEmptySlots() {
-  return STORY_ELEMENTS.every((element) => workspace.story.answers[element.id].status !== 'empty');
-}
-
 export function storyProgress() {
   return storyCompletion(workspace.story);
+}
+
+export function storyTextFields() {
+  return STORY_TEXT_FIELDS;
 }
 
 export function storyboardIsComplete() {
@@ -143,7 +149,7 @@ export function setRoadshow(key, value) {
 }
 
 export function applyImportedProject(data) {
-  workspace.start = data.story?.start || 'character';
+  workspace.start = normalizeStartKind(data.story?.start);
   workspace.seed = data.story?.seed || '';
   workspace.story = applyStoryValues(data.story);
   workspace.storyboard = data.storyboard.map((page) => ({ ...page }));
@@ -183,7 +189,6 @@ export function createWorkspaceFile(version) {
     version,
   });
 }
-
 export function nextExportVersion(baseVersion) {
   return resolveExportVersion({
     imported: workspace.imported,

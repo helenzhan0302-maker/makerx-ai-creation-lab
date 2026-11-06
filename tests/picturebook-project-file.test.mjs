@@ -138,6 +138,42 @@ test('missing images and roadshow in an old file still produce six safe page rec
   assert.equal(parsed.data.roadshow.favoritePage, null);
 });
 
+test('legacy v1 story fields survive the full parse path', () => {
+  const file = createProjectFile({ story, storyboard, visual, checks, version: 1 });
+  const legacy = {
+    ...file,
+    story: {
+      start: 'wish',
+      seed: '会飞的小猫',
+      hero: '一只怕黑的小猫',
+      goal: '找回丢失的星星',
+      obstacle: '夜里太黑',
+      action: '提着灯笼出门',
+      result: '星星回到天上',
+      title: '小猫的灯笼',
+      story: '小猫发现星星不见了，最后把它送回天上。',
+    },
+  };
+
+  const parsed = parseProjectFile(JSON.stringify(legacy));
+
+  assert.equal(parsed.ok, true);
+  assert.match(parsed.data.story.card, /故事主角：一只怕黑的小猫/);
+  assert.match(parsed.data.story.card, /故事结果：星星回到天上/);
+  assert.equal(parsed.data.story.storyTitle, '小猫的灯笼');
+  assert.equal(parsed.data.story.storyBody, '小猫发现星星不见了，最后把它送回天上。');
+});
+
+test('new story fields win over legacy fields when both exist', () => {
+  const file = createProjectFile({ story: { ...story, card: '新创意卡', storyTitle: '新标题', storyBody: '新正文' }, storyboard, visual, checks, version: 1 });
+  const parsed = parseProjectFile(stringifyProjectFile(file));
+
+  assert.equal(parsed.ok, true);
+  assert.equal(parsed.data.story.card, '新创意卡');
+  assert.equal(parsed.data.story.storyTitle, '新标题');
+  assert.equal(parsed.data.story.storyBody, '新正文');
+});
+
 test('invalid JSON is rejected with a readable reason', () => {
   const parsed = parseProjectFile('{not json');
   assert.equal(parsed.ok, false);

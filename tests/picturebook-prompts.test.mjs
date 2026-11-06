@@ -45,72 +45,50 @@ test('storyboard completion needs all three fields on a page', () => {
   assert.equal(storyboardCompletion(pages), 1);
 });
 
-test('storyboard prompt lists pending story elements instead of inventing them', () => {
-  const prompt = buildStoryboardPrompt({
-    hero: '',
-    goal: '找到丢失的星星',
-    obstacle: '',
-    action: '',
-    result: '',
-  });
-  assert.match(prompt, /主角：待补充/);
-  assert.match(prompt, /困难：待补充/);
-  assert.match(prompt, /不要自己补/);
+test('storyboard prompt carries the confirmed story instead of inventing it', () => {
+  const prompt = buildStoryboardPrompt({ card: '', storyBody: '' });
+  assert.match(prompt, /【故事创意卡】\n待补充/);
+  assert.match(prompt, /【完整故事】\n待补充/);
+  assert.match(prompt, /不要新增我没有说过的主要情节/);
 });
 
-test('socratic prompt runs three phases: ask, write, let the child check', () => {
+test('socratic prompt runs four phases: ask, confirm card, write, revise', () => {
   const prompt = buildSocraticPrompt({
-    story: { hero: '一只怕黑的小猫', goal: '', obstacle: '', action: '', result: '' },
+    story: { startKind: 'character', seed: '一只怕黑的小猫' },
   });
-  assert.match(prompt, /不是代写机器/);
-  assert.match(prompt, /第一阶段：一次只问一个问题，把故事问清楚/);
-  assert.match(prompt, /第二阶段：把我说过的整理成完整故事/);
-  assert.match(prompt, /第三阶段：请我检查并修改/);
-  assert.match(prompt, /每次只问一个问题/);
-  assert.match(prompt, /不要提前给我一整套问卷/);
-  assert.match(prompt, /只能使用我说过的内容/);
-  assert.match(prompt, /这是你想讲的故事吗/);
-  assert.match(prompt, /最多问 6 个问题/);
-  assert.match(prompt, /信息够了就立刻停止/);
+  assert.match(prompt, /采访搭档和灵感伙伴/);
+  assert.match(prompt, /# 第一阶段：采访孩子，激发故事/);
+  assert.match(prompt, /# 第二阶段：整理故事创意，请孩子确认/);
+  assert.match(prompt, /# 第三阶段：根据确认的创意写故事/);
+  assert.match(prompt, /# 第四阶段：让孩子修改，直到满意/);
+  assert.match(prompt, /一次只问一个问题/);
+  assert.match(prompt, /最多提问 6 个问题/);
+  assert.match(prompt, /确认前不要生成完整故事/);
+  assert.match(prompt, /这是不是自己想讲的故事/);
+  assert.match(prompt, /【我的完整故事】/);
+  assert.match(prompt, /【这是我自己做出的创意决定】/);
   assert.doesNotMatch(prompt, /颜色 \/ 发型或外形 \/ 衣服 \/ 标志物/, 'trait extraction belongs to lesson 2');
 });
 
-test('socratic prompt carries the seed and the filled story card', () => {
+test('socratic prompt carries the chosen start and the seed', () => {
   const prompt = buildSocraticPrompt({
     story: {
-      startKind: '一个角色',
+      startKind: 'character',
       seed: '一只总把袜子藏起来的小猫',
-      hero: '小猫',
-      goal: '找回星星',
-      obstacle: '天黑',
-      action: '它决定提灯出门',
-      result: '',
     },
   });
-  assert.match(prompt, /我的故事从「一个角色」开始/);
+  assert.match(prompt, /孩子选择的创作起点类型：一个特别的角色/);
   assert.match(prompt, /一只总把袜子藏起来的小猫/);
-  assert.match(prompt, /主角：小猫/);
-  assert.match(prompt, /目标：找回星星/);
-  assert.match(prompt, /困难：天黑/);
-  assert.match(prompt, /行动：它决定提灯出门/);
-  assert.match(prompt, /我最不确定的是：结果/);
+  assert.match(prompt, /孩子最初的创意/);
 });
 
-test('socratic prompt asks the child to choose a starting kind when nothing is written', () => {
+test('socratic prompt asks about the chosen start when no seed is written', () => {
   const prompt = buildSocraticPrompt({
-    story: { hero: '', goal: '', obstacle: '', action: '', result: '' },
+    story: { startKind: 'event', seed: '' },
   });
-  assert.match(prompt, /一个角色、一个愿望，还是一件奇怪的事/);
-  assert.match(prompt, /不要写故事/);
-});
-
-test('socratic prompt keeps the chosen start kind when the seed is still empty', () => {
-  const prompt = buildSocraticPrompt({
-    story: { startKind: '一件奇怪的事', seed: '', hero: '', goal: '', obstacle: '', action: '', result: '' },
-  });
-  assert.match(prompt, /我的故事想从「一件奇怪的事」开始/);
-  assert.match(prompt, /请先只问我一个关于「一件奇怪的事」的问题/);
-  assert.doesNotMatch(prompt, /你的故事想从一个角色、一个愿望，还是一件奇怪的事开始/);
+  assert.match(prompt, /孩子选择的创作起点类型：一件奇妙的事情/);
+  assert.match(prompt, /请先只问一个关于「一件奇妙的事情」的问题/);
+  assert.match(prompt, /确认前不要生成完整故事/);
 });
 
 test('page prompt contains all four character traits and three style settings', () => {
@@ -134,16 +112,15 @@ test('trait extraction only uses the story and marks unknown items as pending', 
     story: {
       startKind: '一个角色',
       seed: '一只会发光的小恐龙',
-      hero: '一只会发光的小恐龙',
-      goal: '想找到自己的影子',
-      obstacle: '',
-      action: '',
-      result: '',
+      card: '故事主角：一只会发光的小恐龙',
+      storyBody: '它想找到自己的影子。',
     },
   });
   assert.match(prompt, /一只会发光的小恐龙/);
   assert.match(prompt, /起点类型：一个角色/);
   assert.match(prompt, /故事种子：一只会发光的小恐龙/);
+  assert.match(prompt, /【故事创意卡】/);
+  assert.match(prompt, /【完整故事】/);
   assert.match(prompt, /颜色：/);
   assert.match(prompt, /待补充/);
   assert.match(prompt, /不要凭空发明角色/);
@@ -151,7 +128,7 @@ test('trait extraction only uses the story and marks unknown items as pending', 
 });
 
 test('storyboard prompt assigns one narrative task to each of the six pages', () => {
-  const prompt = buildStoryboardPrompt({ hero: '小猫', goal: '找星星', obstacle: '天黑', action: '提灯', result: '找到' });
+  const prompt = buildStoryboardPrompt({ card: '故事主角：小猫', storyBody: '小猫提灯找回星星。' });
   assert.match(prompt, /第 1 页 · 认识主角/);
   assert.match(prompt, /第 3 页 · 困难出现/);
   assert.match(prompt, /第 6 页 · 结果与结尾/);
@@ -185,7 +162,7 @@ test('roadshow card answers the three lesson questions', () => {
   const pages = createStoryboard();
   pages[2] = { page: 3, scene: '主角找到星星', action: '伸手接住', emotion: '开心' };
   const card = buildRoadshowCard({
-    story: { hero: '一只小猫', goal: '找回星星' },
+    story: { storyTitle: '小猫的灯笼' },
     storyboard: pages,
   });
   assert.match(card, /我的故事讲什么/);
@@ -199,21 +176,23 @@ test('roadshow card answers the three lesson questions', () => {
 test('prompts never include child identity fields', () => {
   const source = fs.readFileSync(path.join(root, 'src/lib/picturebook-prompts.mjs'), 'utf8');
   assert.doesNotMatch(source, /name\s*:|school\s*:|address\s*:|phone\s*:|email\s*:/i);
-  assert.match(source, /不要问我真实姓名、学校、住址、电话或照片/);
+  assert.match(source, /不要问真实姓名、学校、住址、电话或照片/);
 });
 
-test('lesson one page includes story card, storyboard and save controls', () => {
+test('lesson one page includes the four-step story flow and save controls', () => {
   const page = fs.readFileSync(path.join(root, 'src/pages/lab/002-picturebook/lesson-1.astro'), 'utf8');
   const storyCard = fs.readFileSync(path.join(root, 'src/components/StoryCardBuilder.astro'), 'utf8');
-  const storyboard = fs.readFileSync(path.join(root, 'src/components/StoryboardBuilder.astro'), 'utf8');
 
   assert.match(page, /StoryCardBuilder/);
-  assert.match(page, /StoryboardBuilder/);
+  assert.doesNotMatch(page, /StoryboardBuilder/, 'storyboard belongs to lesson 2');
   assert.match(page, /ProjectFileBar/);
   assert.match(storyCard, /data-story-card/);
-  assert.match(storyboard, /data-storyboard/);
-  assert.match(storyboard, /PAGE_COUNT/);
-  assert.match(storyboard, /data-storyboard-page/);
+  assert.match(storyCard, /step 01 \/ find your idea/);
+  assert.match(storyCard, /step 02 \/ create your prompt/);
+  assert.match(storyCard, /step 03 \/ story interview/);
+  assert.match(storyCard, /step 04 \/ save your story/);
+  assert.match(storyCard, /data-story-text=\{field\.id\}/);
+  assert.match(storyCard, /STORY_TEXT_FIELDS\.map/);
   assert.match(page, /pb-save-panel/, 'lesson 1 keeps a save panel');
   assert.match(page, /pb-save-panel[\s\S]*ProjectFileBar/, 'save panel wraps the file bar');
   assert.doesNotMatch(page, /pb-save-dock/, 'save entry was moved out of the top of the page');
@@ -221,9 +200,9 @@ test('lesson one page includes story card, storyboard and save controls', () => 
   assert.match(storyCard, /data-story-inspiration/, 'seed panel offers starting ideas');
   assert.match(storyCard, /data-story-seed/, 'seed field is the first input');
   const promptData = fs.readFileSync(path.join(root, 'src/lib/picturebook-prompts.mjs'), 'utf8');
-  assert.match(promptData, /会发光的小恐龙/);
-  assert.match(promptData, /影子不听话的小猫/);
-  assert.match(promptData, /听见植物说话的女孩/);
+  assert.match(promptData, /会飞的小猫/);
+  assert.match(promptData, /害怕黑暗的小龙/);
+  assert.match(promptData, /住在瓶子里的精灵/);
   assert.doesNotMatch(page, /pb-boundary|pb-stack-end|保存方式说明/, 'lesson 1 no longer repeats the classroom save speech');
   assert.doesNotMatch(page, /两个周六中的第 1 节|不填写姓名|不上传照片/, 'lesson 1 chips were removed by user request');
   assert.doesNotMatch(storyCard, /生成追问提示词|复制追问提示词/, 'prompt buttons use the shorter labels');
@@ -232,14 +211,14 @@ test('lesson one page includes story card, storyboard and save controls', () => 
 });
 
 test('lesson steps are numbered continuously on each page', () => {
-  const lessonOne = ['src/components/StoryCardBuilder.astro', 'src/components/StoryboardBuilder.astro']
-    .map((file) => fs.readFileSync(path.join(root, file), 'utf8'))
-    .join('\n');
-  const lessonTwo = fs.readFileSync(path.join(root, 'src/components/PicturebookStudio.astro'), 'utf8');
+  const lessonOne = fs.readFileSync(path.join(root, 'src/components/StoryCardBuilder.astro'), 'utf8');
+  const storyboard = fs.readFileSync(path.join(root, 'src/components/StoryboardBuilder.astro'), 'utf8');
+  const studio = fs.readFileSync(path.join(root, 'src/components/PicturebookStudio.astro'), 'utf8');
+  const lessonTwo = studio.replace('<StoryboardBuilder />', storyboard);
   const lessonOneSteps = [...lessonOne.matchAll(/step (\d{2})\b/g)].map((match) => match[1]);
   const lessonTwoSteps = [...lessonTwo.matchAll(/step (\d{2})\b/g)].map((match) => match[1]);
   assert.deepEqual(lessonOneSteps, ['01', '02', '03', '04']);
-  assert.deepEqual(lessonTwoSteps, ['01', '02', '03', '04', '05']);
+  assert.deepEqual(lessonTwoSteps, ['01', '02', '03', '04', '05', '06']);
 });
 
 test('lesson two save copy does not imply the project file contains images', () => {

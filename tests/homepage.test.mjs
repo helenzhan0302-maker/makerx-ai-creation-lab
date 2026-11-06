@@ -45,7 +45,7 @@ test('homepage lists project 002 with a real detail route', () => {
   const content = read('src/content/projects/002-picturebook.md');
   assert.match(page, /002-picturebook/);
   assert.match(page, /picturebookProject\.title/);
-  assert.match(content, /title: 故事放映机/);
+  assert.match(content, /title: 故事造物机/);
   assert.match(content, /id: '002'/);
 });
 

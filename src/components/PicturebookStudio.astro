@@ -1,5 +1,6 @@
 ---
 import { CHARACTER_TRAITS, PAGE_COUNT, STYLE_OPTIONS, createStoryboard } from '../lib/picturebook-prompts.mjs';
+import StoryboardBuilder from './StoryboardBuilder.astro';
 
 const pages = createStoryboard();
 const styleGroups = [
@@ -58,9 +59,11 @@ const styleGroups = [
       </div>
     </section>
 
+    <StoryboardBuilder />
+
     <section class="pb-section pb-character" aria-labelledby="character-title">
       <div class="pb-section-heading">
-        <p class="pb-kicker">step 02 / character sheet</p>
+        <p class="pb-kicker">step 03 / character sheet</p>
         <h2 id="character-title">把主角固定成四件事。</h2>
         <p>颜色、发型或外形、衣服、标志物。每一页都带着这四项，AI 才有机会画出同一个角色。</p>
       </div>
@@ -103,7 +106,7 @@ const styleGroups = [
 
     <section class="pb-section pb-pages" aria-labelledby="pages-title">
       <div class="pb-section-heading">
-        <p class="pb-kicker">step 03 / page by page</p>
+        <p class="pb-kicker">step 04 / page by page</p>
         <h2 id="pages-title">一页一页画，一页一页检查。</h2>
         <p>每次只生成一页。选到满意的图就标成“已选用”；不满意就写清楚要改什么，不要整本重做。</p>
       </div>
@@ -167,7 +170,7 @@ const styleGroups = [
 
     <section class="pb-section pb-final-checks" aria-labelledby="final-title">
       <div class="pb-section-heading">
-        <p class="pb-kicker">step 04 / release check</p>
+        <p class="pb-kicker">step 05 / release check</p>
         <h2 id="final-title">绘本出厂前，再看四件事。</h2>
         <p>四项都确认后再去首映。任何一项没把握，都可以回到对应页修改。</p>
       </div>
@@ -182,7 +185,7 @@ const styleGroups = [
 
     <section class="pb-section pb-roadshow" aria-labelledby="roadshow-title">
       <div class="pb-section-heading">
-        <p class="pb-kicker">step 05 / premiere</p>
+        <p class="pb-kicker">step 06 / premiere</p>
         <h2 id="roadshow-title">首映礼：讲给同伴听。</h2>
         <p>不用背台词，回答三个问题就好。同伴的反馈不是打分，是帮你看到自己没注意的地方。</p>
       </div>
@@ -375,13 +378,10 @@ const styleGroups = [
       if (output) {
         output.textContent = buildTraitExtractionPrompt({
           story: {
-            startKind: STORY_STARTS[workspace.start]?.label || '',
+            startKind: STORY_STARTS[workspace.start]?.prompt || '',
             seed: workspace.seed,
-            hero: workspace.story.answers.hero.original,
-            goal: workspace.story.answers.goal.original,
-            obstacle: workspace.story.answers.obstacle.original,
-            action: workspace.story.answers.action.original,
-            result: workspace.story.answers.result.original,
+            card: workspace.story.text.card,
+            storyBody: workspace.story.text.storyBody,
           },
         });
         output.hidden = false;
