@@ -901,7 +901,7 @@ curl -s https://<子域>/DEPLOY_STATUS.txt   # 应为 status=ok
 
 **未验证**：真实手机与微信内置浏览器、真实屏幕阅读器；**类型检查 `pnpm check` 未通过**（`design/` 既有错误导致 heap OOM，退出码 134），不能声称类型检查通过。
 
-### C · 课程目标复核与提示词重构（2026-11-04，未部署）
+### C · 课程目标复核与提示词重构（2026-11-06，代码与产物已验证；生产未发布）
 
 **依据**：用 huashu-design 重读 `AI_绘本造物指南` 15 页 PPT。课程产出被重新确认为「孩子自己的故事 + 6 页分镜 + 6 张插图 + 一版首映」，不是「AI 代写的作文」。决策见 `docs/decisions.md` D-23–D-25。
 
@@ -914,15 +914,27 @@ curl -s https://<子域>/DEPLOY_STATUS.txt   # 应为 status=ok
 - 保存条件改为「故事卡 5 行 + 6 页分镜」都完成，避免带走半成品。
 - 修复 `.pb-button { display:inline-flex }` 覆盖 `hidden` 属性、导致未生成的复制按钮提前出现的问题；修复手机端顶部返回链接换行。
 
-**本机实测**：
+**本机实测**（2026-11-06 复跑）：
 
 | 命令 | 结果 |
 |---|---|
-| `pnpm test` | **76 pass / 0 fail** |
-| `pnpm exec astro build --config astro.config.subdomain.mjs --outDir dist-subdomain` | 退出码 0，**7 pages** |
-| 本地浏览器 E2E（`PB_BASE=http://localhost:4413`） | **63/63 通过** |
+| `pnpm test` | **79 pass / 0 fail / 0 skipped** |
+| `pnpm exec astro build --config astro.config.subdomain.mjs --outDir dist-subdomain` | 退出码 0，**7 pages**，20 个产物文件 |
+| 本地静态预览 E2E（`PB_BASE=http://127.0.0.1:4413`） | **66/66 通过** |
+| 本地七路由检查 | 全部 `200` |
+| `dist-subdomain` 与 `deploy-subdomain` 产物树逐文件 SHA-256 | 20/20 文件列表与哈希一致 |
 
-**未验证**：真实手机与微信内置浏览器、真实屏幕阅读器；**本轮未部署**，线上仍是 `deploy=20261104170025`。`pnpm check` 仍未通过（既有 `design/` 问题）。
+**部署状态**：代码已提交 `main`（`7172f69`）并推送；产物已提交 `deploy-subdomain`（`77c0c3b`）并推送。**生产站点仍未发布**，线上回执仍是 `deploy=20261104170025`，lesson-1 仍引用旧版 `picturebook.DzhgN6yZ.css`；本轮产物对应的新 CSS 是 `picturebook.65mMGA-u.css`。
+
+**发布卡点（2026-11-06 实测）**：
+
+- 本机无 `tccli`、无腾讯云 API 凭证，无法用云 API 触发 TAT。
+- `~/.ssh/id_ed25519_makerx` 与 `id_ed25519_makerx2` 均被服务器拒绝：`Permission denied (publickey,password)`。
+- Computer Use 在本轮被其 URL 安全校验终止，未执行发布。
+- Chrome 插件通道返回 `Local browser use is disabled in Work settings`；未绕过该策略。
+- 因此服务器发布仍需人工在腾讯云控制台执行已保存命令 `cmd-fc0x3vye`，只勾选 `lhins-ce4mfndw`。
+
+**未验证**：真实手机与微信内置浏览器、真实屏幕阅读器；**生产 E2E 未运行**（线上尚未更新）。`pnpm check` 仍未通过（既有 `design/` 问题）。
 
 ### 尚未核对 / 未验证
 
