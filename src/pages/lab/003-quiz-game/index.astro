@@ -2,6 +2,7 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { QUIZ_COURSE, courseHref } from '../../../content/quiz-course.mjs';
 import '../../../styles/ai-planet-builder.css';
+import '../../../styles/planet-upgrade.css';
 import '../../../styles/quiz.css';
 
 const baseUrl = import.meta.env.BASE_URL;
@@ -49,8 +50,10 @@ const project = QUIZ_COURSE.overview;
                   <rect class="qz-bank-back" x="20" y="26" width="104" height="118" rx="8" transform="rotate(-6 72 85)" />
                   <rect class="qz-bank-front" x="38" y="18" width="104" height="118" rx="8" transform="rotate(4 90 77)" />
                   <path class="qz-bank-lines" d="M58 50h62M58 68h44M58 86h54M58 104h34" />
-                  <circle class="qz-bank-seal" cx="116" cy="118" r="16" />
-                  <path class="qz-bank-check" d="M110 118l4 4 9-10" />
+                  <g class="qz-bank-badge">
+                    <circle class="qz-bank-seal" cx="116" cy="118" r="16" />
+                    <path class="qz-bank-check" d="M110 118l4 4 9-10" />
+                  </g>
                 </svg>
               ) : (
                 <svg viewBox="0 0 160 160" focusable="false">

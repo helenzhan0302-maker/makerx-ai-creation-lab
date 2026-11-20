@@ -1191,7 +1191,6 @@
 
 .qz-lesson-card .lesson-card-label {
   color: var(--ink-muted);
-  font-family: inherit;
   font-size: 0.8125rem;
   letter-spacing: 0.02em;
 }
@@ -1217,7 +1216,6 @@
 .qz-lesson-card .lesson-card-description {
   max-width: 21rem;
   margin: 0.6rem 0 0.9rem;
-  padding-right: 0;
   font-size: 0.95rem;
   line-height: 1.72;
 }
@@ -1259,6 +1257,15 @@
   stroke: var(--accent-wire);
   stroke-linecap: round;
   stroke-width: 3.2;
+  stroke-dasharray: 220;
+  stroke-dashoffset: 0;
+  animation: qz-bank-write 5.2s ease-in-out infinite alternate;
+}
+
+.qz-bank-badge {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: qz-bank-stamp 4.4s ease-in-out infinite;
 }
 
 .qz-bank-seal {
@@ -1305,6 +1312,48 @@
   stroke-dasharray: 4 7;
   stroke-linecap: round;
   stroke-width: 1.6;
+  animation: qz-game-cursor 3.6s ease-in-out infinite alternate;
+}
+
+.qz-lesson-card--bank:hover .qz-bank-badge,
+.qz-lesson-card--bank:focus-visible .qz-bank-badge {
+  animation-duration: 1.8s;
+}
+
+.qz-lesson-card--game:hover .qz-game-dash,
+.qz-lesson-card--game:focus-visible .qz-game-dash {
+  animation-duration: 1.4s;
+}
+
+@keyframes qz-bank-write {
+  from {
+    stroke-dashoffset: 24;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes qz-bank-stamp {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  55% {
+    transform: translateY(-2px) scale(1.04);
+  }
+}
+
+@keyframes qz-game-cursor {
+  from {
+    stroke-dashoffset: 0;
+  }
+
+  to {
+    stroke-dashoffset: -22;
+  }
 }
 
 .qz-web-roles {
@@ -2039,7 +2088,10 @@
   .qz-link-button,
   .qz-topic-card,
   .qz-question-card,
-  .qz-hub-art {
+  .qz-hub-art,
+  .qz-bank-lines,
+  .qz-bank-badge,
+  .qz-game-dash {
     animation: none !important;
     transition: none !important;
     transform: none !important;

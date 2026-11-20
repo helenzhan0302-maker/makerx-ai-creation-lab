@@ -989,15 +989,17 @@ curl -s https://<子域>/DEPLOY_STATUS.txt   # 应为 status=ok
 
 | 命令 | 结果 |
 |---|---|
-| `pnpm test` | **133 pass / 0 fail / 0 skipped** |
+| `pnpm test` | **134 pass / 0 fail / 0 skipped** |
 | `pnpm exec astro build --config astro.config.subdomain.mjs --outDir dist-subdomain` | 退出码 0，**10 pages** |
-| `node tests/browser-quiz.mjs` | **22/22 通过**（含第 1 节说明条已删除、第 2 节提示词首尾与复制按钮、1024 / 390px 无溢出） |
+| `node tests/browser-quiz.mjs` | **26/26 通过**（含课次卡圆角/阴影/无下划线、562 与 390px 双卡可读、第 1 节说明条已删除、第 2 节提示词首尾与复制按钮、1024 / 390px 无溢出） |
 | `node tests/browser-quiz-flow.mjs` | **21/21 通过**（标准题库与未核验题库导入 → 程序员提示词 → 5 题预演 → 五项测试 → 导出 v2） |
 | `node tests/browser-picturebook.mjs` | **74/74 通过**；首页三卡实测约 278px × 264px，无横向溢出 |
 | 003 课程页 1440 / 1024 / 390px | 无横向溢出 |
 | `prefers-reduced-motion: reduce` | 第三课 `.qz-topic-card` 过渡为 0s，内容可读 |
 
 **部署状态**：003 初版已上线（回执 `deploy=20261120174343`、`status=ok`、`https=on`）。以上批注修订已完成本地验证，**部署回执与生产 E2E 结果见本节下方「部署记录」**。
+
+**课次卡修复**：003 总览此前只引入 `ai-planet-builder.css` 与 `quiz.css`，漏掉 001/002 共用的 `.lesson-card` 基线（位于 `planet-upgrade.css`），导致卡片没有圆角、阴影，且继承链接下划线。现已先引入共享基线 `planet-upgrade.css`，再由 `quiz.css` 覆盖局部尺寸；卡片与 002 保持同一「文案 + 自绘 SVG」两列结构，并给题库书写线、核验印章、游戏虚线加了克制动效（`prefers-reduced-motion` 下关闭）。实测 1440px：`textDecoration: none`、`border-radius: 16px`、阴影存在；562 / 390px 两张卡宽度分别为 522px / 350px，文字不溢出。
 
 **部署记录**：源码 `main` = `ffb35ca`，产物 `deploy-subdomain` = `c807c4b`，均已推送。发布前线上回执为 `deploy=20261120174343`，线上 `_astro` 仍引用旧文件 `quiz.CL0ejzQC.css` / `QuizGameStudio...CiviRBHv.js`；新产物对应 `quiz.b5OgMqL1.css` / `QuizGameStudio...CDf6nM2F.js`。
 

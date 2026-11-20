@@ -59,6 +59,15 @@ test('quiz hub lesson cards reuse the two-column story layout', () => {
   assert.match(pages.hub, /qz-lesson-meta/);
 });
 
+test('quiz hub loads the shared lesson-card baseline before quiz overrides', () => {
+  assert.match(pages.hub, /styles\/planet-upgrade\.css/);
+  assert.equal(
+    pages.hub.indexOf('planet-upgrade.css') < pages.hub.indexOf('quiz.css'),
+    true,
+  );
+  assert.match(pages.hub, /class:list=\{\['lesson-card'/);
+});
+
 test('lesson two stays locked until a verified bank is imported', () => {
   assert.match(pages.lessonTwo, /<QuizGameStudio \/>/);
   assert.match(pages.gameComponent, /data-studio-body data-locked="true"/);

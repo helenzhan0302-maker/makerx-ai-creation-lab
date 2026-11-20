@@ -30,6 +30,36 @@ await page.goto(`${base}/lab/003-quiz-game/`, { waitUntil: 'networkidle' });
 check('quiz hub loads', (await page.locator('h1').innerText()).includes('AI 趣味知识挑战赛'));
 check('hub has two lesson entries', (await page.locator('.lesson-card').count()) === 2);
 check('hub has no horizontal overflow', !(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)));
+const hubCardStyle = await page.locator('.qz-lesson-card').first().evaluate((element) => {
+  const style = getComputedStyle(element);
+  return {
+    textDecoration: style.textDecorationLine,
+    borderRadius: style.borderRadius,
+    boxShadow: style.boxShadow,
+  };
+});
+check('hub cards keep the shared rounded card surface', hubCardStyle.borderRadius !== '0px' && hubCardStyle.boxShadow !== 'none', JSON.stringify(hubCardStyle));
+check('hub cards are not rendered as underlined link text', hubCardStyle.textDecoration === 'none', hubCardStyle.textDecoration);
+
+for (const width of [562, 390]) {
+  await page.setViewportSize({ width, height: 900 });
+  await page.goto(`${base}/lab/003-quiz-game/`, { waitUntil: 'networkidle' });
+  const narrowHub = await page.evaluate(() => {
+    const cards = [...document.querySelectorAll('.qz-lesson-card')];
+    return {
+      overflow: document.documentElement.scrollWidth > innerWidth,
+      widths: cards.map((card) => Math.round(card.getBoundingClientRect().width)),
+      textOverflow: cards.some((card) =>
+        [...card.querySelectorAll('.lesson-card-title, .lesson-card-description, .lesson-card-action')].some(
+          (node) => node.scrollWidth > node.clientWidth + 1 || node.getBoundingClientRect().right > innerWidth,
+        ),
+      ),
+    };
+  });
+  check(`hub keeps two readable cards at ${width}`, !narrowHub.overflow && narrowHub.widths.length === 2 && narrowHub.widths.every((cardWidth) => cardWidth > 200) && !narrowHub.textOverflow, JSON.stringify(narrowHub));
+}
+
+await page.setViewportSize({ width: 1440, height: 1000 });
 
 await page.goto(`${base}/lab/003-quiz-game/lesson-1/`, { waitUntil: 'networkidle' });
 check('lesson 1 labels itself as lesson three', (await page.locator('.project-page-status').innerText()).includes('第 3 次课'));
