@@ -997,13 +997,13 @@ curl -s https://<子域>/DEPLOY_STATUS.txt   # 应为 status=ok
 | 003 课程页 1440 / 1024 / 390px | 无横向溢出 |
 | `prefers-reduced-motion: reduce` | 第三课 `.qz-topic-card` 过渡为 0s，内容可读 |
 
-**部署状态**：003 初版已上线（回执 `deploy=20261120174343`、`status=ok`、`https=on`）。以上批注修订已完成本地验证，**部署回执与生产 E2E 结果见本节下方「部署记录」**。
+**部署状态**：卡片修复已上线并验收通过（回执 `deploy=20261120222229`、`status=ok`、`https=on`）。十条路由全部 200，线上 003 引用 `_astro/quiz.cBbJQGvD.css`，与本机 `dist-subdomain` 一致。
 
 **课次卡修复**：003 总览此前只引入 `ai-planet-builder.css` 与 `quiz.css`，漏掉 001/002 共用的 `.lesson-card` 基线（位于 `planet-upgrade.css`），导致卡片没有圆角、阴影，且继承链接下划线。现已先引入共享基线 `planet-upgrade.css`，再由 `quiz.css` 覆盖局部尺寸；卡片与 002 保持同一「文案 + 自绘 SVG」两列结构，并给题库书写线、核验印章、游戏虚线加了克制动效（`prefers-reduced-motion` 下关闭）。实测 1440px：`textDecoration: none`、`border-radius: 16px`、阴影存在；562 / 390px 两张卡宽度分别为 522px / 350px，文字不溢出。
 
-**部署记录**：源码 `main` = `ffb35ca`，产物 `deploy-subdomain` = `c807c4b`，均已推送。发布前线上回执为 `deploy=20261120174343`，线上 `_astro` 仍引用旧文件 `quiz.CL0ejzQC.css` / `QuizGameStudio...CiviRBHv.js`；新产物对应 `quiz.b5OgMqL1.css` / `QuizGameStudio...CDf6nM2F.js`。
+**部署记录**：源码 `main` = `3a8143e`，产物 `deploy-subdomain` = `4afe84c`，均已推送。发布前回执 `deploy=20261120174343` → 发布后 `deploy=20261120222229`；线上 `_astro/quiz.cBbJQGvD.css` 与本机一致，`QuizGameStudio...CDf6nM2F.js` 未变。生产 E2E：003 `26/26`、003 流程 `21/21`、002 回归 `74/74`。
 
-**待执行**：在腾讯云 TAT 命令 `makerx-deploy-002-multisrc-20261104`（`cmd-fc0x3vye`）中仅勾选 `lhins-ce4mfndw` 并执行。收到新 `DEPLOY_STAMP`、`status=ok`、`https=on`、十条路由 200、线上哈希与本地一致、生产 E2E 全过后，才能把本节标为“已上线并验收”。
+**部署方式**：腾讯云 TAT 命令 `makerx-deploy-002-multisrc-20261104`（`cmd-fc0x3vye`），仅勾选 `lhins-ce4mfndw`（124.222.99.128），执行确认显示「已选择1个实例」，约 90 秒完成。
 
 **未验证**：真实手机与微信内置浏览器、真实屏幕阅读器、视觉观感与最终审美确认；`pnpm check` 未重跑，不能声称通过。以上只验证了 DOM、CSS、构建产物与运行时几何。
 
