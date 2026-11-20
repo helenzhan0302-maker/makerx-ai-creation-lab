@@ -997,11 +997,11 @@ curl -s https://<子域>/DEPLOY_STATUS.txt   # 应为 status=ok
 | 003 课程页 1440 / 1024 / 390px | 无横向溢出 |
 | `prefers-reduced-motion: reduce` | 第三课 `.qz-topic-card` 过渡为 0s，内容可读 |
 
-**部署状态**：卡片修复已上线并验收通过（回执 `deploy=20261120222229`、`status=ok`、`https=on`）。十条路由全部 200，线上 003 引用 `_astro/quiz.cBbJQGvD.css`，与本机 `dist-subdomain` 一致。
+**部署状态**：课次卡标签删除已上线并验收通过（回执 `deploy=20261120224147`、`status=ok`、`https=on`）。十条路由全部 200，线上 003 引用 `_astro/quiz.C75goEO4.css`，与本机 `dist-subdomain` 一致；线上 DOM 实测 `.lesson-card-label` 数量为 0，两张卡的元信息分别为「01 10 道核验题」「02 一局 5 题 · 满分 100」。
 
 **课次卡修复**：003 总览此前只引入 `ai-planet-builder.css` 与 `quiz.css`，漏掉 001/002 共用的 `.lesson-card` 基线（位于 `planet-upgrade.css`），导致卡片没有圆角、阴影，且继承链接下划线。现已先引入共享基线 `planet-upgrade.css`，再由 `quiz.css` 覆盖局部尺寸；卡片与 002 保持同一「文案 + 自绘 SVG」两列结构，并给题库书写线、核验印章、游戏虚线加了克制动效（`prefers-reduced-motion` 下关闭）。实测 1440px：`textDecoration: none`、`border-radius: 16px`、阴影存在；562 / 390px 两张卡宽度分别为 522px / 350px，文字不溢出。
 
-**部署记录**：源码 `main` = `3a8143e`，产物 `deploy-subdomain` = `4afe84c`，均已推送。发布前回执 `deploy=20261120174343` → 发布后 `deploy=20261120222229`；线上 `_astro/quiz.cBbJQGvD.css` 与本机一致，`QuizGameStudio...CDf6nM2F.js` 未变。生产 E2E：003 `26/26`、003 流程 `21/21`、002 回归 `74/74`。
+**部署记录**：源码 `main` = `7f1ce60`，产物 `deploy-subdomain` = `76184aa`，均已推送。发布前回执 `deploy=20261120222229` → 发布后 `deploy=20261120224147`；线上 `_astro/quiz.C75goEO4.css` 与本机一致。本次在前一轮卡片修复基础上，按批注删除课次卡上的「第 3 次课」「第 4 次课」标签（课程页头部状态文字保留），并同步删除 `.lesson-card-label` 样式与内容字段；新增测试断言总览页不再出现 `lesson-card-label`。生产 E2E：003 `26/26`、003 流程 `21/21`、002 回归 `74/74`。
 
 **部署方式**：腾讯云 TAT 命令 `makerx-deploy-002-multisrc-20261104`（`cmd-fc0x3vye`），仅勾选 `lhins-ce4mfndw`（124.222.99.128），执行确认显示「已选择1个实例」，约 90 秒完成。
 
@@ -1080,3 +1080,4 @@ curl -s https://<子域>/DEPLOY_STATUS.txt   # 应为 status=ok
 - 文档互相矛盾时，按 [决策优先级](docs/decisions.md) 判定并记录，**不静默选一个版本执行**。
 
 完整约束见 [AGENTS.md](AGENTS.md)。
+
