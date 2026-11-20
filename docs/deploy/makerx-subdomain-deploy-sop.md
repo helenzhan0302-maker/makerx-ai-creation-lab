@@ -43,7 +43,7 @@ pnpm exec astro build --config astro.config.subdomain.mjs --outDir dist-subdomai
 
 要求：
 
-- 单元测试全绿（2026-11-20 基线 128 pass）。
+- 单元测试全绿（2026-11-20 修订后基线 133 pass）。
 - 构建退出码 0，页面数为 10。
 - `dist-subdomain` 中不出现 `/makerx/_astro` 绝对路径（脚本也会拦截）。
 
@@ -55,14 +55,14 @@ $env:PB_BASE='http://127.0.0.1:4400'
 node tests/browser-picturebook.mjs
 ```
 
-2026-11-20 基线：003 两套 20/20 与 27/27，002 回归 74/74。失败就不要往下走。
+2026-11-20 修订后基线：003 两套 22/22 与 21/21，002 回归 74/74。失败就不要往下走。
 
 ### 3. 同步产物到 `deploy-subdomain`
 
 工作树：`.superpowers/deploy-subdomain-wt4`（不要使用 `wt2`，它停在旧提交）。
 
 ```powershell
-robocopy dist-subdomain .superpowers\deploy-subdomain-wt4 /MIR /XD .git
+robocopy dist-subdomain .superpowers\deploy-subdomain-wt4 /MIR /XF .git
 ```
 
 然后确认：
@@ -103,6 +103,7 @@ https://console.cloud.tencent.com/lighthouse/command/invoke?rid=4&id=cmd-fc0x3vy
 - 只勾选 `lhins-ce4mfndw`（`124.222.99.128`）。
 - 必须看到「已选择 1 个实例」且「执行命令」按钮变为可用。
 - 一次执行约 90–120 秒。
+- 2026-11-20 复测：Playwright 用临时配置打开命令页会跳转腾讯云登录页，无法复用现有 Chrome 会话；不要把脚本化登录或固定坐标盲点当作替代方案。
 
 ### 5. 验收（必须做，不能凭感觉）
 
