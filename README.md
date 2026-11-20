@@ -999,7 +999,9 @@ curl -s https://<子域>/DEPLOY_STATUS.txt   # 应为 status=ok
 
 **部署状态**：003 初版已上线（回执 `deploy=20261120174343`、`status=ok`、`https=on`）。以上批注修订已完成本地验证，**部署回执与生产 E2E 结果见本节下方「部署记录」**。
 
-**部署记录**：占位，部署完成后回填新 `DEPLOY_STAMP`、线上 `_astro` 哈希与生产 E2E 数量。
+**部署记录**：源码 `main` = `ffb35ca`，产物 `deploy-subdomain` = `c807c4b`，均已推送。发布前线上回执为 `deploy=20261120174343`，线上 `_astro` 仍引用旧文件 `quiz.CL0ejzQC.css` / `QuizGameStudio...CiviRBHv.js`；新产物对应 `quiz.b5OgMqL1.css` / `QuizGameStudio...CDf6nM2F.js`。
+
+**待执行**：在腾讯云 TAT 命令 `makerx-deploy-002-multisrc-20261104`（`cmd-fc0x3vye`）中仅勾选 `lhins-ce4mfndw` 并执行。收到新 `DEPLOY_STAMP`、`status=ok`、`https=on`、十条路由 200、线上哈希与本地一致、生产 E2E 全过后，才能把本节标为“已上线并验收”。
 
 **未验证**：真实手机与微信内置浏览器、真实屏幕阅读器、视觉观感与最终审美确认；`pnpm check` 未重跑，不能声称通过。以上只验证了 DOM、CSS、构建产物与运行时几何。
 
