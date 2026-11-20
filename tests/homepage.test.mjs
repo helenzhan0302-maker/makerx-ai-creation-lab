@@ -49,6 +49,15 @@ test('homepage lists project 002 with a real detail route', () => {
   assert.match(content, /id: '002'/);
 });
 
+test('homepage lists project 003 with a real detail route', () => {
+  const page = read('src/pages/index.astro');
+  const content = read('src/content/projects/003-quiz-game.md');
+  assert.match(page, /003-quiz-game/);
+  assert.match(page, /quizProject\.title/);
+  assert.match(content, /title: AI 趣味知识挑战赛/);
+  assert.match(content, /id: '003'/);
+});
+
 test('homepage uses compact editorial cards with one motion per project', () => {
   const page = read('src/pages/index.astro');
   const styles = read('src/styles/global.css');
@@ -57,9 +66,11 @@ test('homepage uses compact editorial cards with one motion per project', () => 
   assert.match(page, /class="project-list"/);
   assert.match(page, /project-card--001/);
   assert.match(page, /project-card--002/);
+  assert.match(page, /project-card--003/);
+  assert.match(page, /class="quiz-system"/);
   assert.match(page, /class="orbit-system"/);
   assert.match(page, /class="storyboard-frame/);
-  assert.match(styles, /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
+  assert.match(styles, /grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
   assert.match(styles, /@media \(max-width: 1040px\)/);
   assert.match(styles, /project-orbit/);
   assert.match(styles, /frame-fill/);

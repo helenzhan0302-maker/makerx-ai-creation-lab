@@ -1,0 +1,702 @@
+---
+import {
+  DESIGN_CHECKLIST,
+  buildBugPrompt,
+  buildDesignMarkdown,
+  buildProgrammerPrompt,
+  resultCopy,
+  shuffledIds,
+  splitGameQuestions,
+} from '../lib/quiz-game.mjs';
+import { BANK_SIZE, GAME_RULES, TEST_CHECKLIST } from '../lib/quiz-challenge.mjs';
+import { QUIZ_COURSE } from '../content/quiz-course.mjs';
+
+const lesson = QUIZ_COURSE.lessonTwo;
+---
+
+<section class="qz-studio" data-quiz-studio aria-labelledby="studio-title">
+  <div class="qz-import-zone">
+    <div class="qz-import-box" data-import-gate>
+      <p class="qz-kicker">step 00 / open project</p>
+      <h2 id="studio-title">先导入第 1 节的题库工程。</h2>
+      <p>选择 <code>quiz-project-v1.json</code>。页面只读取文件，不会上传到任何服务器。</p>
+      <label class="qz-file-picker">
+        <span>打开工程文件</span>
+        <input type="file" accept=".json,application/json" data-project-file-input />
+      </label>
+      <p class="qz-feedback" data-import-feedback role="status" aria-live="polite">还没有打开工程文件。</p>
+    </div>
+    <div class="qz-import-box">
+      <h3>导入时会检查什么？</h3>
+      <p>正好 {BANK_SIZE} 道题；每题 4 个选项；答案只能是 A/B/C/D；每题都有解释、核验关键词、查证来源和支撑证据；每题都盖了「正确 · 准予通过」印章。</p>
+      <p class="qz-note">任何一项不满足，工作台都会保持锁定。不会把没核验的题偷偷带进游戏。</p>
+    </div>
+  </div>
+
+  <div class="qz-bank-loaded" data-bank-loaded data-loaded="false" role="status" aria-live="polite">
+    <strong data-bank-status>等待导入题库</strong>
+    <span data-bank-meta>导入成功后显示题库名称和题目数量</span>
+  </div>
+
+  <div class="qz-studio-body" data-studio-body data-locked="true">
+    <p class="qz-lock-note" data-lock-note>工作台已锁定。先在上方导入通过核验的题库工程，下面的编辑和测试工具才会启用。</p>
+
+    <section class="qz-section" aria-labelledby="game-design-title">
+      <div class="qz-section-heading">
+        <p class="qz-kicker">step 01 / game design</p>
+        <h2 id="game-design-title">给你的游戏一个名字、主题和开场介绍。</h2>
+        <p>玩家打开网页，第一眼就要知道：这是什么挑战，为什么要玩。介绍不用长，两三句话就够。</p>
+      </div>
+      <div class="qz-question-fields">
+        <label class="qz-field">
+          <span>游戏名字 <em>必填</em></span>
+          <input type="text" maxlength="40" autocomplete="off" data-game-field="title" data-design-field="title" placeholder="例如：动物睡觉大挑战" disabled />
+        </label>
+        <label class="qz-field">
+          <span>知识主题 <em>必填</em></span>
+          <input type="text" maxlength="60" autocomplete="off" data-game-field="topic" data-design-field="topic" placeholder="例如：动物奇葩睡觉姿势" disabled />
+        </label>
+        <label class="qz-field qz-field--span-2 qz-field--wide">
+          <span>首页介绍 <em>必填</em></span>
+          <textarea rows="3" maxlength="220" data-game-field="intro" data-design-field="intro" placeholder="用一句话告诉玩家：这个挑战考什么，答完能学到什么。" disabled></textarea>
+        </label>
+      </div>
+    </section>
+
+    <section class="qz-section" aria-labelledby="pages-title">
+      <div class="qz-section-heading">
+        <p class="qz-kicker">step 02 / three pages</p>
+        <h2 id="pages-title">三个页面，各管一件事。</h2>
+        <p>不用花哨涂鸦，先把关键零件摆对位置。首页负责吸引，答题页负责互动，结果页负责结算和重开。</p>
+      </div>
+      <div class="qz-design-grid">
+        {DESIGN_CHECKLIST.map((group, index) => (
+          <article class="qz-design-card">
+            <span class="qz-rule-mark" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+            <strong>{group.title}</strong>
+            <ul>
+              {group.items.map((item) => <li>{item}</li>)}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="qz-section qz-section--ink" aria-labelledby="rules-title">
+      <div class="qz-section-heading">
+        <p class="qz-kicker">step 03 / game rules</p>
+        <h2 id="rules-title">题库有 10 道，每一局只抽 5 道。</h2>
+        <p>这不是随便减少题量，而是让每一轮都有新鲜感。下一轮优先抽没出现过的题，10 道全玩过后再重新洗牌。</p>
+      </div>
+      <div class="qz-rule-grid">
+        {GAME_RULES.map((rule, index) => (
+          <article class="qz-rule-card qz-rule-card--ink">
+            <span class="qz-rule-mark" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+            <strong>{rule.label}</strong>
+            <p>{rule.value}。{rule.detail}</p>
+          </article>
+        ))}
+      </div>
+      <div class="qz-simulation" aria-label="三轮抽题示意">
+        <div><strong>第 1 轮</strong><span>从 10 道里随机抽 5 道</span></div>
+        <div><strong>第 2 轮</strong><span>优先抽剩下的 5 道</span></div>
+        <div><strong>第 3 轮</strong><span>10 道全部洗牌，重新开始</span></div>
+      </div>
+    </section>
+
+    <section class="qz-section" aria-labelledby="programmer-title">
+      <div class="qz-section-heading">
+        <p class="qz-kicker">step 04 / ask the ai programmer</p>
+        <h2 id="programmer-title">把设计稿交给 AI 程序员。</h2>
+        <p>提示词要有四块积木：身份设定、功能清单、技术铁律、完整题库。题库必须原样粘贴，严禁 AI 改题、加题或删题。</p>
+      </div>
+      <div class="qz-action-row">
+        <button class="qz-button qz-button--secondary" type="button" data-generate-programmer disabled>生成程序员提示词</button>
+        <button class="qz-button qz-button--quiet" type="button" data-copy-programmer hidden>复制程序员提示词</button>
+      </div>
+      <pre class="qz-output qz-output--tall" data-programmer-output hidden tabindex="0"></pre>
+      <p class="qz-feedback" data-programmer-feedback role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="qz-section qz-preview-section" aria-labelledby="preview-title">
+      <div class="qz-section-heading">
+        <p class="qz-kicker">step 05 / preview</p>
+        <h2 id="preview-title">先在课堂上预演一遍规则。</h2>
+        <p>这个小样只演示抽 5 题、判分、解释和重开。真正的游戏由你的 AI 程序员生成，页面不替代你的作品。</p>
+      </div>
+      <div class="qz-demo" data-demo>
+        <div class="qz-demo-topbar">
+          <span data-demo-progress>第 0 / 5 题</span>
+          <span class="qz-demo-score">当前得分：<strong data-demo-score>0</strong> 分</span>
+        </div>
+        <div class="qz-demo-start" data-demo-start-screen>
+          <h3 data-demo-title>你的知识挑战赛</h3>
+          <p data-demo-intro>导入题库并写好游戏信息后，这里会变成你的开场页。</p>
+          <button class="qz-button qz-button--secondary" type="button" data-demo-start disabled>开始挑战</button>
+        </div>
+        <div class="qz-demo-question" data-demo-question hidden>
+          <h3 data-demo-question-text></h3>
+          <div class="qz-demo-options" data-demo-options></div>
+          <div class="qz-answer-box" data-demo-answer hidden>
+            <strong data-demo-answer-title></strong>
+            <p data-demo-answer-text></p>
+          </div>
+          <div class="qz-action-row">
+            <button class="qz-button qz-button--secondary" type="button" data-demo-next hidden>下一题</button>
+          </div>
+        </div>
+        <div class="qz-demo-result" data-demo-result hidden>
+          <p class="qz-demo-score-big" data-demo-final-score>0</p>
+          <h3 data-demo-final-title></h3>
+          <p data-demo-final-copy></p>
+          <button class="qz-button qz-button--secondary" type="button" data-demo-restart>再玩一次</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="qz-section" aria-labelledby="test-title">
+      <div class="qz-section-heading">
+        <p class="qz-kicker">step 06 / qa checklist</p>
+        <h2 id="test-title">先跑通功能，再谈美化。</h2>
+        <p>五项都亲手试过再打勾。看起来能用，不代表真的好用。</p>
+      </div>
+      <div class="qz-check-layout">
+        <ul class="qz-checklist">
+          {TEST_CHECKLIST.map((item) => (
+            <li>
+              <input type="checkbox" data-test-check={item.id} disabled />
+              <span><strong>{item.title}</strong><span>{item.prompt}</span></span>
+            </li>
+          ))}
+        </ul>
+        <div>
+          <div class="qz-test-log">
+            <div class="qz-test-round">
+              <h3>第 1 轮</h3>
+              <p>记下 5 道题的题号；故意答错 1 题，检查解释；正常做完 5 题；再点一次「再玩一次」。</p>
+            </div>
+            <div class="qz-test-round">
+              <h3>第 2 轮</h3>
+              <p>优先出现第 1 轮没见过的题吗？分数清零了吗？快速连点同一选项会不会刷分？题库有没有被改？</p>
+            </div>
+          </div>
+          <p class="qz-note">调皮玩家测试：连点按钮、按回车、反复点上一题。游戏仍然不崩溃，才算真的坚固。</p>
+        </div>
+      </div>
+
+      <div class="qz-test-fields">
+        <label class="qz-field">
+          <span>第 1 轮抽到的题号</span>
+          <input type="text" maxlength="80" autocomplete="off" data-round="firstIds" placeholder="例如：Q1、Q3、Q5、Q7、Q8" disabled />
+        </label>
+        <label class="qz-field">
+          <span>第 1 轮得分</span>
+          <input type="text" maxlength="20" inputmode="numeric" autocomplete="off" data-round="firstScore" placeholder="例如：80" disabled />
+        </label>
+        <label class="qz-field">
+          <span>第 2 轮抽到的题号</span>
+          <input type="text" maxlength="80" autocomplete="off" data-round="secondIds" placeholder="例如：Q2、Q4、Q6、Q9、Q10" disabled />
+        </label>
+        <label class="qz-field">
+          <span>第 2 轮得分</span>
+          <input type="text" maxlength="20" inputmode="numeric" autocomplete="off" data-round="secondScore" placeholder="例如：100" disabled />
+        </label>
+        <label class="qz-field qz-field--span-2">
+          <span>发现的 Bug <em>没发现就写「没有发现 Bug」</em></span>
+          <textarea rows="2" maxlength="240" data-round="bugs" placeholder="点了哪个按钮、看到了什么、你原本期望什么" disabled></textarea>
+        </label>
+      </div>
+    </section>
+
+    <section class="qz-section" aria-labelledby="bug-title">
+      <div class="qz-section-heading">
+        <p class="qz-kicker">step 07 / bug workshop</p>
+        <h2 id="bug-title">修 Bug 不是重做，是找到那一个按钮。</h2>
+        <p>把现象说清楚，让 AI 只改出问题的部分，然后重新跑同一套测试。</p>
+      </div>
+      <div class="qz-bug-steps">
+        {lesson.bugSteps.map((step) => (
+          <article>
+            <span>{step.step}</span>
+            <strong>{step.title}</strong>
+            <p>{step.detail}</p>
+          </article>
+        ))}
+      </div>
+      <div class="qz-bug-form">
+        <label class="qz-field">
+          <span>我看到的异常现象</span>
+          <textarea rows="2" maxlength="200" data-bug="phenomenon" placeholder="例如：点开始挑战后还停在首页" disabled></textarea>
+        </label>
+        <label class="qz-field">
+          <span>我原本期望</span>
+          <textarea rows="2" maxlength="200" data-bug="expected" placeholder="例如：应该进入第 1 题" disabled></textarea>
+        </label>
+        <label class="qz-field">
+          <span>实际发生了什么</span>
+          <textarea rows="2" maxlength="200" data-bug="actual" placeholder="例如：按钮动了，但页面没有变化" disabled></textarea>
+        </label>
+      </div>
+      <div class="qz-action-row">
+        <button class="qz-button qz-button--secondary" type="button" data-generate-bug disabled>生成修 Bug 提示词</button>
+        <button class="qz-button qz-button--quiet" type="button" data-copy-bug hidden>复制修 Bug 提示词</button>
+      </div>
+      <pre class="qz-output" data-bug-output hidden tabindex="0"></pre>
+      <p class="qz-feedback" data-bug-feedback role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="qz-section" aria-labelledby="publish-title">
+      <div class="qz-section-heading">
+        <p class="qz-kicker">step 08 / one-minute pitch</p>
+        <h2 id="publish-title">一分钟产品发布：讲清你的决定。</h2>
+        <p>不用背稿。回答问题，再邀请同伴上手玩一局。</p>
+      </div>
+      <div class="qz-roadshow-grid">
+        <label class="qz-field">
+          <span>游戏名字与知识主题</span>
+          <textarea rows="2" maxlength="160" data-roadshow="name" placeholder="我的游戏叫《…》，考考大家对…的了解。" disabled></textarea>
+        </label>
+        <label class="qz-field">
+          <span>我最喜欢的一个设计</span>
+          <textarea rows="2" maxlength="160" data-roadshow="favorite" placeholder="抽题规则、解释弹窗、结果页……为什么喜欢？" disabled></textarea>
+        </label>
+        <label class="qz-field">
+          <span>测试时揪出的 Bug</span>
+          <textarea rows="2" maxlength="160" data-roadshow="bug" placeholder="一开始哪里不对，后来怎么修好的。" disabled></textarea>
+        </label>
+      </div>
+      <div class="qz-peer-note">
+        <p class="qz-kicker">peer play / 同伴互玩</p>
+        <p>交换电脑，亲自玩对方的小游戏。告诉作者：你最喜欢哪一道题，或者哪项功能超酷，再给一个具体建议。</p>
+      </div>
+    </section>
+
+    <section class="qz-section" aria-labelledby="export-title">
+      <div class="qz-section-heading">
+        <p class="qz-kicker">step 09 / save v2</p>
+        <h2 id="export-title">把游戏设计、测试记录和发布稿一起带走。</h2>
+        <p>保存第 2 版工程文件，再导出游戏设计单。v1 还留在你的电脑里，想回看出题过程随时可以打开。</p>
+      </div>
+      <div class="qz-readiness">
+        <strong data-export-status>还不能保存第 2 版</strong>
+        <span data-export-progress>等待导入题库</span>
+      </div>
+      <div class="qz-download-grid">
+        <article class="qz-download-card">
+          <strong>quiz-project-v2.json</strong>
+          <p>包含题库、游戏设计、5 项测试、两轮记录和发布稿。</p>
+          <button class="qz-button qz-button--primary" type="button" data-export-v2 disabled>保存第 2 版工程</button>
+        </article>
+        <article class="qz-download-card">
+          <strong>游戏设计单.md</strong>
+          <p>给老师看的设计与测试记录，不包含学生个人信息。</p>
+          <button class="qz-button qz-button--quiet" type="button" data-export-design disabled>下载游戏设计单</button>
+        </article>
+      </div>
+      <p class="qz-feedback" data-export-feedback role="status" aria-live="polite">导入题库后，完成游戏信息、测试清单和发布稿，就可以导出。</p>
+    </section>
+
+    <section class="qz-section qz-section--ink" aria-labelledby="finish-title">
+      <div class="qz-section-heading">
+        <p class="qz-kicker">project complete / 项目大圆满</p>
+        <h2 id="finish-title">从一个想法，到一件真正的作品。</h2>
+        <p>{lesson.finishLine}</p>
+      </div>
+      <a class="qz-link-button qz-button--light" href={`${import.meta.env.BASE_URL}lab/003-quiz-game/`}>回到项目总览 ↗</a>
+    </section>
+  </div>
+</section>
+
+<script>
+  // @ts-nocheck
+  import { copyTextToClipboard } from '../lib/ai-planet-builder.mjs';
+  import { BANK_SIZE, TEST_CHECKLIST } from '../lib/quiz-challenge.mjs';
+  import {
+    DESIGN_CHECKLIST,
+    buildBugPrompt,
+    buildDesignMarkdown,
+    buildProgrammerPrompt,
+    resultCopy,
+    shuffledIds,
+    splitGameQuestions,
+  } from '../lib/quiz-game.mjs';
+  import { buildBankJson } from '../lib/quiz-challenge.mjs';
+  import {
+    buildQuizProjectFileName,
+    parseQuizProjectFile,
+    stringifyQuizProjectFile,
+  } from '../lib/quiz-project-file.mjs';
+  import {
+    QUIZ_WORKSPACE_EVENT,
+    applyImportedProject,
+    canBuildGame,
+    createWorkspaceFile,
+    setCheck,
+    setDesign,
+    setRoadshow,
+    setRound,
+    workspace,
+  } from '../lib/quiz-workspace.mjs';
+
+  const root = document.querySelector('[data-quiz-studio]');
+
+  if (root) {
+    const input = root.querySelector('[data-project-file-input]');
+    const importFeedback = root.querySelector('[data-import-feedback]');
+    const bankStatus = root.querySelector('[data-bank-status]');
+    const bankMeta = root.querySelector('[data-bank-meta]');
+    const bankLoaded = root.querySelector('[data-bank-loaded]');
+    const body = root.querySelector('[data-studio-body]');
+    const lockNote = root.querySelector('[data-lock-note]');
+    const demoTitle = root.querySelector('[data-demo-title]');
+    const demoIntro = root.querySelector('[data-demo-intro]');
+    const demoStart = root.querySelector('[data-demo-start]');
+    const exportV2 = root.querySelector('[data-export-v2]');
+    const exportDesign = root.querySelector('[data-export-design]');
+    const exportStatus = root.querySelector('[data-export-status]');
+    const exportProgress = root.querySelector('[data-export-progress]');
+    const exportFeedback = root.querySelector('[data-export-feedback]');
+    const programmerOutput = root.querySelector('[data-programmer-output]');
+    const bugOutput = root.querySelector('[data-bug-output]');
+    const demo = {
+      queue: [],
+      round: [],
+      index: 0,
+      score: 0,
+      answered: false,
+    };
+
+    const say = (element, message, tone = 'neutral') => {
+      if (!element) return;
+      element.textContent = message;
+      element.dataset.tone = tone;
+    };
+
+    const downloadText = (text, fileName, type) => {
+      const blob = new Blob([text], { type });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    };
+
+    const bank = () => buildBankJson({ topic: workspace.topic, questions: workspace.questions });
+    const bankQuestions = () => splitGameQuestions(bank().questions);
+
+    const designReady = () => Boolean(workspace.design.title.trim() && workspace.design.topic.trim() && workspace.design.intro.trim());
+    const checksReady = () => workspace.checks.every((check) => check.checked);
+    const roundsReady = () => Boolean(
+      workspace.rounds.firstIds.trim()
+      && workspace.rounds.firstScore.trim()
+      && workspace.rounds.secondIds.trim()
+      && workspace.rounds.secondScore.trim()
+    );
+    const roadshowReady = () => Boolean(
+      workspace.roadshow.name.trim()
+      && workspace.roadshow.favorite.trim()
+      && workspace.roadshow.bug.trim()
+    );
+
+    const blockers = () => {
+      if (!workspace.imported) return '先导入第 1 节的题库工程。';
+      if (!canBuildGame()) return '题库里还有题目没有通过核验，不能进入游戏阶段。';
+      if (!designReady()) return '先把游戏名字、知识主题和首页介绍写完整。';
+      if (!checksReady()) return '5 项测试还没有全部打勾。';
+      if (!roundsReady()) return '把两轮测试的题号和得分都记下来。';
+      if (!roadshowReady()) return '把一分钟发布稿的三个问题都填完。';
+      return '';
+    };
+
+    const syncLock = () => {
+      const locked = !workspace.imported || !canBuildGame();
+      if (body) body.dataset.locked = String(locked);
+      root.querySelectorAll('[data-game-field], [data-test-check], [data-round], [data-bug], [data-roadshow]').forEach((control) => {
+        control.disabled = locked;
+      });
+      root.querySelectorAll('[data-generate-programmer], [data-generate-bug]').forEach((button) => {
+        button.disabled = locked;
+      });
+      if (demoStart) demoStart.disabled = locked;
+      if (lockNote) lockNote.hidden = !locked;
+      if (bankLoaded) bankLoaded.dataset.loaded = String(workspace.imported && canBuildGame());
+    };
+
+    const syncExport = () => {
+      const blocker = blockers();
+      if (exportV2) exportV2.disabled = Boolean(blocker);
+      if (exportDesign) exportDesign.disabled = Boolean(blocker);
+      if (exportStatus) exportStatus.textContent = blocker ? '还不能保存第 2 版' : '可以保存第 2 版了';
+      if (exportProgress) {
+        exportProgress.textContent = blocker
+          || '题库 10 道 · 测试 5 / 5 · 两轮记录齐全 · 发布稿完整';
+      }
+      if (exportFeedback && blocker) {
+        exportFeedback.textContent = blocker;
+        exportFeedback.dataset.tone = 'neutral';
+      }
+    };
+
+    const renderDesign = () => {
+      if (demoTitle) demoTitle.textContent = workspace.design.title.trim() || '你的知识挑战赛';
+      if (demoIntro) demoIntro.textContent = workspace.design.intro.trim() || '导入题库并写好游戏信息后，这里会变成你的开场页。';
+      root.querySelectorAll('[data-design-field]').forEach((field) => {
+        if (document.activeElement !== field) field.value = workspace.design[field.dataset.designField] || '';
+      });
+    };
+
+    const renderBank = () => {
+      if (workspace.imported) {
+        if (bankStatus) bankStatus.textContent = '题库已载入：' + (bank().title || '未命名题库');
+        if (bankMeta) bankMeta.textContent = BANK_SIZE + ' 道核验题 · 第 ' + (workspace.importedVersion || 1) + ' 版工程';
+      } else {
+        if (bankStatus) bankStatus.textContent = '等待导入题库';
+        if (bankMeta) bankMeta.textContent = '导入成功后显示题库名称和题目数量';
+      }
+    };
+
+    const renderAll = () => {
+      syncLock();
+      renderBank();
+      renderDesign();
+      syncExport();
+    };
+
+    const demoElements = {
+      progress: root.querySelector('[data-demo-progress]'),
+      score: root.querySelector('[data-demo-score]'),
+      startScreen: root.querySelector('[data-demo-start-screen]'),
+      question: root.querySelector('[data-demo-question]'),
+      questionText: root.querySelector('[data-demo-question-text]'),
+      options: root.querySelector('[data-demo-options]'),
+      answer: root.querySelector('[data-demo-answer]'),
+      answerTitle: root.querySelector('[data-demo-answer-title]'),
+      answerText: root.querySelector('[data-demo-answer-text]'),
+      next: root.querySelector('[data-demo-next]'),
+      result: root.querySelector('[data-demo-result]'),
+      finalScore: root.querySelector('[data-demo-final-score]'),
+      finalTitle: root.querySelector('[data-demo-final-title]'),
+      finalCopy: root.querySelector('[data-demo-final-copy]'),
+    };
+
+    const renderDemo = () => {
+      if (demoElements.progress) demoElements.progress.textContent = '第 ' + Math.min(demo.index + 1, demo.round.length || 0) + ' / ' + (demo.round.length || 5) + ' 题';
+      if (demoElements.score) demoElements.score.textContent = String(demo.score);
+    };
+
+    const showDemoStart = () => {
+      if (demoElements.startScreen) demoElements.startScreen.hidden = false;
+      if (demoElements.question) demoElements.question.hidden = true;
+      if (demoElements.result) demoElements.result.hidden = true;
+      demo.index = 0;
+      demo.score = 0;
+      demo.round = [];
+      renderDemo();
+    };
+
+    const startDemoRound = () => {
+      const all = bankQuestions();
+      if (!all.length) return;
+      if (demo.queue.length < 5) demo.queue = shuffledIds(all.map((question) => question.id));
+      demo.round = demo.queue.splice(0, 5).map((id) => all.find((question) => String(question.id) === String(id))).filter(Boolean);
+      demo.index = 0;
+      demo.score = 0;
+      demo.answered = false;
+      if (demoElements.startScreen) demoElements.startScreen.hidden = true;
+      if (demoElements.result) demoElements.result.hidden = true;
+      if (demoElements.question) demoElements.question.hidden = false;
+      renderDemoQuestion();
+    };
+
+    const renderDemoQuestion = () => {
+      const question = demo.round[demo.index];
+      if (!question) return;
+      demo.answered = false;
+      if (demoElements.questionText) demoElements.questionText.textContent = question.question;
+      if (demoElements.answer) demoElements.answer.hidden = true;
+      if (demoElements.next) demoElements.next.hidden = true;
+      if (demoElements.options) {
+        demoElements.options.replaceChildren();
+        question.options.forEach((option) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'qz-demo-option';
+          button.dataset.key = option.key;
+          const key = document.createElement('span');
+          key.className = 'qz-demo-key';
+          key.textContent = option.key;
+          const text = document.createElement('span');
+          text.textContent = option.text;
+          button.append(key, text);
+          button.addEventListener('click', () => {
+            if (demo.answered) return;
+            demo.answered = true;
+            const correct = option.key === question.answer;
+            if (correct) demo.score += 20;
+            demoElements.options.querySelectorAll('.qz-demo-option').forEach((item) => {
+              item.disabled = true;
+              if (item.dataset.key === question.answer) item.dataset.state = 'correct';
+            });
+            if (!correct) button.dataset.state = 'wrong';
+            if (demoElements.answerTitle) demoElements.answerTitle.textContent = correct ? '答对了！+20 分' : '正确答案是 ' + question.answer;
+            if (demoElements.answerText) demoElements.answerText.textContent = question.explanation;
+            if (demoElements.answer) demoElements.answer.hidden = false;
+            if (demoElements.next) {
+              demoElements.next.hidden = false;
+              demoElements.next.textContent = demo.index === demo.round.length - 1 ? '看结果' : '下一题';
+            }
+            renderDemo();
+          });
+          demoElements.options.appendChild(button);
+        });
+      }
+      renderDemo();
+    };
+
+    const finishDemo = () => {
+      if (demoElements.question) demoElements.question.hidden = true;
+      if (demoElements.result) demoElements.result.hidden = false;
+      const copy = resultCopy(demo.score);
+      if (demoElements.finalScore) demoElements.finalScore.textContent = String(demo.score);
+      if (demoElements.finalTitle) demoElements.finalTitle.textContent = copy.title;
+      if (demoElements.finalCopy) demoElements.finalCopy.textContent = copy.description;
+    };
+
+    demoStart?.addEventListener('click', startDemoRound);
+    demoElements.next?.addEventListener('click', () => {
+      if (demo.index >= demo.round.length - 1) finishDemo();
+      else {
+        demo.index += 1;
+        renderDemoQuestion();
+      }
+    });
+    root.querySelector('[data-demo-restart]')?.addEventListener('click', startDemoRound);
+
+    input?.addEventListener('change', async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      try {
+        const result = parseQuizProjectFile(await file.text());
+        if (!result.ok) {
+          say(importFeedback, result.message, 'error');
+          return;
+        }
+        applyImportedProject(result.data);
+        demo.queue = [];
+        showDemoStart();
+        say(importFeedback, '已导入第 ' + result.data.version + ' 版：10 道题全部通过核验。', 'ok');
+        renderAll();
+        syncExport();
+      } catch {
+        say(importFeedback, '文件没有读出来。请确认选择的是 quiz-project-v1.json，再试一次。', 'error');
+      }
+    });
+
+    root.querySelectorAll('[data-design-field]').forEach((field) => {
+      field.addEventListener('input', () => {
+        setDesign(field.dataset.designField, field.value);
+        renderDesign();
+      });
+    });
+
+    root.querySelectorAll('[data-test-check]').forEach((checkbox) => {
+      checkbox.addEventListener('change', () => setCheck(checkbox.dataset.testCheck, checkbox.checked));
+    });
+
+    root.querySelectorAll('[data-round]').forEach((field) => {
+      field.addEventListener('input', () => setRound(field.dataset.round, field.value));
+    });
+
+    root.querySelectorAll('[data-roadshow]').forEach((field) => {
+      field.addEventListener('input', () => setRoadshow(field.dataset.roadshow, field.value));
+    });
+
+    root.querySelector('[data-generate-programmer]')?.addEventListener('click', () => {
+      const prompt = buildProgrammerPrompt({ design: workspace.design, bank: bank() });
+      if (programmerOutput) {
+        programmerOutput.textContent = prompt;
+        programmerOutput.hidden = false;
+      }
+      const copy = root.querySelector('[data-copy-programmer]');
+      if (copy) copy.hidden = false;
+      say(root.querySelector('[data-programmer-feedback]'), '提示词已生成。它包含完整题库，不要在粘贴前删掉任何一道题。', 'ok');
+    });
+
+    root.querySelector('[data-copy-programmer]')?.addEventListener('click', async () => {
+      const copied = await copyTextToClipboard(programmerOutput?.textContent || '');
+      say(root.querySelector('[data-programmer-feedback]'), copied ? '已复制程序员提示词。' : '复制没有成功，请手动选中文字。', copied ? 'ok' : 'error');
+    });
+
+    const bugFields = () => ({
+      phenomenon: root.querySelector('[data-bug="phenomenon"]')?.value || '',
+      expected: root.querySelector('[data-bug="expected"]')?.value || '',
+      actual: root.querySelector('[data-bug="actual"]')?.value || '',
+    });
+
+    root.querySelector('[data-generate-bug]')?.addEventListener('click', () => {
+      const fields = bugFields();
+      if (!fields.phenomenon.trim()) {
+        say(root.querySelector('[data-bug-feedback]'), '先写清楚你看到的异常现象，再生成提示词。', 'error');
+        return;
+      }
+      if (bugOutput) {
+        bugOutput.textContent = buildBugPrompt(fields);
+        bugOutput.hidden = false;
+      }
+      const copy = root.querySelector('[data-copy-bug]');
+      if (copy) copy.hidden = false;
+      say(root.querySelector('[data-bug-feedback]'), '提示词已生成。让 AI 先说明原因，再给你修改后的完整代码。', 'ok');
+    });
+
+    root.querySelector('[data-copy-bug]')?.addEventListener('click', async () => {
+      const copied = await copyTextToClipboard(bugOutput?.textContent || '');
+      say(root.querySelector('[data-bug-feedback]'), copied ? '已复制修 Bug 提示词。' : '复制没有成功，请手动选中文字。', copied ? 'ok' : 'error');
+    });
+
+    exportV2?.addEventListener('click', () => {
+      const blocker = blockers();
+      if (blocker) {
+        syncExport();
+        say(exportFeedback, blocker, 'error');
+        return;
+      }
+      const version = Math.max(2, Number(workspace.importedVersion) || 1);
+      const file = createWorkspaceFile(version);
+      downloadText(stringifyQuizProjectFile(file), buildQuizProjectFileName(version), 'application/json;charset=utf-8');
+      workspace.lastExportedVersion = version;
+      say(exportFeedback, '已保存 ' + buildQuizProjectFileName(version) + '。v1 仍然留在你的电脑里。', 'ok');
+    });
+
+    exportDesign?.addEventListener('click', () => {
+      const blocker = blockers();
+      if (blocker) {
+        syncExport();
+        say(exportFeedback, blocker, 'error');
+        return;
+      }
+      const checked = TEST_CHECKLIST.map((item) => ({
+        label: item.title + '：' + item.prompt,
+        checked: Boolean(workspace.checks.find((check) => check.id === item.id)?.checked),
+      }));
+      const markdown = buildDesignMarkdown({
+        design: workspace.design,
+        bank: bank(),
+        checks: checked,
+        rounds: workspace.rounds,
+        roadshow: workspace.roadshow,
+      });
+      downloadText(markdown, '游戏设计单.md', 'text/markdown;charset=utf-8');
+      say(exportFeedback, '已下载游戏设计单.md。它不包含姓名、学校或联系方式。', 'ok');
+    });
+
+    document.addEventListener(QUIZ_WORKSPACE_EVENT, () => {
+      renderAll();
+    });
+
+    showDemoStart();
+    renderAll();
+  }
+</script>

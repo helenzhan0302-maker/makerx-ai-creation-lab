@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import QuizGameStudio from '../../../components/QuizGameStudio.astro';
+import { QUIZ_COURSE } from '../../../content/quiz-course.mjs';
+import '../../../styles/ai-planet-builder.css';
+import '../../../styles/quiz.css';
+
+const baseUrl = import.meta.env.BASE_URL;
+const lesson = QUIZ_COURSE.lessonTwo;
+---
+
+<BaseLayout
+  title="我是游戏设计师 · 第 2 节｜AI 趣味知识挑战赛"
+  description="导入核验题库，设计首页、答题页和结果页，生成给 AI 程序员的任务单，完成测试、修 Bug 和一分钟发布。"
+>
+  <div class="project-page-shell qz-page-shell">
+    <header class="project-page-header">
+      <a class="project-back-link" href={`${baseUrl}lab/003-quiz-game/`}>← AI 趣味知识挑战赛课程总览</a>
+      <span class="project-page-status">实验编号 003 / 我是游戏设计师 · {lesson.label}</span>
+    </header>
+
+    <main id="main-content">
+      <section class="project-intro qz-intro" aria-labelledby="project-title">
+        <p class="eyebrow">{lesson.eyebrow}</p>
+        <h1 id="project-title">{lesson.title}</h1>
+        <p class="project-intro-lead">{lesson.lead}</p>
+        <div class="project-intro-notes">
+          {lesson.notes.map((note) => <p>{note}</p>)}
+        </div>
+      </section>
+
+      <aside class="qz-warning" aria-label="导入与保存说明">
+        <span class="qz-warning-mark" aria-hidden="true">!</span>
+        <p><strong>这一页不会记住上次的内容。</strong>先导入第 1 节保存的 <code>quiz-project-v1.json</code>；下课前再保存一次，得到 <code>quiz-project-v2.json</code>。没有通过核验的题库，工作台会保持锁定。</p>
+      </aside>
+
+      <section class="qz-section" aria-labelledby="journey-title">
+        <div class="qz-section-heading">
+          <p class="qz-kicker">mission 01 / 先看别人怎么做</p>
+          <h2 id="journey-title">一个游戏，玩家要走四站。</h2>
+          <p>先不写代码。像玩家一样打开一个游戏，观察它怎么开始、怎么答题、怎么重来，再把这张地图画成自己的三个页面。</p>
+        </div>
+        <div class="qz-flow">
+          {lesson.journey.map((station, index) => (
+            <article>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <h3>{station.title}</h3>
+              <p>{station.detail}</p>
+            </article>
+          ))}
+        </div>
+        <div class="qz-standard-grid qz-web-roles">
+          {lesson.webRoles.map((role) => (
+            <article class="qz-standard-card">
+              <strong>{role.title} · {role.role}</strong>
+              <p>{role.detail}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <QuizGameStudio />
+    </main>
+
+    <footer class="project-page-footer">
+      <p>MakerX AI 造物实验室</p>
+      <a href={baseUrl}>回到首页 ↗</a>
+    </footer>
+  </div>
+</BaseLayout>

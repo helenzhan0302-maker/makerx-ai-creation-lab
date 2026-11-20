@@ -971,6 +971,35 @@ curl -s https://<子域>/DEPLOY_STATUS.txt   # 应为 status=ok
 
 **未验证**：真实手机与微信内置浏览器、真实屏幕阅读器未测；`pnpm check` 未重跑，不能声称通过。视觉观感未经视觉模型确认，只验证了 DOM、CSS、HTTP 与运行时几何。
 
+### E · 003「AI 趣味知识挑战赛」两节课网页（2026-11-20，本地完成，未部署）
+
+**依据**：用户提供第 3 次课《我是出题官》与第 4 次课《我是游戏设计师》两份 PPT，要求设计项目 3 两节课配合的网页。决策记录见 `docs/decisions.md` D-27。
+
+**本轮改动**：
+
+- 首页新增第三张项目卡「AI 趣味知识挑战赛」，桌面三列紧凑卡片；窄屏改为单列，插画退为背景层。
+- 新增三个路由：`/lab/003-quiz-game/`、`/lab/003-quiz-game/lesson-1/`、`/lab/003-quiz-game/lesson-2/`。
+- 第 1 节「我是出题官」：主题选择、AI 初稿提示词、逐题核验（关键词 / 来源 / 证据 / 结论）、导出 Markdown、JSON 与 `quiz-project-v1.json`；页面末尾原样展示用户提供的「AI题库整理与文件生成助手」提示词，并提供复制按钮。
+- 第 2 节「我是游戏设计师」：导入 v1 → 三个页面设计 → 游戏规则 → 程序员提示词 → 5 题预演 → 五项测试与两轮记录 → 修 Bug → 一分钟发布稿 → 导出 `quiz-project-v2.json` 与游戏设计单。
+- 第 2 节导入校验会拒绝缺少关键词、来源或证据的题目，手工改工程文件不能绕过核验。
+- 两节课均不使用浏览器存储、不发起网络请求；PPT 只用于文字与流程，未复制任何插画或截图。
+
+**本机实测**：
+
+| 命令 | 结果 |
+|---|---|
+| `pnpm test` | **128 pass / 0 fail / 0 skipped** |
+| `pnpm exec astro build --config astro.config.subdomain.mjs --outDir dist-subdomain` | 退出码 0，**10 pages** |
+| `node tests/browser-quiz.mjs` | **20/20 通过** |
+| `node tests/browser-quiz-flow.mjs` | **27/27 通过**（10 题核验 → 下载题库与 v1 → 导入 → 程序员提示词 → 5 题预演 → 五项测试 → 导出 v2） |
+| `node tests/browser-picturebook.mjs` | **74/74 通过**；首页三卡实测约 278px × 264px，无横向溢出 |
+| 003 课程页 1440 / 1024 / 390px | 无横向溢出 |
+| `prefers-reduced-motion: reduce` | 第三课 `.qz-topic-card` 过渡为 0s，内容可读 |
+
+**部署状态**：**未部署**。`https://makerx.skftai.top/` 仍是 2026-11-06 的版本，003 三个路由尚未上线。
+
+**未验证**：真实手机与微信内置浏览器、真实屏幕阅读器、视觉观感与最终审美确认；`pnpm check` 未重跑，不能声称通过。以上只验证了 DOM、CSS、构建产物与运行时几何。
+
 
 ### 尚未核对 / 未验证
 

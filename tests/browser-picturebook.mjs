@@ -48,7 +48,7 @@ const homeLayout = await page.evaluate(() => {
     frames: getComputedStyle(document.querySelector('.storyboard-frame')).animationName,
   };
 });
-check('home shows two compact cards side by side', homeLayout.cards.length === 2 && homeLayout.cards.every((card) => card.width > 300 && card.width < 420 && card.height < 320), JSON.stringify(homeLayout.cards));
+check('home shows three compact project cards', homeLayout.cards.length === 3 && homeLayout.cards.every((card) => card.width > 250 && card.width < 440 && card.height < 340), JSON.stringify(homeLayout.cards));
 check('home archive title has no negative tracking', homeLayout.titleLetter === 'normal');
 check('home card body is at least 15px', homeLayout.bodySize >= 15, String(homeLayout.bodySize));
 check('home project cards run separate motion', homeLayout.orbit === 'project-orbit' && homeLayout.frames === 'frame-fill');

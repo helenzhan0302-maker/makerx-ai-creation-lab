@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { frontmatter as aiBaseProject } from '../content/projects/001-ai-base.md';
 import { frontmatter as picturebookProject } from '../content/projects/002-picturebook.md';
+import { frontmatter as quizProject } from '../content/projects/003-quiz-game.md';
 
 const baseUrl = import.meta.env.BASE_URL;
 ---
@@ -164,6 +165,27 @@ const baseUrl = import.meta.env.BASE_URL;
               <div class="project-card-copy">
                 <h3>{picturebookProject.title}</h3>
                 <p>{picturebookProject.summary}</p>
+              </div>
+              <span class="project-card-arrow" aria-hidden="true">↗</span>
+            </a>
+            <a class="project-card project-card--003" href={baseUrl + 'lab/003-quiz-game/'} data-reveal style="--reveal-delay: 320ms">
+              <div class="project-card-meta">
+                <span class="project-card-index" aria-hidden="true">{quizProject.id}</span>
+                <span class="project-card-status"><span aria-hidden="true"></span>{quizProject.status}</span>
+              </div>
+              <div class="project-card-art" aria-hidden="true">
+                <svg viewBox="0 0 160 160" focusable="false">
+                  <g class="quiz-system">
+                    <rect class="quiz-card quiz-card--back" x="28" y="20" width="104" height="104" rx="14" transform="rotate(-8 80 72)" />
+                    <rect class="quiz-card quiz-card--front" x="34" y="28" width="104" height="104" rx="14" transform="rotate(5 86 80)" />
+                    <text class="quiz-mark" x="54" y="83" aria-hidden="true">?</text>
+                    <path class="quiz-spark" d="M126 24v12M120 30h12M28 132v10M23 137h10" />
+                  </g>
+                </svg>
+              </div>
+              <div class="project-card-copy">
+                <h3>{quizProject.title}</h3>
+                <p>{quizProject.summary}</p>
               </div>
               <span class="project-card-arrow" aria-hidden="true">↗</span>
             </a>

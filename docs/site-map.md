@@ -1,6 +1,6 @@
 # MakerX AI 造物实验室｜站点地图与页面结构（Phase 0）
 
-> 状态：当前已实现 **首页**、实验 001 的总览与两节课工具、**实验 002「故事造物机」的总览与两节课工具**。实验 002 的设计依据见 `docs/superpowers/specs/2026-11-03-picturebook-project-design.md`，第 1 周四步流程以用户 2026-11-06 提供的参考稿为准（见 `docs/decisions.md` D-26）。规划中的其他页面结构保留在本文，便于后续增量开发。
+> 状态：当前已实现 **首页**、实验 001 的总览与两节课工具、**实验 002「故事造物机」的总览与两节课工具**、**实验 003「AI 趣味知识挑战赛」的总览与两节课工具**。实验 002 的设计依据见 `docs/superpowers/specs/2026-11-03-picturebook-project-design.md`，第 1 周四步流程以用户 2026-11-06 提供的参考稿为准（见 `docs/decisions.md` D-26）。实验 003 以用户 2026-11-20 提供的两份 PPT 为准（见 `docs/decisions.md` D-27）。规划中的其他页面结构保留在本文，便于后续增量开发。
 > 组件命名与 `docs/content-model.md` 的字段一一对应，避免后期返工。
 
 ---
@@ -15,6 +15,9 @@
 | `/lab/002-picturebook/` | 实验 002「故事造物机」课程总览 | ✅ 当前已实现 | 两节课入口；第 1 节「故事导演营」，第 2 节「绘本造物营」 |
 | `/lab/002-picturebook/lesson-1/` | 实验 002 第 1 节课「故事导演营」 | ✅ 当前已实现 | 选故事起点 → 生成采访提示词 → 课堂 Agent 创作 → 回填创意卡与完整故事 → 导出 v1 |
 | `/lab/002-picturebook/lesson-2/` | 实验 002 第 2 节课「绘本造物营」 | ✅ 当前已实现 | 导入 v1 → 6 页分镜 → 画风与角色 → 逐页插画提示词 → 检查单 → 路演卡 → 导出 v2 |
+| `/lab/003-quiz-game/` | 实验 003「AI 趣味知识挑战赛」课程总览 | ✅ 当前已实现 | 两节课入口；第 1 节「我是出题官」，第 2 节「我是游戏设计师」 |
+| `/lab/003-quiz-game/lesson-1/` | 实验 003 第 1 节课「我是出题官」 | ✅ 当前已实现 | 选主题 → AI 生成初稿 → 逐题查证 → 复制整理提示词 → 导出题库与 `quiz-project-v1.json` |
+| `/lab/003-quiz-game/lesson-2/` | 实验 003 第 2 节课「我是游戏设计师」 | ✅ 当前已实现 | 导入 v1 → 三页设计 → 游戏规则 → 程序员提示词 → 预演 → 五项测试 → 修 Bug → 发布稿 → 导出 v2 |
 | `/parents/` | 给家长 | ⬜ 可选 | 第一版先作为首页的一个区块；内容变多再独立成页 |
 | `/about/` | 关于 / 学习方式 | ⬜ 可选 | 同上，先做首页区块 |
 | `/404` | 找不到页面 | ⬜ 未实现 | 后续补充真实可用的返回出口 |
@@ -23,11 +26,11 @@
 - 当前项目页路由为 `src/pages/lab/<slug>/`；首页卡片的轻量展示数据来自 `src/content/projects/*.md`，课程工具文字仍按项目放在各自页面与组件中。正式内容系统接入后，再统一扩展内容字段。
 - 未来新增实验**只新增内容文件**，路由与模板自动生效。
 - 第一版**不产生**任何需要登录、上传、支付的路由。
-- 实验 002 的两节课分两个周六上，**不用浏览器存储**：第 1 节导出本地工程文件，第 2 节导入继续。站点没有用户账号，也不存在浏览器层面的用户数据隔离。
+- 实验 002、003 的两节课都分两个周六上，**不用浏览器存储**：第 1 节导出本地工程文件，第 2 节导入继续。站点没有用户账号，也不存在浏览器层面的用户数据隔离。
 
 **当前原型落地范围（2026-10-15）**
 - 首屏为单列 `100svh` HTML/CSS/SVG 舞台，不把 PNG 作为 Hero 主体展示。
-- 「探索造物项目」CTA 指向首页内的 `#project-list`，项目档案区当前展示 `AI星球` 与 `故事造物机` 两张可点击卡片。
+- 「探索造物项目」CTA 指向首页内的 `#project-list`，项目档案区当前展示 `AI星球`、`故事造物机` 与 `AI 趣味知识挑战赛` 三张可点击卡片。
 - 卡片状态为「研发中」，只展示项目名、编号和真实入口；没有文档下载链接、报名入口或虚构课程细节。
 
 ---
@@ -192,6 +195,7 @@
 **导航**：`SiteHeader`、`SiteFooter`、`ProjectNav`、`AnchorNav`
 **首页**：`HeroLab`、`HeroVisual`（承载用户提供的首屏图）、`CraftFlow`、`ProjectGrid`、`ProjectCard`、`LearningWhy`、`ForParents`
 **实验页**：`ProjectHeader`、`ProjectMission`、`LearningGoals`、`PrepChecklist`、`StepList`、`PromptBox`、`ResourceList`、`RubricTable`、`PitchGuide`、`PortfolioExit`
+**实验 003 工具**：`QuizBankWorkshop`、`QuizGameStudio`
 **基础件**：`Reveal`（滚动揭示容器）、`Callout`、`Tag`、`Icon`（自绘 SVG 集合）
 **仅备选方案需要**：`FloatingObject`（自绘装置；只有放弃首屏图、改用自绘时才建，见 [visual-direction.md §5.2](visual-direction.md)）
 

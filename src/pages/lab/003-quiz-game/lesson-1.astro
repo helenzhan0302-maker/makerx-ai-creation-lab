@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import QuizBankWorkshop from '../../../components/QuizBankWorkshop.astro';
+import { QUIZ_COURSE, courseHref } from '../../../content/quiz-course.mjs';
+import '../../../styles/ai-planet-builder.css';
+import '../../../styles/quiz.css';
+
+const baseUrl = import.meta.env.BASE_URL;
+const lesson = QUIZ_COURSE.lessonOne;
+const nextLesson = QUIZ_COURSE.overview.lessons[1];
+---
+
+<BaseLayout
+  title="我是出题官 · 第 1 节｜AI 趣味知识挑战赛"
+  description="选一个知识主题，让 AI 生成 10 道初稿，再用权威资料逐题核验，最后导出可进入游戏的题库工程文件。"
+>
+  <div class="project-page-shell qz-page-shell">
+    <header class="project-page-header">
+      <a class="project-back-link" href={`${baseUrl}lab/003-quiz-game/`}>← AI 趣味知识挑战赛课程总览</a>
+      <span class="project-page-status">实验编号 003 / 我是出题官 · {lesson.label}</span>
+    </header>
+
+    <main id="main-content">
+      <section class="project-intro qz-intro" aria-labelledby="project-title">
+        <p class="eyebrow">{lesson.eyebrow}</p>
+        <h1 id="project-title">{lesson.title}</h1>
+        <p class="project-intro-lead">{lesson.lead}</p>
+        <div class="project-intro-notes">
+          {lesson.notes.map((note) => <p>{note}</p>)}
+        </div>
+        <ol class="qz-mission-strip">
+          {lesson.missions.map((mission) => (
+            <li>
+              <span aria-hidden="true">{mission.step}</span>
+              <div>
+                <strong>{mission.title}</strong>
+                <small>{mission.detail}</small>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <QuizBankWorkshop />
+
+      <section class="qz-section qz-section--ink" aria-labelledby="next-title">
+        <div class="qz-section-heading">
+          <p class="qz-kicker">next lesson / 下周六</p>
+          <h2 id="next-title">带着题库，去把它做成真正能玩的游戏。</h2>
+          <p>下节课要导入今天保存的工程文件。旧题、核验记录和改动都留着，游戏阶段只使用通过核验的正式题库。</p>
+        </div>
+        <p class="qz-action-row">
+          <a class="qz-link-button qz-button--light" href={courseHref(baseUrl, nextLesson.href)}>{nextLesson.title}课程入口 ↗</a>
+        </p>
+      </section>
+    </main>
+
+    <footer class="project-page-footer">
+      <p>MakerX AI 造物实验室</p>
+      <a href={baseUrl}>回到首页 ↗</a>
+    </footer>
+  </div>
+</BaseLayout>

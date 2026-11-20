@@ -2,7 +2,7 @@
 
 > 适用对象：`https://makerx.skftai.top/`（腾讯云轻量实例 `lhins-ce4mfndw`，Ubuntu 22.04，上海 `rid=4`）。
 > 本文只记录**已验证**的操作与已实际发生的故障。尚未验证的步骤会明确标注「未验证」。
-> 最近更新：2026-11-04
+> 最近更新：2026-11-20
 
 ---
 
@@ -43,8 +43,8 @@ pnpm exec astro build --config astro.config.subdomain.mjs --outDir dist-subdomai
 
 要求：
 
-- 单元测试全绿（当前基线 76 pass）。
-- 构建退出码 0，页面数为 7。
+- 单元测试全绿（2026-11-20 基线 128 pass）。
+- 构建退出码 0，页面数为 10。
 - `dist-subdomain` 中不出现 `/makerx/_astro` 绝对路径（脚本也会拦截）。
 
 ### 2. 生产预览 E2E
@@ -55,7 +55,7 @@ $env:PB_BASE='http://127.0.0.1:4400'
 node tests/browser-picturebook.mjs
 ```
 
-当前基线：60/60。失败就不要往下走。
+2026-11-20 基线：003 两套 20/20 与 27/27，002 回归 74/74。失败就不要往下走。
 
 ### 3. 同步产物到 `deploy-subdomain`
 
@@ -116,7 +116,7 @@ curl.exe -s -L https://makerx.skftai.top/DEPLOY_STATUS.txt
 - `deploy=` 是**新的**时间戳，不是部署前那个。
 - `status=ok`，`https=on`。
 
-七条路由必须全部 200：
+十条路由必须全部 200：
 
 ```text
 /
@@ -126,6 +126,9 @@ curl.exe -s -L https://makerx.skftai.top/DEPLOY_STATUS.txt
 /lab/002-picturebook/
 /lab/002-picturebook/lesson-1/
 /lab/002-picturebook/lesson-2/
+/lab/003-quiz-game/
+/lab/003-quiz-game/lesson-1/
+/lab/003-quiz-game/lesson-2/
 ```
 
 生产 E2E：
@@ -153,8 +156,8 @@ node tests/browser-picturebook.mjs
 | 判据 | 为什么 |
 |---|---|
 | `DEPLOY_STAMP` 变化 | 首页 200 可能是 nginx 默认站点兜底，不能证明部署 |
-| `DEPLOY_STATUS=ok` | 脚本只有在七条路由全 200 时才写 ok |
-| 七条路由 200 | 少一条就说明产物或路由缺失 |
+| `DEPLOY_STATUS=ok` | 脚本只有在十条路由全 200 时才写 ok |
+| 十条路由 200 | 少一条就说明产物或路由缺失 |
 | 线上 CSS 哈希 = 本地构建哈希 | 证明线上确实是这次构建 |
 | 生产 E2E 全过 | 证明交互功能没被部署破坏 |
 

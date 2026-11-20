@@ -565,8 +565,8 @@ a:focus-visible {
 
 .archive-layout {
   display: grid;
-  grid-template-columns: minmax(17rem, 0.78fr) minmax(0, 1.22fr);
-  gap: clamp(2.5rem, 6vw, 7rem);
+  grid-template-columns: minmax(15rem, 0.62fr) minmax(0, 1.38fr);
+  gap: clamp(2.5rem, 4vw, 4.5rem);
   align-items: start;
   padding-top: clamp(1.5rem, 3vw, 2.5rem);
   border-top: 1px solid var(--brand-ink);
@@ -636,17 +636,17 @@ a:focus-visible {
 
 .project-list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(0.85rem, 1.4vw, 1.25rem);
 }
 
 .project-card {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 7.4rem;
-  grid-template-rows: auto 1fr auto;
-  gap: 0.75rem;
-  min-height: 17.5rem;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  gap: 0.9rem;
+  min-height: 16.5rem;
   padding: 1.15rem;
   overflow: hidden;
   border: 1px solid var(--line);
@@ -690,7 +690,8 @@ a:focus-visible {
   z-index: 1;
   align-self: end;
   grid-column: 1;
-  grid-row: 3;
+  grid-row: 2;
+  padding-right: 1.6rem;
 }
 
 .project-card-status {
@@ -714,28 +715,29 @@ a:focus-visible {
   margin: 0;
   color: var(--brand-ink);
   font-family: var(--font-display);
-  font-size: clamp(1.55rem, 2vw, 2rem);
+  font-size: clamp(1.4rem, 1.7vw, 1.8rem);
   font-weight: 720;
   letter-spacing: 0;
   line-height: 1.18;
 }
 
 .project-card-copy > p:last-child {
-  max-width: 17rem;
+  max-width: 18rem;
   margin: 0.65rem 0 0;
   color: var(--ink-muted);
-  font-size: 0.95rem;
-  line-height: 1.68;
+  font-size: 0.9375rem;
+  line-height: 1.62;
 }
 
 .project-card-art {
-  display: grid;
-  grid-column: 2;
-  grid-row: 2 / 4;
-  align-self: center;
+  position: absolute;
+  top: 2.45rem;
+  right: -0.55rem;
+  z-index: 0;
   width: 7.4rem;
   height: 7.4rem;
-  place-items: center;
+  opacity: 0.3;
+  pointer-events: none;
 }
 
 .project-card-art svg {
@@ -829,6 +831,56 @@ a:focus-visible {
   opacity: 0.65;
 }
 
+.quiz-card {
+  stroke: var(--line-strong);
+  stroke-width: 1.3;
+}
+
+.quiz-card--back {
+  fill: rgba(119, 218, 248, 0.16);
+  stroke: var(--accent-wire);
+  opacity: 0.45;
+}
+
+.quiz-card--front {
+  fill: #ffffff;
+}
+
+.quiz-mark {
+  fill: var(--accent-wire);
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 800;
+}
+
+.quiz-spark {
+  fill: none;
+  stroke: var(--accent-wire);
+  stroke-linecap: round;
+  stroke-width: 2;
+  opacity: 0.55;
+}
+
+.quiz-system {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: quiz-tilt 7s ease-in-out infinite;
+}
+
+.project-card--003 {
+  background: #f6faff;
+}
+
+.project-card--003:hover .quiz-system,
+.project-card--003:focus-visible .quiz-system {
+  animation-duration: 2.2s;
+}
+
+@keyframes quiz-tilt {
+  0%, 100% { transform: rotate(-2deg) translateY(0); }
+  50% { transform: rotate(2deg) translateY(-4px); }
+}
+
 .project-card--002:hover .storyboard-frame,
 .project-card--002:focus-visible .storyboard-frame {
   animation-duration: 1.8s;
@@ -851,6 +903,16 @@ a:focus-visible {
   100% {
     fill: transparent;
     stroke: var(--line);
+  }
+}
+
+@media (max-width: 1180px) {
+  .project-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .project-card--003 {
+    grid-column: span 2;
   }
 }
 
@@ -1138,6 +1200,10 @@ a:focus-visible {
 
   .project-list {
     grid-template-columns: 1fr;
+  }
+
+  .project-card--003 {
+    grid-column: auto;
   }
 
   .project-card {
