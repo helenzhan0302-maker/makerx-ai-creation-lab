@@ -10,25 +10,39 @@ import {
 } from '../lib/quiz-game.mjs';
 import { BANK_SIZE, GAME_RULES, TEST_CHECKLIST } from '../lib/quiz-challenge.mjs';
 import { QUIZ_COURSE } from '../content/quiz-course.mjs';
+import { GAME_DEV_PROMPT } from '../lib/quiz-prompts.mjs';
 
 const lesson = QUIZ_COURSE.lessonTwo;
 ---
 
 <section class="qz-studio" data-quiz-studio aria-labelledby="studio-title">
+  <section class="qz-section qz-game-prompt" aria-labelledby="game-prompt-title">
+    <div class="qz-section-heading">
+      <p class="qz-kicker">ready-made prompt / 直接复制</p>
+      <h2 id="game-prompt-title">把这段提示词交给 AI，开始做你的游戏。</h2>
+      <p>先导入下面工作台里的题库，让 AI 能读到你自己的 <code>.md</code> 和 <code>.json</code> 文件；再把这段提示词原样复制过去。</p>
+    </div>
+    <pre class="qz-output qz-output--tall" data-game-prompt-output tabindex="0">{GAME_DEV_PROMPT}</pre>
+    <div class="qz-copy-row">
+      <button class="qz-button qz-button--secondary" type="button" data-copy-game-prompt>复制游戏提示词</button>
+    </div>
+    <p class="qz-feedback" data-game-prompt-feedback role="status" aria-live="polite">提示词按用户提供的原文呈现，没有改写或精简。</p>
+  </section>
+
   <div class="qz-import-zone">
     <div class="qz-import-box" data-import-gate>
       <p class="qz-kicker">step 00 / open project</p>
-      <h2 id="studio-title">先导入第 1 节的题库工程。</h2>
-      <p>选择 <code>quiz-project-v1.json</code>。页面只读取文件，不会上传到任何服务器。</p>
+      <h2 id="studio-title">先导入第 1 节整理好的题库。</h2>
+      <p>选择第 1 节整理助手生成的 <code>主题名称.json</code>，或旧版 <code>quiz-project-v1.json</code>。页面只读取文件，不会上传到任何服务器。</p>
       <label class="qz-file-picker">
-        <span>打开工程文件</span>
+        <span>打开题库文件</span>
         <input type="file" accept=".json,application/json" data-project-file-input />
       </label>
-      <p class="qz-feedback" data-import-feedback role="status" aria-live="polite">还没有打开工程文件。</p>
+      <p class="qz-feedback" data-import-feedback role="status" aria-live="polite">还没有打开题库文件。</p>
     </div>
     <div class="qz-import-box">
       <h3>导入时会检查什么？</h3>
-      <p>正好 {BANK_SIZE} 道题；每题 4 个选项；答案只能是 A/B/C/D；每题都有解释、核验关键词、查证来源和支撑证据；每题都盖了「正确 · 准予通过」印章。</p>
+      <p>正好 {BANK_SIZE} 道题；每题 4 个选项；答案只能是 A/B/C/D；每题都有解释、核验关键词和查证来源；标准题库的每题必须标记 <code>verification: verified</code>，旧版工程必须带支撑证据和「正确 · 准予通过」印章。</p>
       <p class="qz-note">任何一项不满足，工作台都会保持锁定。不会把没核验的题偷偷带进游戏。</p>
     </div>
   </div>
@@ -39,7 +53,7 @@ const lesson = QUIZ_COURSE.lessonTwo;
   </div>
 
   <div class="qz-studio-body" data-studio-body data-locked="true">
-    <p class="qz-lock-note" data-lock-note>工作台已锁定。先在上方导入通过核验的题库工程，下面的编辑和测试工具才会启用。</p>
+    <p class="qz-lock-note" data-lock-note>工作台已锁定。先在上方导入通过核验的题库文件，下面的编辑和测试工具才会启用。</p>
 
     <section class="qz-section" aria-labelledby="game-design-title">
       <div class="qz-section-heading">
@@ -275,7 +289,7 @@ const lesson = QUIZ_COURSE.lessonTwo;
       <div class="qz-section-heading">
         <p class="qz-kicker">step 09 / save v2</p>
         <h2 id="export-title">把游戏设计、测试记录和发布稿一起带走。</h2>
-        <p>保存第 2 版工程文件，再导出游戏设计单。v1 还留在你的电脑里，想回看出题过程随时可以打开。</p>
+        <p>保存第 2 版工程文件，再导出游戏设计单。第 1 节的题库和核验记录还留在你的电脑里，想回看出题过程随时可以打开。</p>
       </div>
       <div class="qz-readiness">
         <strong data-export-status>还不能保存第 2 版</strong>
@@ -323,7 +337,7 @@ const lesson = QUIZ_COURSE.lessonTwo;
   import { buildBankJson } from '../lib/quiz-challenge.mjs';
   import {
     buildQuizProjectFileName,
-    parseQuizProjectFile,
+    parseLessonOneFile,
     stringifyQuizProjectFile,
   } from '../lib/quiz-project-file.mjs';
   import {
@@ -337,6 +351,7 @@ const lesson = QUIZ_COURSE.lessonTwo;
     setRound,
     workspace,
   } from '../lib/quiz-workspace.mjs';
+  import { GAME_DEV_PROMPT } from '../lib/quiz-prompts.mjs';
 
   const root = document.querySelector('[data-quiz-studio]');
 
@@ -402,7 +417,7 @@ const lesson = QUIZ_COURSE.lessonTwo;
     );
 
     const blockers = () => {
-      if (!workspace.imported) return '先导入第 1 节的题库工程。';
+      if (!workspace.imported) return '先导入第 1 节整理好的题库。';
       if (!canBuildGame()) return '题库里还有题目没有通过核验，不能进入游戏阶段。';
       if (!designReady()) return '先把游戏名字、知识主题和首页介绍写完整。';
       if (!checksReady()) return '5 项测试还没有全部打勾。';
@@ -579,7 +594,7 @@ const lesson = QUIZ_COURSE.lessonTwo;
       const file = input.files?.[0];
       if (!file) return;
       try {
-        const result = parseQuizProjectFile(await file.text());
+        const result = parseLessonOneFile(await file.text());
         if (!result.ok) {
           say(importFeedback, result.message, 'error');
           return;
@@ -591,7 +606,7 @@ const lesson = QUIZ_COURSE.lessonTwo;
         renderAll();
         syncExport();
       } catch {
-        say(importFeedback, '文件没有读出来。请确认选择的是 quiz-project-v1.json，再试一次。', 'error');
+        say(importFeedback, '文件没有读出来。请确认选择的是题库 JSON 或 quiz-project-v1.json，再试一次。', 'error');
       }
     });
 
@@ -612,6 +627,11 @@ const lesson = QUIZ_COURSE.lessonTwo;
 
     root.querySelectorAll('[data-roadshow]').forEach((field) => {
       field.addEventListener('input', () => setRoadshow(field.dataset.roadshow, field.value));
+    });
+
+    root.querySelector('[data-copy-game-prompt]')?.addEventListener('click', async () => {
+      const copied = await copyTextToClipboard(GAME_DEV_PROMPT);
+      say(root.querySelector('[data-game-prompt-feedback]'), copied ? '已复制原文提示词。接下来把题库文件和它一起发给 AI。' : '复制没有成功，请手动选中整段文字。', copied ? 'ok' : 'error');
     });
 
     root.querySelector('[data-generate-programmer]')?.addEventListener('click', () => {

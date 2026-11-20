@@ -33,34 +33,17 @@ check('hub has no horizontal overflow', !(await page.evaluate(() => document.doc
 
 await page.goto(`${base}/lab/003-quiz-game/lesson-1/`, { waitUntil: 'networkidle' });
 check('lesson 1 labels itself as lesson three', (await page.locator('.project-page-status').innerText()).includes('第 3 次课'));
-check('ten question cards', (await page.locator('[data-question-card]').count()) === 10);
-check('lesson 1 starts with downloads disabled', await page.locator('[data-download-md]').isDisabled());
+check('lesson 1 drops the intro notes row', (await page.locator('.project-intro-notes').count()) === 0);
+check('lesson 1 no longer repeats the slide deck as page sections', (await page.locator('[data-question-card]').count()) === 0 && (await page.locator('.qz-warmup').count()) === 0);
+check('lesson 1 keeps the organiser card', (await page.locator('.qz-organizer').count()) === 1);
 check('organiser prompt is rendered as text', (await page.locator('[data-organizer-output]').innerText()).includes('现在请等待我提供题目内容。'));
 const promptText = await page.locator('[data-organizer-output]').innerText();
 check('organiser prompt keeps its opening line', promptText.startsWith('你是一名专业的题库数据整理助手。'));
 
-await page.locator('[data-warmup-option="A"]').click();
-check('warm-up gives feedback', (await page.locator('[data-warmup-result]').innerText()).includes('正确答案是 C'));
-
 await page.locator('[data-topic-radio][value="animals"]').check();
 await page.locator('[data-topic-custom]').fill('动物奇葩睡觉姿势');
-await page.locator('[data-copy-outline]').click();
 check('outline prompt uses the focused topic', (await page.locator('[data-outline-output]').innerText()).includes('【动物奇葩睡觉姿势】'));
-
-await page.locator('[data-question-card="1"] summary').click();
-await page.locator('[data-question="1"][data-field="question"]').fill('章鱼有几颗心脏？');
-await page.locator('[data-question="1"][data-option="0"]').fill('1 颗');
-await page.locator('[data-question="1"][data-option="1"]').fill('2 颗');
-await page.locator('[data-question="1"][data-option="2"]').fill('3 颗');
-await page.locator('[data-question="1"][data-option="3"]').fill('4 颗');
-await page.locator('[data-question="1"][data-field="answer"]').selectOption('C');
-await page.locator('[data-question="1"][data-field="explanation"]').fill('一颗主心脏供全身，两颗鳃心脏供鳃部呼吸。');
-await page.locator('[data-question="1"][data-field="keywords"]').fill('章鱼、心脏');
-await page.locator('[data-question="1"][data-field="source"]').fill('中国数字科技馆');
-await page.locator('[data-question="1"][data-field="evidence"]').fill('章鱼有 3 颗心脏。');
-await page.locator('[data-question="1"][data-field="verdict"]').selectOption('correct');
-check('one verified question counted', (await page.locator('[data-verified-count]').innerText()).includes('1 / 10'));
-check('bank still keeps downloads disabled', await page.locator('[data-export-project]').isDisabled());
+check('lesson 1 prompt section is titled as requested', (await page.locator('.qz-prompt-sheet h3').innerText()) === '出题提示词');
 
 const overflow1440 = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
 check('lesson 1 has no horizontal overflow at 1440', overflow1440 === false);
@@ -69,6 +52,10 @@ await page.goto(`${base}/lab/003-quiz-game/lesson-2/`, { waitUntil: 'networkidle
 check('lesson 2 labels itself as lesson four', (await page.locator('.project-page-status').innerText()).includes('第 4 次课'));
 check('studio starts locked', (await page.locator('[data-studio-body]').getAttribute('data-locked')) === 'true');
 check('game fields start disabled', await page.locator('[data-game-field="title"]').isDisabled());
+const gamePrompt = await page.locator('[data-game-prompt-output]').innerText();
+check('lesson 2 shows the supplied game prompt', gamePrompt.startsWith('任务：开发儿童趣味知识挑战赛网页'));
+check('lesson 2 game prompt keeps its closing line', gamePrompt.trim().endsWith('请直接完成网页开发，不要只提供设计方案或代码片段。'));
+check('lesson 2 game prompt copy button is usable before import', !(await page.locator('[data-copy-game-prompt]').isDisabled()));
 
 const badFile = path.join(os.tmpdir(), 'quiz-bad-project.json');
 fs.writeFileSync(badFile, JSON.stringify({ projectCode: '003-quiz-game', schemaVersion: 2, questions: [] }));

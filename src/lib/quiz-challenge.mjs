@@ -122,6 +122,7 @@ export function createQuestion(index = 1) {
     keywords: '',
     source: '',
     evidence: '',
+    verification: '',
     verdict: '',
     revision: '',
   };
@@ -171,7 +172,7 @@ export function isQuestionVerified(question) {
     isQuestionDraftComplete(question)
     && clean(question?.keywords)
     && clean(question?.source)
-    && clean(question?.evidence)
+    && (clean(question?.evidence) || clean(question?.verification) === 'verified')
     && clean(question?.verdict) === 'correct',
   );
 }

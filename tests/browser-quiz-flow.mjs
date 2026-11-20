@@ -30,64 +30,48 @@ await page.goto(`${base}/lab/003-quiz-game/lesson-1/`, { waitUntil: 'networkidle
 await page.locator('[data-topic-radio][value="animals"]').check();
 await page.locator('[data-topic-custom]').fill('动物奇葩睡觉姿势');
 
-const optionSets = [
-  ['1 颗', '2 颗', '3 颗', '4 颗'],
-  ['鳃', '肺', '皮肤', '胃'],
-  ['树上', '水里', '洞穴', '沙里'],
-  ['海豚', '蝙蝠', '大象', '企鹅'],
-  ['站着睡', '倒挂着睡', '边飞边睡', '埋在沙里睡'],
-  ['长颈鹿', '考拉', '狮子', '河马'],
-  ['火烈鸟', '猫头鹰', '鸭子', '鹤'],
-  ['北极熊', '海豹', '鲸鱼', '海龟'],
-  ['猫', '狗', '兔子', '仓鼠'],
-  ['树懒', '猴子', '袋鼠', '松鼠'],
-];
+const projectPath = path.join(os.tmpdir(), 'quiz-organizer-bank.json');
+const questions = Array.from({ length: 10 }, (_, index) => ({
+  id: `ANIMALS-001-Q${String(index + 1).padStart(3, '0')}`,
+  type: 'single_choice',
+  question: `第 ${index + 1} 题：动物睡觉冷知识`,
+  options: [
+    { key: 'A', text: `第 ${index + 1} 题的正确选项` },
+    { key: 'B', text: '干扰选项 B' },
+    { key: 'C', text: '干扰选项 C' },
+    { key: 'D', text: '干扰选项 D' },
+  ],
+  answer: 'A',
+  explanation: `第 ${index + 1} 题的答案解释，来自核验资料。`,
+  keywords: ['动物', '睡觉'],
+  source: ['中国数字科技馆'],
+  verification: 'verified',
+}));
+fs.writeFileSync(projectPath, JSON.stringify({
+  bank_id: 'ANIMALS-001',
+  title: '动物奇葩睡觉姿势',
+  category: '动物王国',
+  age_range: [9, 12],
+  version: '1.0',
+  question_count: 10,
+  questions,
+}, null, 2));
+check('organiser JSON has ten verified questions', questions.length === 10 && questions.every((question) => question.verification === 'verified'));
 
-for (let index = 0; index < 10; index += 1) {
-  const id = index + 1;
-  await page.locator(`[data-question-card="${id}"] summary`).click();
-  await page.locator(`[data-question="${id}"][data-field="question"]`).fill(`第 ${id} 题：动物睡觉冷知识`);
-  for (let option = 0; option < 4; option += 1) {
-    await page.locator(`[data-question="${id}"][data-option="${option}"]`).fill(optionSets[index][option]);
-  }
-  await page.locator(`[data-question="${id}"][data-field="answer"]`).selectOption('A');
-  await page.locator(`[data-question="${id}"][data-field="explanation"]`).fill(`第 ${id} 题的答案解释，来自核验资料。`);
-  await page.locator(`[data-question="${id}"][data-field="keywords"]`).fill('动物、睡觉');
-  await page.locator(`[data-question="${id}"][data-field="source"]`).fill('中国数字科技馆');
-  await page.locator(`[data-question="${id}"][data-field="evidence"]`).fill(`第 ${id} 题对应的权威原文摘录。`);
-  await page.locator(`[data-question="${id}"][data-field="verdict"]`).selectOption('correct');
-}
+const pendingPath = path.join(os.tmpdir(), 'quiz-organizer-pending.json');
+const pendingQuestions = structuredClone(questions);
+pendingQuestions[4].verification = 'pending';
+fs.writeFileSync(pendingPath, JSON.stringify({
+  bank_id: 'ANIMALS-001',
+  title: '动物奇葩睡觉姿势',
+  question_count: 10,
+  questions: pendingQuestions,
+}, null, 2));
 
-check('all ten questions verified', (await page.locator('[data-verified-count]').innerText()).includes('10 / 10'));
-check('downloads unlock after full verification', !(await page.locator('[data-download-md]').isDisabled()));
-await page.locator('[data-check-bank]').click();
-check('bank check reports all clear', (await page.locator('[data-bank-check-text]').innerText()).includes('10 道题全部通过'));
-
-const mdDownloadPromise = page.waitForEvent('download');
-await page.locator('[data-download-md]').click();
-const mdDownload = await mdDownloadPromise;
-const mdPath = path.join(os.tmpdir(), 'quiz-flow-bank.md');
-await mdDownload.saveAs(mdPath);
-const markdown = fs.readFileSync(mdPath, 'utf8');
-check('markdown has ten question blocks', (markdown.match(/^## 第[0-9][0-9]题$/gm) || []).length === 10);
-check('markdown follows the supplied field contract', markdown.includes('核验关键词：') && markdown.includes('资料来源：') && markdown.includes('核验状态：'));
-
-const jsonDownloadPromise = page.waitForEvent('download');
-await page.locator('[data-download-json]').click();
-const jsonDownload = await jsonDownloadPromise;
-const jsonPath = path.join(os.tmpdir(), 'quiz-flow-bank.json');
-await jsonDownload.saveAs(jsonPath);
-const bankJson = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-check('json bank parses and has ten questions', bankJson.questions.length === 10);
-check('json answers are A-D', bankJson.questions.every((question) => ['A', 'B', 'C', 'D'].includes(question.answer)));
-
-const projectDownloadPromise = page.waitForEvent('download');
-await page.locator('[data-export-project]').click();
-const projectDownload = await projectDownloadPromise;
-const projectPath = path.join(os.tmpdir(), 'quiz-project-v1.json');
-await projectDownload.saveAs(projectPath);
-const project = JSON.parse(fs.readFileSync(projectPath, 'utf8'));
-check('v1 keeps ten verified questions', project.questions.length === 10 && project.questions.every((question) => question.verdict === 'correct'));
+await page.goto(`${base}/lab/003-quiz-game/lesson-2/`, { waitUntil: 'networkidle' });
+await page.locator('[data-project-file-input]').setInputFiles(pendingPath);
+await page.waitForFunction(() => document.querySelector('[data-import-feedback]')?.textContent.includes('还没有核验通过'));
+check('lesson 2 rejects an unverified organiser JSON', (await page.locator('[data-studio-body]').getAttribute('data-locked')) === 'true');
 
 await page.goto(`${base}/lab/003-quiz-game/lesson-2/`, { waitUntil: 'networkidle' });
 await page.locator('[data-project-file-input]').setInputFiles(projectPath);

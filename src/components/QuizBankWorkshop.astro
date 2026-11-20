@@ -1,77 +1,7 @@
 ---
-import {
-  BANK_SIZE,
-  OPTION_KEYS,
-  OUTLINE_TEMPLATE,
-  PUBLISH_QUESTIONS,
-  SOURCE_GUIDES,
-  THINKING_STEPS,
-  TOPIC_EXAMPLES,
-  TOPIC_OPTIONS,
-  VERDICTS,
-} from '../lib/quiz-challenge.mjs';
+import { OUTLINE_TEMPLATE, TOPIC_OPTIONS } from '../lib/quiz-challenge.mjs';
 import { BANK_ORGANIZER_PROMPT } from '../lib/quiz-prompts.mjs';
-import { QUIZ_COURSE } from '../content/quiz-course.mjs';
-
-const lesson = QUIZ_COURSE.lessonOne;
 ---
-
-<section class="qz-section qz-warmup" data-warmup aria-labelledby="warmup-title">
-  <div class="qz-section-heading">
-    <p class="qz-kicker">warm-up / 10 秒竞猜</p>
-    <h2 id="warmup-title">{lesson.warmup.title}</h2>
-    <p>{lesson.warmup.lead}</p>
-  </div>
-  <fieldset class="qz-warmup-options" data-warmup-options>
-    <legend class="sr-only">选一个你觉得正确的答案</legend>
-    {lesson.warmup.options.map((option) => (
-      <button class="qz-warmup-option" type="button" data-warmup-option={option.key}>
-        <span class="qz-warmup-key" aria-hidden="true">{option.key}</span>
-        <span>{option.text}</span>
-      </button>
-    ))}
-  </fieldset>
-  <p class="qz-warmup-result" data-warmup-result role="status" hidden></p>
-  <button class="qz-button qz-button--quiet" type="button" data-warmup-reveal>直接揭晓答案</button>
-  <div class="qz-warmup-answer" data-warmup-answer hidden>
-    <strong>正确答案：{lesson.warmup.answer}</strong>
-    <p>{lesson.warmup.explanation}</p>
-  </div>
-</section>
-
-<section class="qz-section" aria-labelledby="standards-title">
-  <div class="qz-section-heading">
-    <p class="qz-kicker">mission 01 / 好题标准</p>
-    <h2 id="standards-title">一道合格的好题，要过五道关。</h2>
-    <p>五个标准缺一不可。尤其是「唯一」：如果两个选项都能算对，这道题就必须重写。</p>
-  </div>
-  <div class="qz-standard-grid">
-    {lesson.standards.map((standard, index) => (
-      <article class="qz-standard-card">
-        <span class="qz-standard-mark" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-        <strong>{standard.title}</strong>
-        <p>{standard.detail}</p>
-      </article>
-    ))}
-  </div>
-</section>
-
-<section class="qz-section" aria-labelledby="risk-title">
-  <div class="qz-section-heading">
-    <p class="qz-kicker">mission 01 / AI 也会犯糊涂</p>
-    <h2 id="risk-title">AI 生成的初稿，不能直接相信。</h2>
-    <p>它能帮我们找灵感、写草稿，但不能替我们做事实判断。出题官的黄金铁律是：AI 帮我们找灵感，不能替我们做判断。</p>
-  </div>
-  <div class="qz-rule-grid">
-    {lesson.risks.map((risk, index) => (
-      <article class="qz-rule-card">
-        <span class="qz-rule-mark" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-        <strong>{risk.title}</strong>
-        <p>{risk.detail}</p>
-      </article>
-    ))}
-  </div>
-</section>
 
 <section class="qz-section" data-topic-section aria-labelledby="topic-title">
   <div class="qz-section-heading">
@@ -112,12 +42,7 @@ const lesson = QUIZ_COURSE.lessonOne;
   </div>
 
   <div class="qz-prompt-sheet">
-    <h3>PPT 原版出题模板</h3>
-    <pre class="qz-output" tabindex="0">{OUTLINE_TEMPLATE}</pre>
-  </div>
-
-  <div class="qz-prompt-sheet">
-    <h3>替换主题后的专属出题指令</h3>
+    <h3>出题提示词</h3>
     <p>主题没填时会显示「待补充」，不会替你编一个。</p>
     <pre class="qz-output" data-outline-output tabindex="0"></pre>
     <div class="qz-copy-row">
@@ -131,217 +56,6 @@ const lesson = QUIZ_COURSE.lessonOne;
     <li><strong>发送给 AI</strong><span>粘进课堂智能体，等 10 道题全部生成。</span></li>
     <li><strong>通读初稿</strong><span>看不懂的地方请 AI 重写，但不要直接相信答案。</span></li>
   </ol>
-</section>
-
-<section class="qz-section qz-section--ink" aria-labelledby="verify-title">
-  <div class="qz-section-heading">
-    <p class="qz-kicker">mission 03 / 答案侦探</p>
-    <h2 id="verify-title">AI 生成 ≠ 事实正确。</h2>
-    <p>从出题官变身答案侦探。每道题都要找到能支持答案的权威原文，而不是再问另一个 AI「对不对」。</p>
-  </div>
-  <ol class="qz-step-line qz-step-line--ink">
-    {THINKING_STEPS.map((step) => (
-      <li><strong>{step.title}</strong><span>{step.prompt}</span></li>
-    ))}
-  </ol>
-  <p class="qz-note qz-note--ink">侦探铁律：打开权威网页看全文和证据出处，不要只看搜索引擎自动生成的两行摘要。</p>
-</section>
-
-<section class="qz-section" aria-labelledby="source-title">
-  <div class="qz-section-heading">
-    <p class="qz-kicker">mission 03 / 信源导航</p>
-    <h2 id="source-title">去哪里找最硬的证据？</h2>
-    <p>优先使用国家级科普平台、专业科学机构和正规出版社的科普书。链接状态只按本机实测标注，没验证的不会写成「已验证」。</p>
-  </div>
-  <div class="qz-source-grid">
-    {SOURCE_GUIDES.map((source) => (
-      <article class="qz-source-card">
-        <strong>{source.name}</strong>
-        <code>{source.host}</code>
-        <p>{source.description}</p>
-        <span class="qz-source-state" data-verified={source.verified ? 'true' : 'false'}>
-          {source.verified ? '首页已实测可访问' : '链接未验证'}
-        </span>
-        {source.href ? (
-          <a href={source.href} target="_blank" rel="noreferrer noopener">打开网站 ↗</a>
-        ) : (
-          <span class="qz-source-state">入口由老师当堂指定</span>
-        )}
-      </article>
-    ))}
-  </div>
-</section>
-
-<section class="qz-section" aria-labelledby="verdict-title">
-  <div class="qz-section-heading">
-    <p class="qz-kicker">mission 03 / 四种裁决</p>
-    <h2 id="verdict-title">给每道题盖一个结论印章。</h2>
-    <p>只有「正确 · 准予通过」的题，才允许进入下节课的游戏。</p>
-  </div>
-  <ul class="qz-verdict-legend">
-    {VERDICTS.map((verdict) => (
-      <li data-tone={verdict.tone}>
-        <strong>{verdict.label}</strong>
-        <span>{verdict.description}</span>
-      </li>
-    ))}
-  </ul>
-</section>
-
-<section class="qz-section" aria-labelledby="record-title">
-  <div class="qz-section-heading">
-    <p class="qz-kicker">mission 03 / 20 分钟行动</p>
-    <h2 id="record-title">每道题，留下六条核验记录。</h2>
-    <p>证据不能只留在脑子里。把来源和原文摘录写下来，别人才能复查你的判断。</p>
-  </div>
-  <ol class="qz-record-list">
-    {lesson.verifyRecord.map((item, index) => (
-      <li><span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>{item}</li>
-    ))}
-  </ol>
-  <p class="qz-note">查不到可靠证据怎么办？换个更具体的搜索关键词；仍然找不到，就果断淘汰这道题，换一道备用题。</p>
-</section>
-
-<section class="qz-section" data-bank-section aria-labelledby="bank-title">
-  <div class="qz-section-heading">
-    <p class="qz-kicker">workbench / 题库工作台</p>
-    <h2 id="bank-title">把 10 道题逐题查证，再决定谁能进游戏。</h2>
-    <p>下面是 {BANK_SIZE} 个题位。先粘贴 AI 初稿，再逐题补上核验关键词、来源、证据和结论。内容只在这个浏览器里，不会上传。</p>
-  </div>
-
-  <div class="qz-bank-toolbar">
-    <div class="qz-bank-progress">
-      <span>初稿完成 <strong data-draft-count>0 / {BANK_SIZE}</strong></span>
-      <span>核验通过 <strong data-verified-count>0 / {BANK_SIZE}</strong></span>
-      <span data-ready-state="false">还不能进入游戏</span>
-    </div>
-    <button class="qz-button qz-button--secondary" type="button" data-check-bank>检查我的题库</button>
-  </div>
-
-  <div class="qz-question-list">
-    {Array.from({ length: BANK_SIZE }, (_, index) => (
-      <details class="qz-question-card" data-question-card={index + 1}>
-        <summary>
-          <span class="qz-question-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-          <span class="qz-question-title">
-            <span data-question-summary={index + 1}>第 {index + 1} 题：还没有题干</span>
-            <small data-question-meta={index + 1}>未开始</small>
-          </span>
-          <span class="qz-status-pill" data-question-pill={index + 1} data-state="empty">未开始</span>
-        </summary>
-        <div class="qz-question-body">
-          <div class="qz-question-fields">
-            <label class="qz-field qz-field--span-2">
-              <span>题目内容 <em>必填</em></span>
-              <textarea rows="2" maxlength="240" data-question={index + 1} data-field="question" placeholder="把 AI 初稿里的题干粘贴到这里"></textarea>
-            </label>
-          </div>
-
-          <div class="qz-options-grid">
-            {OPTION_KEYS.map((key, optionIndex) => (
-              <label class="qz-option-row">
-                <span class="qz-option-key" aria-hidden="true">{key}</span>
-                <span class="sr-only">选项 {key}</span>
-                <input
-                  type="text"
-                  maxlength="120"
-                  autocomplete="off"
-                  data-question={index + 1}
-                  data-option={optionIndex}
-                  placeholder={'选项 ' + key}
-                />
-              </label>
-            ))}
-          </div>
-
-          <div class="qz-verdict-row">
-            <label class="qz-field qz-answer-field">
-              <span>正确答案</span>
-              <select data-question={index + 1} data-field="answer">
-                <option value="">待确认</option>
-                {OPTION_KEYS.map((key) => <option value={key}>{key}</option>)}
-              </select>
-            </label>
-            <label class="qz-field">
-              <span>核验结论</span>
-              <select data-question={index + 1} data-field="verdict">
-                <option value="">还没核验</option>
-                {VERDICTS.map((verdict) => <option value={verdict.id}>{verdict.label}</option>)}
-              </select>
-            </label>
-          </div>
-
-          <div class="qz-question-fields">
-            <label class="qz-field qz-field--span-2">
-              <span>答案解释 <em>必填</em></span>
-              <textarea rows="2" maxlength="360" data-question={index + 1} data-field="explanation" placeholder="答错时也要让人学到知识"></textarea>
-            </label>
-            <label class="qz-field">
-              <span>核验关键词</span>
-              <input type="text" maxlength="120" autocomplete="off" data-question={index + 1} data-field="keywords" placeholder="用顿号分开，例如：章鱼、心脏" />
-            </label>
-            <label class="qz-field">
-              <span>查证来源</span>
-              <input type="text" maxlength="180" autocomplete="off" data-question={index + 1} data-field="source" placeholder="网站、书名或机构名" />
-            </label>
-            <label class="qz-field qz-field--span-2">
-              <span>支撑证据 <em>摘录 1–2 句原文</em></span>
-              <textarea rows="2" maxlength="360" data-question={index + 1} data-field="evidence" placeholder="把权威资料里的原句抄下来，不要只写「网上说的」"></textarea>
-            </label>
-            <label class="qz-field qz-field--span-2">
-              <span>优化改动 <em>选填</em></span>
-              <textarea rows="2" maxlength="200" data-question={index + 1} data-field="revision" placeholder="如果改过题目，写下最终定稿和改动原因"></textarea>
-            </label>
-          </div>
-        </div>
-      </details>
-    ))}
-  </div>
-
-  <div class="qz-check-result" data-bank-check data-ok="false" role="status" aria-live="polite">
-    <p data-bank-check-text>还没有检查。把题目和核验记录填完后，点「检查我的题库」。</p>
-    <ul data-bank-issues hidden></ul>
-  </div>
-</section>
-
-<section class="qz-section" aria-labelledby="download-title">
-  <div class="qz-section-heading">
-    <p class="qz-kicker">deliverables / 带走题库</p>
-    <h2 id="download-title">正式题库、工程文件，各存一份。</h2>
-    <p>Markdown 给人读，JSON 给程序读，工程文件留给下节课继续。三个文件都只包含通过了核验的题。</p>
-  </div>
-  <div class="qz-download-grid">
-    <article class="qz-download-card">
-      <strong>主题名称.md</strong>
-      <p>按题库整理格式导出的 Markdown，方便阅读、修改和扩充。</p>
-      <button class="qz-button qz-button--quiet" type="button" data-download-md>下载 Markdown</button>
-    </article>
-    <article class="qz-download-card">
-      <strong>主题名称.json</strong>
-      <p>标准 JSON 题库，供下节课的游戏直接读取。</p>
-      <button class="qz-button qz-button--quiet" type="button" data-download-json>下载 JSON</button>
-    </article>
-    <article class="qz-download-card">
-      <strong>quiz-project-v1.json</strong>
-      <p>带核验证据和改动的工程文件，是第 2 节课的入口。</p>
-      <button class="qz-button qz-button--secondary" type="button" data-export-project>保存第 1 版工程</button>
-    </article>
-  </div>
-  <p class="qz-feedback" data-download-feedback role="status" aria-live="polite">题库通过检查后，三个下载按钮才会启用。</p>
-</section>
-
-<section class="qz-section" aria-labelledby="publish-title">
-  <div class="qz-section-heading">
-    <p class="qz-kicker">mission 04 / 出题官发布</p>
-    <h2 id="publish-title">用四个问题，讲清你的题库。</h2>
-    <p>不用背稿。按顺序回答，别人就能听懂你在做什么、为什么值得玩。</p>
-  </div>
-  <ul class="qz-publish-list">
-    {PUBLISH_QUESTIONS.map((question, index) => (
-      <li><strong aria-hidden="true">{index + 1}</strong><span>{question}</span></li>
-    ))}
-  </ul>
-  <p class="qz-note">真正厉害的出题官，不只是会用 AI，更知道怎样辨别事实真假。</p>
 </section>
 
 <section class="qz-section qz-organizer" aria-labelledby="organizer-title">
@@ -360,85 +74,22 @@ const lesson = QUIZ_COURSE.lessonOne;
 <script>
   // @ts-nocheck
   import { copyTextToClipboard } from '../lib/ai-planet-builder.mjs';
-  import {
-    BANK_SIZE,
-    OUTLINE_TEMPLATE,
-    bankFileName,
-    buildBankJson,
-    buildBankMarkdown,
-    buildOutlinePrompt,
-    checkQuestionBank,
-    isQuestionVerified,
-    verificationProgress,
-  } from '../lib/quiz-challenge.mjs';
+  import { OUTLINE_TEMPLATE, buildOutlinePrompt } from '../lib/quiz-challenge.mjs';
   import { BANK_ORGANIZER_PROMPT } from '../lib/quiz-prompts.mjs';
-  import { buildQuizProjectFileName, stringifyQuizProjectFile } from '../lib/quiz-project-file.mjs';
-  import { QUIZ_COURSE } from '../content/quiz-course.mjs';
   import {
     QUIZ_WORKSPACE_EVENT,
-    createWorkspaceFile,
     currentTopic,
-    setQuestionField,
-    setQuestionOption,
     setTopic,
     setTopicCustom,
     workspace,
   } from '../lib/quiz-workspace.mjs';
 
-  const root = document.querySelector('[data-warmup]')?.closest('main');
-
-  const downloadText = (text, fileName, type) => {
-    const blob = new Blob([text], { type });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-  };
+  const root = document.querySelector('[data-topic-section]')?.closest('main');
 
   if (root) {
-    const warmup = QUIZ_COURSE.lessonOne.warmup;
-
-    root.querySelector('[data-warmup-reveal]')?.addEventListener('click', (event) => {
-      event.currentTarget.hidden = true;
-      const answer = root.querySelector('[data-warmup-answer]');
-      if (answer) answer.hidden = false;
-    });
-
-    root.querySelectorAll('[data-warmup-option]').forEach((button) => {
-      button.addEventListener('click', () => {
-        const correct = button.dataset.warmupOption === warmup.answer;
-        root.querySelectorAll('[data-warmup-option]').forEach((item) => {
-          item.disabled = true;
-          item.dataset.state = item.dataset.warmupOption === warmup.answer ? 'correct' : 'idle';
-        });
-        button.dataset.state = correct ? 'correct' : 'wrong';
-        const result = root.querySelector('[data-warmup-result]');
-        if (result) {
-          result.hidden = false;
-          result.dataset.tone = correct ? 'ok' : 'error';
-          result.textContent = correct
-            ? '答对了！章鱼确实有 3 颗心脏。'
-            : '这次没猜中。正确答案是 C：章鱼有 3 颗心脏。';
-        }
-        const answer = root.querySelector('[data-warmup-answer]');
-        if (answer) answer.hidden = false;
-      });
-    });
-
     const outlineOutput = root.querySelector('[data-outline-output]');
     const topicInput = root.querySelector('[data-topic-custom]');
     const topicFeedback = root.querySelector('[data-topic-feedback]');
-    const draftCount = root.querySelector('[data-draft-count]');
-    const verifiedCount = root.querySelector('[data-verified-count]');
-    const readyState = root.querySelector('[data-ready-state]');
-    const bankCheck = root.querySelector('[data-bank-check]');
-    const bankCheckText = root.querySelector('[data-bank-check-text]');
-    const bankIssues = root.querySelector('[data-bank-issues]');
-    const downloadFeedback = root.querySelector('[data-download-feedback]');
 
     const renderOutline = () => {
       if (!outlineOutput) return;
@@ -450,78 +101,6 @@ const lesson = QUIZ_COURSE.lessonOne;
           : '选一个方向，再把它改成一个具体的题目范围。';
         topicFeedback.dataset.tone = topic.label ? 'ok' : 'neutral';
       }
-    };
-
-    const renderQuestions = () => {
-      const progress = verificationProgress(workspace.questions);
-      if (draftCount) draftCount.textContent = progress.drafted + ' / ' + BANK_SIZE;
-      if (verifiedCount) verifiedCount.textContent = progress.verified + ' / ' + BANK_SIZE;
-      if (readyState) {
-        const ready = progress.verified === BANK_SIZE;
-        readyState.dataset.ready = String(ready);
-        readyState.textContent = ready ? '10 道题已全部通过，可以导出' : '还不能进入游戏';
-      }
-
-      workspace.questions.forEach((question) => {
-        const card = root.querySelector('[data-question-card="' + question.id + '"]');
-        if (!card) return;
-        const summary = root.querySelector('[data-question-summary="' + question.id + '"]');
-        const meta = root.querySelector('[data-question-meta="' + question.id + '"]');
-        const pill = root.querySelector('[data-question-pill="' + question.id + '"]');
-        const verified = isQuestionVerified(question);
-        const started = Boolean(question.question || question.options.some(Boolean) || question.answer);
-
-        card.dataset.verified = String(verified);
-        if (summary) summary.textContent = question.question ? '第 ' + question.id + ' 题：' + question.question : '第 ' + question.id + ' 题：还没有题干';
-        if (meta) {
-          meta.textContent = verified
-            ? '已通过核验 · ' + question.source
-            : started
-              ? '已开始填写 · 还没有通过核验'
-              : '未开始';
-        }
-        if (pill) {
-          pill.dataset.state = verified ? 'verified' : question.verdict && question.verdict !== 'correct' ? 'rejected' : started ? 'draft' : 'empty';
-          pill.textContent = verified ? '准予通过' : question.verdict === 'correct' ? '缺少证据' : question.verdict ? '未通过' : started ? '填写中' : '未开始';
-        }
-      });
-
-      setDownloadsEnabled(progress.verified === BANK_SIZE);
-    };
-
-    const setDownloadsEnabled = (enabled) => {
-      root.querySelectorAll('[data-download-md], [data-download-json], [data-export-project]').forEach((button) => {
-        button.disabled = !enabled;
-      });
-      if (downloadFeedback) {
-        downloadFeedback.textContent = enabled
-          ? '题库已通过检查，可以下载三个文件。'
-          : '题库通过检查后，三个下载按钮才会启用。';
-      }
-    };
-
-    const runBankCheck = () => {
-      const result = checkQuestionBank(workspace.questions);
-      if (bankCheck) bankCheck.dataset.ok = String(result.ok);
-      if (bankCheckText) {
-        bankCheckText.textContent = result.ok
-          ? '10 道题全部通过：题面、4 个选项、答案、解释、来源、证据和关键词都齐了。'
-          : '还有 ' + (BANK_SIZE - result.approvedCount) + ' 道题没有通过核验。先处理下面的问题，再导出。';
-      }
-      if (bankIssues) {
-        bankIssues.replaceChildren();
-        if (result.issues.length) {
-          result.issues.forEach((issue) => {
-            const item = document.createElement('li');
-            item.textContent = issue;
-            bankIssues.appendChild(item);
-          });
-          bankIssues.hidden = false;
-        } else {
-          bankIssues.hidden = true;
-        }
-      }
-      setDownloadsEnabled(result.ok);
     };
 
     root.querySelectorAll('[data-topic-radio]').forEach((radio) => {
@@ -542,16 +121,6 @@ const lesson = QUIZ_COURSE.lessonOne;
       renderOutline();
     });
 
-    root.querySelectorAll('[data-question]').forEach((input) => {
-      input.addEventListener('input', () => {
-        const id = Number(input.dataset.question);
-        if (input.dataset.option !== undefined) setQuestionOption(id, Number(input.dataset.option), input.value);
-        else if (input.dataset.field) setQuestionField(id, input.dataset.field, input.value);
-      });
-    });
-
-    root.querySelector('[data-check-bank]')?.addEventListener('click', runBankCheck);
-
     root.querySelector('[data-copy-outline]')?.addEventListener('click', async () => {
       const copied = await copyTextToClipboard(outlineOutput?.textContent || '');
       const feedback = root.querySelector('[data-outline-feedback]');
@@ -559,25 +128,6 @@ const lesson = QUIZ_COURSE.lessonOne;
         feedback.textContent = copied ? '已复制。粘到课堂智能体里，等 10 道题全部生成。' : '复制没有成功，请手动选中文字。';
         feedback.dataset.tone = copied ? 'ok' : 'error';
       }
-    });
-
-    root.querySelector('[data-download-md]')?.addEventListener('click', () => {
-      const topic = currentTopic();
-      const text = buildBankMarkdown({ topic: workspace.topic, questions: workspace.questions });
-      downloadText(text, bankFileName(workspace.topic) + '.md', 'text/markdown;charset=utf-8');
-    });
-
-    root.querySelector('[data-download-json]')?.addEventListener('click', () => {
-      const json = buildBankJson({ topic: workspace.topic, questions: workspace.questions });
-      downloadText(JSON.stringify(json, null, 2) + '\n', bankFileName(workspace.topic) + '.json', 'application/json;charset=utf-8');
-    });
-
-    root.querySelector('[data-export-project]')?.addEventListener('click', () => {
-      const file = createWorkspaceFile(1);
-      downloadText(stringifyQuizProjectFile(file), buildQuizProjectFileName(1), 'application/json;charset=utf-8');
-      workspace.lastExportedVersion = 1;
-      if (downloadFeedback) downloadFeedback.textContent = '已保存 quiz-project-v1.json。下节课导入它继续。';
-      document.dispatchEvent(new CustomEvent('quiz:exported', { detail: file }));
     });
 
     root.querySelector('[data-copy-organizer]')?.addEventListener('click', async () => {
@@ -591,10 +141,8 @@ const lesson = QUIZ_COURSE.lessonOne;
 
     document.addEventListener(QUIZ_WORKSPACE_EVENT, () => {
       renderOutline();
-      renderQuestions();
     });
 
     renderOutline();
-    renderQuestions();
   }
 </script>

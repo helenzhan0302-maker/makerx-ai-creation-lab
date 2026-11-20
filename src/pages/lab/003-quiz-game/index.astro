@@ -30,37 +30,39 @@ const project = QUIZ_COURSE.overview;
         <p><strong>先看边界：</strong>{project.boundary} 没有登录、没有云端保存，也不会上传任何内容。</p>
       </aside>
 
-      <section class="lesson-hub qz-lesson-hub" aria-label="选择课次">
+      <section class="lesson-hub qz-lesson-hub qz-lesson-hub--pb" aria-label="选择课次">
         {project.lessons.map((lesson) => (
           <a class:list={['lesson-card', 'qz-lesson-card', `qz-lesson-card--${lesson.variant}`]} href={courseHref(baseUrl, lesson.href)}>
-            <div class="lesson-card-top">
+            <div class="lesson-card-top qz-lesson-meta">
               <span class="lesson-card-index" aria-hidden="true">{lesson.id}</span>
               <span class="lesson-card-label">{lesson.label}</span>
               <span class="lesson-card-meta">{lesson.meta}</span>
             </div>
-            <h2 class="lesson-card-title">{lesson.title}</h2>
-            <p class="lesson-card-description">{lesson.description}</p>
-            <span class="lesson-card-action">{lesson.action} <span aria-hidden="true">↗</span></span>
-            <span class="qz-hub-art" aria-hidden="true">
+            <div class="qz-lesson-copy">
+              <h2 class="lesson-card-title">{lesson.title}</h2>
+              <p class="lesson-card-description">{lesson.description}</p>
+              <span class="lesson-card-action">{lesson.action} <span aria-hidden="true">↗</span></span>
+            </div>
+            <div class="qz-lesson-art" aria-hidden="true">
               {lesson.variant === 'bank' ? (
                 <svg viewBox="0 0 160 160" focusable="false">
-                  <rect x="20" y="26" width="104" height="126" rx="8" transform="rotate(-6 72 89)" fill="none" stroke="currentColor" stroke-width="2" />
-                  <rect x="38" y="18" width="104" height="126" rx="8" transform="rotate(4 90 81)" fill="#ffffff" stroke="currentColor" stroke-width="2" />
-                  <path d="M58 54h64M58 72h46M58 90h56M58 108h35" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
-                  <circle cx="118" cy="124" r="17" fill="var(--accent-wire)" />
-                  <path d="M112 124l4 4 8-9" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+                  <rect class="qz-bank-back" x="20" y="26" width="104" height="118" rx="8" transform="rotate(-6 72 85)" />
+                  <rect class="qz-bank-front" x="38" y="18" width="104" height="118" rx="8" transform="rotate(4 90 77)" />
+                  <path class="qz-bank-lines" d="M58 50h62M58 68h44M58 86h54M58 104h34" />
+                  <circle class="qz-bank-seal" cx="116" cy="118" r="16" />
+                  <path class="qz-bank-check" d="M110 118l4 4 9-10" />
                 </svg>
               ) : (
                 <svg viewBox="0 0 160 160" focusable="false">
-                  <rect x="18" y="24" width="124" height="112" rx="12" fill="#ffffff" stroke="currentColor" stroke-width="2" />
-                  <path d="M18 52h124" stroke="currentColor" stroke-width="2" />
-                  <circle cx="32" cy="38" r="4" fill="var(--accent-wire)" />
-                  <circle cx="46" cy="38" r="4" fill="var(--brand-cyan)" />
-                  <text x="80" y="102" text-anchor="middle" fill="currentColor" font-family="Georgia, serif" font-size="46" font-weight="700">?</text>
-                  <path d="M46 118h68" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 7" />
+                  <rect class="qz-game-frame" x="18" y="24" width="124" height="112" rx="12" />
+                  <path class="qz-game-bar" d="M18 52h124" />
+                  <circle class="qz-game-dot qz-game-dot--one" cx="32" cy="38" r="4" />
+                  <circle class="qz-game-dot qz-game-dot--two" cx="46" cy="38" r="4" />
+                  <text class="qz-game-question" x="80" y="102" text-anchor="middle">?</text>
+                  <path class="qz-game-dash" d="M46 118h68" />
                 </svg>
               )}
-            </span>
+            </div>
           </a>
         ))}
       </section>
@@ -69,7 +71,7 @@ const project = QUIZ_COURSE.overview;
         <div class="qz-section-heading">
           <p class="qz-kicker">how it works / 两节课怎么连起来</p>
           <h2 id="flow-title">从一个好奇的问题，到一件能玩的作品。</h2>
-          <p>第 1 节产出题库，第 2 节产出游戏。中间靠一个本地工程文件衔接，不依赖账号，也不依赖云存储。</p>
+          <p>第 1 节产出题库，第 2 节产出游戏。中间靠一个本地题库文件衔接，不依赖账号，也不依赖云存储。</p>
         </div>
         <div class="qz-flow">
           {project.flow.map((item) => (
@@ -80,7 +82,7 @@ const project = QUIZ_COURSE.overview;
             </article>
           ))}
         </div>
-        <p class="qz-note">下节课一开始需要导入第 1 节保存的 <code>quiz-project-v1.json</code>。没有通过核验的题库，不能进入游戏设计阶段。</p>
+        <p class="qz-note">下节课一开始需要导入第 1 节整理好的 <code>主题名称.json</code>。没有标记核验通过的题库，不能进入游戏设计阶段。</p>
       </section>
     </main>
 

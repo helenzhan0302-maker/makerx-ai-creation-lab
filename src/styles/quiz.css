@@ -1148,36 +1148,163 @@
   line-height: 1.6;
 }
 
-.qz-lesson-hub .lesson-card {
-  position: relative;
-  overflow: hidden;
+.qz-lesson-hub--pb {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 2.4vw, 1.75rem);
+  margin: 0 0 clamp(3rem, 8vw, 6rem);
+}
+
+.qz-lesson-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 7.5rem;
+  grid-template-rows: auto 1fr;
+  gap: 0.8rem;
+  min-height: 14rem;
+  padding: 1.15rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.78);
 }
 
 .qz-lesson-card--bank {
-  background: linear-gradient(135deg, #ffffff, #eef8ff);
+  background: linear-gradient(135deg, #ffffff, #eef9ff);
 }
 
 .qz-lesson-card--game {
-  background: linear-gradient(135deg, #ffffff, #f1efff);
+  background: linear-gradient(135deg, #ffffff, #f1f0ff);
 }
 
-.qz-lesson-card .qz-hub-art {
-  right: 0.35rem;
-  bottom: 0.15rem;
-  width: 7.6rem;
-  height: 7.6rem;
-  color: rgba(47, 75, 199, 0.44);
-  opacity: 0.72;
+.qz-lesson-meta {
+  grid-column: 1 / -1;
+  margin-bottom: 0;
 }
 
-.qz-lesson-card:hover .qz-hub-art,
-.qz-lesson-card:focus-visible .qz-hub-art {
-  opacity: 1;
+.qz-lesson-card .lesson-card-index {
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: none;
+  color: var(--accent-wire);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.qz-lesson-card .lesson-card-label {
+  color: var(--ink-muted);
+  font-family: inherit;
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+}
+
+.qz-lesson-card .lesson-card-meta {
+  padding: 0.24rem 0.6rem;
+  font-size: 0.8125rem;
+}
+
+.qz-lesson-copy {
+  align-self: end;
+  grid-column: 1;
+}
+
+.qz-lesson-card .lesson-card-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 2vw, 2rem);
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.18;
 }
 
 .qz-lesson-card .lesson-card-description {
-  max-width: 27rem;
-  padding-right: 6.5rem;
+  max-width: 21rem;
+  margin: 0.6rem 0 0.9rem;
+  padding-right: 0;
+  font-size: 0.95rem;
+  line-height: 1.72;
+}
+
+.qz-lesson-card .lesson-card-action {
+  font-size: 0.9rem;
+}
+
+.qz-lesson-art {
+  display: grid;
+  grid-column: 2;
+  grid-row: 2;
+  align-self: center;
+  width: 7.5rem;
+  height: 7.5rem;
+  place-items: center;
+}
+
+.qz-lesson-art svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.qz-bank-back {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.6;
+}
+
+.qz-bank-front {
+  fill: #ffffff;
+  stroke: var(--accent-wire);
+  stroke-width: 1.6;
+}
+
+.qz-bank-lines {
+  fill: none;
+  stroke: var(--accent-wire);
+  stroke-linecap: round;
+  stroke-width: 3.2;
+}
+
+.qz-bank-seal {
+  fill: var(--accent-wire);
+}
+
+.qz-bank-check {
+  fill: none;
+  stroke: #ffffff;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.4;
+}
+
+.qz-game-frame {
+  fill: #ffffff;
+  stroke: var(--line-strong);
+  stroke-width: 1.6;
+}
+
+.qz-game-bar {
+  stroke: var(--line-strong);
+  stroke-width: 1.4;
+}
+
+.qz-game-dot--one {
+  fill: var(--accent-wire);
+}
+
+.qz-game-dot--two {
+  fill: var(--brand-cyan);
+}
+
+.qz-game-question {
+  fill: var(--accent-wire);
+  font-family: Georgia, serif;
+  font-size: 46px;
+  font-weight: 700;
+}
+
+.qz-game-dash {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-dasharray: 4 7;
+  stroke-linecap: round;
+  stroke-width: 1.6;
 }
 
 .qz-web-roles {
@@ -1745,6 +1872,10 @@
 }
 
 @media (max-width: 1040px) {
+  .qz-lesson-hub--pb {
+    grid-template-columns: 1fr;
+  }
+
   .qz-mission-strip,
   .qz-flow,
   .qz-warmup-options,
@@ -1854,6 +1985,40 @@
 }
 
 @media (max-width: 520px) {
+  .qz-lesson-card {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    min-height: 0;
+    padding: 1rem;
+  }
+
+  .qz-lesson-copy {
+    position: relative;
+    z-index: 1;
+    grid-column: 1;
+  }
+
+  .qz-lesson-art {
+    position: absolute;
+    top: 2.7rem;
+    right: -0.4rem;
+    z-index: 0;
+    grid-column: 1;
+    grid-row: 1 / -1;
+    width: 5.5rem;
+    height: 5.5rem;
+    opacity: 0.24;
+    pointer-events: none;
+  }
+
+  .qz-lesson-card {
+    position: relative;
+  }
+
+  .qz-lesson-card .lesson-card-description {
+    max-width: none;
+  }
+
   .qz-page-shell .project-intro h1 {
     font-size: clamp(2.05rem, 10vw, 2.8rem);
   }

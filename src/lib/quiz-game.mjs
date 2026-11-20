@@ -61,14 +61,33 @@ export function parseBankFile(text) {
   }
   for (let index = 0; index < data.questions.length; index += 1) {
     const question = data.questions[index];
+    const label = '第 ' + (index + 1) + ' 题';
     if (!question || typeof question.question !== 'string' || !question.question.trim()) {
-      return { ok: false, message: '第 ' + (index + 1) + ' 题缺少题干。' };
+      return { ok: false, message: label + '缺少题干。' };
     }
     if (!Array.isArray(question.options) || question.options.length !== 4) {
-      return { ok: false, message: '第 ' + (index + 1) + ' 题不是 4 个选项。' };
+      return { ok: false, message: label + '不是 4 个选项。' };
+    }
+    if (!question.options.every((option) => option && typeof option.text === 'string' && option.text.trim())) {
+      return { ok: false, message: label + '有一个选项是空的。' };
     }
     if (!['A', 'B', 'C', 'D'].includes(String(question.answer || '').toUpperCase())) {
-      return { ok: false, message: '第 ' + (index + 1) + ' 题的答案不是 A/B/C/D。' };
+      return { ok: false, message: label + '的答案不是 A/B/C/D。' };
+    }
+    if (typeof question.explanation !== 'string' || !question.explanation.trim()) {
+      return { ok: false, message: label + '缺少答案解释。' };
+    }
+    if (!Array.isArray(question.keywords) || !question.keywords.some((keyword) => String(keyword || '').trim())) {
+      return { ok: false, message: label + '缺少核验关键词。' };
+    }
+    const sourceText = Array.isArray(question.source)
+      ? question.source.map((source) => String(source || '').trim()).filter(Boolean).join('、')
+      : String(question.source || '').trim();
+    if (!sourceText) {
+      return { ok: false, message: label + '缺少查证来源。' };
+    }
+    if (question.verification !== 'verified') {
+      return { ok: false, message: label + '还没有核验通过，不能进入游戏。' };
     }
   }
   return {

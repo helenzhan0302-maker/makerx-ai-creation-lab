@@ -31,6 +31,14 @@ test('bank import requires ten questions with four options and A-D answers', () 
   const badAnswer = structuredClone(json);
   badAnswer.questions[0].answer = 'E';
   assert.match(parseBankFile(JSON.stringify(badAnswer)).message, /A\/B\/C\/D/);
+
+  const pending = structuredClone(json);
+  pending.questions[0].verification = 'pending';
+  assert.match(parseBankFile(JSON.stringify(pending)).message, /核验通过/);
+
+  const noSource = structuredClone(json);
+  noSource.questions[0].source = [];
+  assert.match(parseBankFile(JSON.stringify(noSource)).message, /查证来源/);
 });
 
 test('invalid JSON is rejected with a readable message', () => {

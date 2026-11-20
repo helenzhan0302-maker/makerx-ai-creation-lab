@@ -15,9 +15,9 @@
 | `/lab/002-picturebook/` | 实验 002「故事造物机」课程总览 | ✅ 当前已实现 | 两节课入口；第 1 节「故事导演营」，第 2 节「绘本造物营」 |
 | `/lab/002-picturebook/lesson-1/` | 实验 002 第 1 节课「故事导演营」 | ✅ 当前已实现 | 选故事起点 → 生成采访提示词 → 课堂 Agent 创作 → 回填创意卡与完整故事 → 导出 v1 |
 | `/lab/002-picturebook/lesson-2/` | 实验 002 第 2 节课「绘本造物营」 | ✅ 当前已实现 | 导入 v1 → 6 页分镜 → 画风与角色 → 逐页插画提示词 → 检查单 → 路演卡 → 导出 v2 |
-| `/lab/003-quiz-game/` | 实验 003「AI 趣味知识挑战赛」课程总览 | ✅ 当前已实现 | 两节课入口；第 1 节「我是出题官」，第 2 节「我是游戏设计师」 |
-| `/lab/003-quiz-game/lesson-1/` | 实验 003 第 1 节课「我是出题官」 | ✅ 当前已实现 | 选主题 → AI 生成初稿 → 逐题查证 → 复制整理提示词 → 导出题库与 `quiz-project-v1.json` |
-| `/lab/003-quiz-game/lesson-2/` | 实验 003 第 2 节课「我是游戏设计师」 | ✅ 当前已实现 | 导入 v1 → 三页设计 → 游戏规则 → 程序员提示词 → 预演 → 五项测试 → 修 Bug → 发布稿 → 导出 v2 |
+| `/lab/003-quiz-game/` | 实验 003「AI 趣味知识挑战赛」课程总览 | ✅ 当前已实现 | 两节课入口；课次卡沿用项目 002 的「文案 + 自绘插画」两列布局 |
+| `/lab/003-quiz-game/lesson-1/` | 实验 003 第 1 节课「我是出题官」 | ✅ 当前已实现 | 选主题 → 出题提示词 → 复制「AI题库整理与文件生成助手」提示词，生成 `主题名称.md` 与 `主题名称.json` |
+| `/lab/003-quiz-game/lesson-2/` | 实验 003 第 2 节课「我是游戏设计师」 | ✅ 当前已实现 | 顶部复制游戏开发提示词 → 导入标准题库或 v1 → 三页设计 → 游戏规则 → 程序员提示词 → 预演 → 五项测试 → 修 Bug → 发布稿 → 导出 v2 |
 | `/parents/` | 给家长 | ⬜ 可选 | 第一版先作为首页的一个区块；内容变多再独立成页 |
 | `/about/` | 关于 / 学习方式 | ⬜ 可选 | 同上，先做首页区块 |
 | `/404` | 找不到页面 | ⬜ 未实现 | 后续补充真实可用的返回出口 |
@@ -196,6 +196,8 @@
 **首页**：`HeroLab`、`HeroVisual`（承载用户提供的首屏图）、`CraftFlow`、`ProjectGrid`、`ProjectCard`、`LearningWhy`、`ForParents`
 **实验页**：`ProjectHeader`、`ProjectMission`、`LearningGoals`、`PrepChecklist`、`StepList`、`PromptBox`、`ResourceList`、`RubricTable`、`PitchGuide`、`PortfolioExit`
 **实验 003 工具**：`QuizBankWorkshop`、`QuizGameStudio`
+
+`QuizBankWorkshop` 只保留主题选择、可复制的出题提示词与「AI题库整理与文件生成助手」。`QuizGameStudio` 顶部有独立可复制的游戏开发提示词，其后是题库导入门禁、设计与测试工作台；标准题库的核验门槛是每题 `verification: verified`，旧版工程仍需支撑证据与印章。
 **基础件**：`Reveal`（滚动揭示容器）、`Callout`、`Tag`、`Icon`（自绘 SVG 集合）
 **仅备选方案需要**：`FloatingObject`（自绘装置；只有放弃首屏图、改用自绘时才建，见 [visual-direction.md §5.2](visual-direction.md)）
 

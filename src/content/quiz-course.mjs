@@ -4,7 +4,7 @@ export const QUIZ_COURSE = {
     title: 'AI 趣味知识挑战赛',
     lead: '两节课，把好奇心变成一场真正能玩的挑战赛。第 1 节先当较真的出题官，做出 10 道查过证据的题；第 2 节再把题库交给 AI 程序员，设计并测试自己的网页游戏。',
     status: '两节课 · 10 道核验题 · 一局 5 题',
-    boundary: '这一页不会替你保存内容。所有题目、核验记录和游戏设计都只在当前浏览器里，下课前请导出工程文件带走。',
+    boundary: '这一页不会替你保存内容。题目、提示词和游戏设计都只在当前浏览器里，下课前请把整理好的文件带走。',
     lessons: [
       {
         id: '01',
@@ -21,7 +21,7 @@ export const QUIZ_COURSE = {
         label: '第 4 次课',
         title: '我是游戏设计师',
         meta: '一局 5 题 · 满分 100',
-        description: '导入第 1 节的题库，设计首页、答题页和结果页；生成给 AI 程序员的任务单，再按清单测试、修 Bug、做 1 分钟发布。',
+        description: '导入第 1 节整理好的题库，设计首页、答题页和结果页；生成给 AI 程序员的任务单，再按清单测试、修 Bug、做 1 分钟发布。',
         action: '进入游戏设计工作台',
         href: 'lab/003-quiz-game/lesson-2/',
         variant: 'game',
@@ -39,7 +39,7 @@ export const QUIZ_COURSE = {
     eyebrow: 'lesson 01 / question detective',
     title: '我是出题官',
     lead: '不是把 AI 给的题直接搬进游戏，而是像一个较真的出题官：选主题、出初稿、查证据、盖印章，最后做出 10 道经得起追问的好题。',
-    notes: ['两节课中的第 1 节', '目标：10 道核验题', 'AI 初稿必须查证', '下课前导出 quiz-project-v1.json'],
+    notes: ['两节课中的第 1 节', '目标：10 道核验题', 'AI 初稿必须查证', '下课前整理题库文件'],
     missions: [
       { step: '01', title: '选主题', detail: '越聚焦越好玩。' },
       { step: '02', title: '指挥 AI', detail: '用模板生成 10 道初稿。' },
@@ -95,7 +95,7 @@ export const QUIZ_COURSE = {
     eyebrow: 'lesson 02 / game designer',
     title: '我是游戏设计师',
     lead: '先看懂一个游戏怎么开始、怎么答题、怎么重来；再把核验题库交给 AI 程序员，做出首页、答题页、结果页，最后用测试清单把它打磨成真正能玩的作品。',
-    notes: ['先导入 quiz-project-v1.json', '一局随机 5 题', '每题 20 分，满分 100', '下课前导出 quiz-project-v2.json'],
+    notes: ['先导入整理好的题库', '一局随机 5 题', '每题 20 分，满分 100', '下课前导出 quiz-project-v2.json'],
     journey: [
       { title: '起点站', detail: '打开首页，看到主题和【开始挑战】。' },
       { title: '转盘站', detail: '从 10 道题库里随机抽出 5 道。' },

@@ -5,10 +5,11 @@ import {
   QUIZ_SCHEMA_VERSION,
   buildQuizProjectFileName,
   createQuizProjectFile,
+  parseLessonOneFile,
   parseQuizProjectFile,
   stringifyQuizProjectFile,
 } from '../src/lib/quiz-project-file.mjs';
-import { createQuestionBank, sampleQuestionBank } from '../src/lib/quiz-challenge.mjs';
+import { buildBankJson, createQuestionBank, sampleQuestionBank } from '../src/lib/quiz-challenge.mjs';
 
 const design = { title: '动物睡觉大挑战', topic: '动物奇葩睡觉姿势', intro: '看看谁最会睡。' };
 const checks = [
@@ -86,6 +87,25 @@ test('a hand-edited file cannot skip verification fields', () => {
     assert.equal(parsed.ok, false);
     assert.match(parsed.message, message);
   }
+});
+
+test('the organiser JSON can open lesson four without a legacy project file', () => {
+  const sample = sampleQuestionBank();
+  const bank = buildBankJson({ topic: sample.topic, questions: sample.questions });
+  const parsed = parseLessonOneFile(JSON.stringify(bank));
+  assert.equal(parsed.ok, true);
+  assert.equal(parsed.data.questions.length, 10);
+  assert.ok(parsed.data.questions.every((question) => question.verdict === 'correct'));
+  assert.ok(parsed.data.questions.every((question) => question.keywords && question.source));
+});
+
+test('an unverified organiser JSON keeps lesson four locked', () => {
+  const sample = sampleQuestionBank();
+  const bank = buildBankJson({ topic: sample.topic, questions: sample.questions });
+  bank.questions[6].verification = 'pending';
+  const parsed = parseLessonOneFile(JSON.stringify(bank));
+  assert.equal(parsed.ok, false);
+  assert.match(parsed.message, /还没有核验通过/);
 });
 
 test('future schema version is rejected', () => {
