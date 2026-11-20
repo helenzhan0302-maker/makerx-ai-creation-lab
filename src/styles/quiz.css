@@ -1189,12 +1189,6 @@
   font-weight: 700;
 }
 
-.qz-lesson-card .lesson-card-label {
-  color: var(--ink-muted);
-  font-size: 0.8125rem;
-  letter-spacing: 0.02em;
-}
-
 .qz-lesson-card .lesson-card-meta {
   padding: 0.24rem 0.6rem;
   font-size: 0.8125rem;

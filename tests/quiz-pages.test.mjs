@@ -57,6 +57,7 @@ test('quiz hub lesson cards reuse the two-column story layout', () => {
   assert.match(pages.hub, /qz-lesson-copy/);
   assert.match(pages.hub, /qz-lesson-art/);
   assert.match(pages.hub, /qz-lesson-meta/);
+  assert.doesNotMatch(pages.hub, /lesson-card-label/);
 });
 
 test('quiz hub loads the shared lesson-card baseline before quiz overrides', () => {

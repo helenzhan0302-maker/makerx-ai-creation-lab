@@ -8,7 +8,6 @@ export const QUIZ_COURSE = {
     lessons: [
       {
         id: '01',
-        label: '第 3 次课',
         title: '我是出题官',
         meta: '10 道核验题',
         description: '选一个聚焦主题，让 AI 生成 10 道初稿；再用权威资料逐题查证，只把盖上「正确 · 准予通过」印章的题收入题库。',
@@ -18,7 +17,6 @@ export const QUIZ_COURSE = {
       },
       {
         id: '02',
-        label: '第 4 次课',
         title: '我是游戏设计师',
         meta: '一局 5 题 · 满分 100',
         description: '导入第 1 节整理好的题库，设计首页、答题页和结果页；生成给 AI 程序员的任务单，再按清单测试、修 Bug、做 1 分钟发布。',
